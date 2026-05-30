@@ -1,42 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f8fa;
-  --foreground: #18181b;
-  --surface: #ffffff;
-  --surface-muted: #f1f3f5;
-  --border: #d9dee5;
-  --text-primary: #18181b;
-  --text-secondary: #5f6876;
-  --brand: #2563eb;
-  --brand-muted: #eff6ff;
-  --success: #0f766e;
-  --warning: #b45309;
-  --error: #b91c1c;
-  --info: #2563eb;
-  --ring: #2563eb;
-  --radius: 0.5rem;
-  --shadow-subtle: 0 1px 2px rgb(15 23 42 / 0.06);
-}
+  --admin-bg: #f7fafc;
+  --admin-surface: #ffffff;
+  --admin-surface-elevated: #f8fafc;
+  --admin-border: #e2e8f0;
+  --admin-text: #0f172a;
+  --admin-text-muted: #64748b;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f1115;
-    --foreground: #f4f4f5;
-    --surface: #181b21;
-    --surface-muted: #20242c;
-    --border: #313741;
-    --text-primary: #f4f4f5;
-    --text-secondary: #a1a8b3;
-    --brand: #60a5fa;
-    --brand-muted: #172033;
-    --success: #2dd4bf;
-    --warning: #f59e0b;
-    --error: #f87171;
-    --info: #60a5fa;
-    --ring: #60a5fa;
-    --shadow-subtle: none;
-  }
+  --admin-sidebar: #081220;
+  --admin-sidebar-elevated: #0b1a2e;
+  --admin-sidebar-border: #1e3350;
+  --admin-sidebar-text: #f8fafc;
+  --admin-sidebar-muted: #94a3b8;
+
+  --admin-primary: #2563eb;
+  --admin-primary-hover: #1d4ed8;
+  --admin-primary-soft: #dbeafe;
+  --admin-accent-cyan: #06b6d4;
+  --admin-accent-violet: #8b5cf6;
+
+  --admin-success: #10b981;
+  --admin-warning: #f59e0b;
+  --admin-danger: #ef4444;
+  --admin-info: #0ea5e9;
+
+  --admin-radius-card: 24px;
+  --admin-radius-control: 14px;
+  --admin-shadow-card: 0 18px 45px rgba(15, 23, 42, 0.08);
+  --admin-focus-ring: #06b6d4;
+
+  --background: var(--admin-bg);
+  --foreground: var(--admin-text);
+  --surface: var(--admin-surface);
+  --surface-muted: var(--admin-surface-elevated);
+  --border: var(--admin-border);
+  --text-primary: var(--admin-text);
+  --text-secondary: var(--admin-text-muted);
+  --brand: var(--admin-primary);
+  --brand-muted: var(--admin-primary-soft);
+  --success: var(--admin-success);
+  --warning: var(--admin-warning);
+  --error: var(--admin-danger);
+  --info: var(--admin-info);
+  --ring: var(--admin-focus-ring);
+  --radius: var(--admin-radius-control);
+  --shadow-subtle: 0 1px 2px rgb(15 23 42 / 0.06);
 }
 
 * {
