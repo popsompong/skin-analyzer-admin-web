@@ -4,9 +4,9 @@ Private Admin Web for Skin Analyzer.
 
 ## Current Status
 
-This repository is contract-only and has not been scaffolded yet. It currently contains guardrails for future UX/UI and architecture work only.
+This repository contains the initial Admin Web scaffold foundation. The scaffold is intentionally minimal: App Router routes, shell layout, placeholders, design tokens, and typed API/auth/permission placeholders.
 
-Do not scaffold the app until this contract has been reviewed.
+Feature implementation must remain scoped and follow the contract docs.
 
 ## Purpose
 
@@ -28,13 +28,12 @@ skin-analyzer-admin-backend
 
 ## Planned Implementation Order
 
-1. Review and approve this contract.
-2. Scaffold the Admin Web app in a separate scoped task.
-3. Add base layout, tokens, theme foundation, and auth shell.
-4. Implement `/login` and `/dashboard`.
-5. Implement Blog and Tips content workflows.
-6. Add media, taxonomy, authors, revalidation events, and settings as scoped tasks.
-7. Add visual QA coverage once UI routes exist.
+1. Keep scaffold changes small and reviewable.
+2. Wire the real Admin Backend auth flow in a separate scoped task.
+3. Implement `/login` and `/dashboard` behavior.
+4. Implement Blog and Tips content workflows.
+5. Add media, taxonomy, authors, revalidation events, and settings as scoped tasks.
+6. Add visual QA coverage as UI routes mature.
 
 ## Report and Zip Artifact Policy
 
@@ -51,4 +50,3 @@ Report filenames:
 ```
 
 Changed-files zips must include only files changed by the current task and must not include build output, screenshots, reports, `.env*`, uploaded assets, or unrelated files.
-

@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f8fa;
+  --foreground: #18181b;
+  --surface: #ffffff;
+  --surface-muted: #f1f3f5;
+  --border: #d9dee5;
+  --text-primary: #18181b;
+  --text-secondary: #5f6876;
+  --brand: #2563eb;
+  --brand-muted: #eff6ff;
+  --success: #0f766e;
+  --warning: #b45309;
+  --error: #b91c1c;
+  --info: #2563eb;
+  --ring: #2563eb;
+  --radius: 0.5rem;
+  --shadow-subtle: 0 1px 2px rgb(15 23 42 / 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f1115;
+    --foreground: #f4f4f5;
+    --surface: #181b21;
+    --surface-muted: #20242c;
+    --border: #313741;
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a8b3;
+    --brand: #60a5fa;
+    --brand-muted: #172033;
+    --success: #2dd4bf;
+    --warning: #f59e0b;
+    --error: #f87171;
+    --info: #60a5fa;
+    --ring: #60a5fa;
+    --shadow-subtle: none;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--background);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: var(--brand-muted);
+  color: var(--text-primary);
+}
