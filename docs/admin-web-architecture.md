@@ -2,6 +2,8 @@
 
 This document defines the planned architecture. Do not scaffold from this document alone; scaffold only after the contract is reviewed and explicitly approved.
 
+Design implementation also depends on `docs/admin-web-brand-visual-direction.md`. Future UI shell, login, dashboard, and brand work must follow that addendum before code changes.
+
 ## 1. Likely Stack
 
 - Next.js App Router.
@@ -66,9 +68,13 @@ styles/
 - `lib/permissions`: permission checks and menu visibility helpers.
 - `lib/format`: date, status, text, and display formatting.
 - `types/api`: backend DTOs and API response types.
-- `styles/tokens`: theme tokens and design variables.
+- `styles/tokens`: Admin Web-owned theme tokens and design variables.
 
 Product-specific UI must not be placed in `components/ui`.
+
+Token implementation must be separated from Public Web styling. Do not import or mirror the Public Web rose/pearl/champagne theme as the Admin Web base.
+
+Future shell and login work must implement the Modern AI Skin Analysis Admin 2026 direction from the brand addendum, including the dark navy plus blue/cyan system and the front-facing AI skin scan logo direction when brand assets are scoped.
 
 ## 4. API Client Rules
 
@@ -121,4 +127,3 @@ Admin Web expects the Admin Backend contract to provide these high-level capabil
 - Taxonomy and authors: categories, tags, and authors management.
 
 Do not copy full backend API docs into Admin Web docs. Treat backend docs as the source of detailed endpoint contracts.
-

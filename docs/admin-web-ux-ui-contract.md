@@ -2,8 +2,11 @@
 
 This document defines the design direction for `skin-analyzer-admin-web`. It is the main UX/UI source of truth before scaffold or implementation.
 
+Brand and visual direction is further constrained by `docs/admin-web-brand-visual-direction.md`. That addendum overrides any generic scaffold visual direction and must be read before future UI implementation.
+
 ## 1. Design Direction
 
+- Modern AI Skin Analysis Admin 2026.
 - Clean SaaS Dashboard.
 - Calm Editorial Admin.
 - Professional internal tool.
@@ -17,6 +20,7 @@ This document defines the design direction for `skin-analyzer-admin-web`. It is 
 - Not public marketing UI.
 - Not a beauty landing page.
 - Not flashy.
+- Independent from the Public Web visual theme.
 
 The interface should feel efficient, clear, and trustworthy for repeated admin work.
 
@@ -28,6 +32,7 @@ Do not use:
 - Glassmorphism-heavy panels.
 - Neon effects.
 - Public landing page hero style.
+- Public Web rose, pearl, or champagne palette as the Admin Web base.
 - Large marketing typography.
 - Excessive motion.
 - Arbitrary color choices.
@@ -39,6 +44,8 @@ Any visual flourish must serve task clarity, hierarchy, or state recognition.
 ## 3. Design Tokens Direction
 
 Define tokens during scaffold before implementing major screens. Do not introduce one-off colors in components.
+
+Admin Web tokens are Admin Web-owned. They must follow the blue/cyan/navy admin system from `docs/admin-web-brand-visual-direction.md` and must not inherit the Public Web theme as the base.
 
 - `background`: page canvas.
 - `surface`: primary panel, card, dialog, table, and form surface.
@@ -55,6 +62,8 @@ Define tokens during scaffold before implementing major screens. Do not introduc
 - `spacing`: compact but comfortable density for tables, forms, and editor panels.
 - `shadow`: minimal elevation only where layering needs to be clear.
 - `focus ring`: visible, accessible keyboard focus state.
+
+Logo direction is a front-facing AI skin scan mark following Logo B: Semi-realistic App Icon Style. Actual asset implementation must be scoped separately.
 
 ## 4. Typography
 
@@ -119,4 +128,3 @@ The editor should protect brand consistency and content safety more than it maxi
 - Admin Web does not need public SEO.
 - Admin Web must remain private and `noindex`.
 - Public presentation can be previewed, but public-facing rendering belongs to the public web contract.
-

@@ -2,6 +2,8 @@
 
 This document makes UI QA enforceable for `skin-analyzer-admin-web`.
 
+Visual QA must compare screenshots against `docs/admin-web-brand-visual-direction.md` in addition to checking layout and accessibility basics.
+
 ## 1. Screenshot Requirements
 
 For every UI task after scaffold, capture evidence for:
@@ -74,6 +76,17 @@ Every visual review must check:
 - No hidden primary actions.
 - Loading, empty, and error states visible when relevant.
 - Permission and forbidden states visible when relevant.
+- UI does not drift back to generic scaffold styling or Public Web styling.
+- Logo or brand usage follows the front-facing AI skin scan direction when a logo appears.
+
+Visual drift checklist:
+
+- No Public Web palette as the base.
+- No generic cube or hex branding.
+- No marketing-page styling.
+- No arbitrary palette.
+- No heavy neon, glass, or gradient treatment unless approved.
+- Responsive behavior remains intentional.
 
 ## 4. Admin Editor Special Rule
 

@@ -70,6 +70,13 @@ Expected path:
 
 ## 4. UI/UX Safety Rules
 
+- Future UI tasks must read `docs/admin-web-brand-visual-direction.md` before implementation.
+- Admin Web visual system is independent from Public Web.
+- Do not use Public Web colors or theme as the Admin Web base.
+- Follow the `Modern AI Skin Analysis Admin 2026` direction.
+- Logo direction is Logo B: Semi-realistic App Icon Style with a front-facing AI skin scan.
+- Do not use a generic cube or hex mark for Admin Web branding.
+- No UI implementation task can pass full `PASS` if it ignores the brand direction addendum.
 - Do not redesign outside the scoped page or component.
 - Do not create new colors outside approved design tokens.
 - Do not add heavy shadows, gradients, glassmorphism, or animations unless approved.
