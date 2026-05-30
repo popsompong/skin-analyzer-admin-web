@@ -4,16 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/format/class-names";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-[var(--radius)] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 rounded-(--radius) text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--ring) focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-[var(--brand)] text-white hover:brightness-95 ring-offset-[var(--background)]",
+          "bg-(--brand) text-white hover:brightness-95 ring-offset-(--background)",
         secondary:
-          "border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-muted)] ring-offset-[var(--background)]",
+          "border border-(--border) bg-(--surface) text-(--text-primary) hover:bg-(--surface-muted) ring-offset-(--background)",
         ghost:
-          "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)] ring-offset-[var(--background)]"
+          "text-(--text-secondary) hover:bg-(--surface-muted) hover:text-(--text-primary) ring-offset-(--background)"
       },
       size: {
         default: "h-10 px-4 py-2",

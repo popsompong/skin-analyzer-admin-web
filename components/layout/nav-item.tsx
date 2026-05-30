@@ -17,10 +17,10 @@ export function NavItem({ href, icon, label }: NavItemProps) {
   return (
     <Link
       className={cn(
-        "flex min-h-10 items-center gap-3 rounded-[var(--radius)] px-3 py-2 text-sm font-medium text-[var(--text-secondary)]",
-        "hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]",
+        "flex min-h-10 items-center gap-3 rounded-(--radius) px-3 py-2 text-sm font-medium text-(--text-secondary)",
+        "hover:bg-(--surface-muted) hover:text-(--text-primary)",
         active &&
-          "bg-[var(--brand-muted)] text-[var(--brand)] hover:bg-[var(--brand-muted)] hover:text-[var(--brand)]"
+          "bg-(--brand-muted) text-(--brand) hover:bg-(--brand-muted) hover:text-(--brand)"
       )}
       href={href}
     >

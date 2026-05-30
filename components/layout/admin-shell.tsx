@@ -3,7 +3,7 @@ import { Topbar } from "@/components/layout/topbar";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--text-primary)]">
+    <div className="min-h-screen bg-(--background) text-(--text-primary)">
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
