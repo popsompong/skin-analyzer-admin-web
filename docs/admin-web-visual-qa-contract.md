@@ -2,7 +2,7 @@
 
 This document makes UI QA enforceable for `skin-analyzer-admin-web`.
 
-Visual QA must compare screenshots against `docs/admin-web-brand-visual-direction.md` in addition to checking layout and accessibility basics.
+Visual QA must compare screenshots against `docs/admin-web-brand-visual-direction.md` and `docs/admin-web-theme-token-contract.md` in addition to checking layout and accessibility basics.
 
 ## 1. Screenshot Requirements
 
@@ -13,8 +13,9 @@ For every UI task after scaffold, capture evidence for:
 - Tablet landscape: `1024x768`.
 - Tablet portrait: `768x1024`.
 - Mobile: `390x844`.
-- Light mode.
-- Dark mode once available.
+- Light-only MVP mode.
+
+Dark mode screenshots are not required because Admin Web MVP is light-only. Do not fail UI tasks for missing dark mode screenshots.
 
 Docs-only tasks are exempt from screenshot requirements.
 
@@ -78,13 +79,18 @@ Every visual review must check:
 - Permission and forbidden states visible when relevant.
 - UI does not drift back to generic scaffold styling or Public Web styling.
 - Logo or brand usage follows the front-facing AI skin scan direction when a logo appears.
+- UI complies with `docs/admin-web-theme-token-contract.md`.
 
 Visual drift checklist:
 
 - No Public Web palette as the base.
+- Dark navy sidebar.
+- Light neutral workspace.
+- Blue/cyan accents.
 - No generic cube or hex branding.
 - No marketing-page styling.
 - No arbitrary palette.
+- No random local colors outside Admin Web tokens.
 - No heavy neon, glass, or gradient treatment unless approved.
 - Responsive behavior remains intentional.
 
@@ -102,10 +108,11 @@ Codex final reports for UI tasks must include:
 - Routes tested.
 - Screenshot paths, or a clear reason screenshots were unavailable.
 - Viewport list.
-- Mode list.
+- Mode list, which should be light-only for MVP.
 - Issues found.
 - Validation commands.
 - shadcn/ui usage outcome: reused, added, intentionally avoided, or replaced by custom component.
+- Token compliance outcome.
 
 Screenshots, browser workflow artifacts, and generated reports must be stored outside the repo unless explicitly requested.
 

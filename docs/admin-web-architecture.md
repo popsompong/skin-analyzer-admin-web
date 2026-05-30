@@ -2,7 +2,7 @@
 
 This document defines the planned architecture. Do not scaffold from this document alone; scaffold only after the contract is reviewed and explicitly approved.
 
-Design implementation also depends on `docs/admin-web-brand-visual-direction.md`. Future UI shell, login, dashboard, and brand work must follow that addendum before code changes.
+Design implementation also depends on `docs/admin-web-brand-visual-direction.md` and `docs/admin-web-theme-token-contract.md`. Future UI shell, login, dashboard, and brand work must follow those addenda before code changes.
 
 ## 1. Likely Stack
 
@@ -10,11 +10,11 @@ Design implementation also depends on `docs/admin-web-brand-visual-direction.md`
 - TypeScript.
 - Tailwind CSS.
 - shadcn/ui.
-- `next-themes` if theme support is selected during scaffold.
 - React Hook Form and Zod only if later chosen during scaffold or form implementation.
 - Centralized API client layer.
 
 Do not install dependencies as part of contract work.
+Do not add `next-themes`, a theme toggle, or app-level `prefers-color-scheme` theme switching unless a future explicit contract changes the light-only MVP decision.
 
 ## 2. Future Folder Plan
 
@@ -68,13 +68,15 @@ styles/
 - `lib/permissions`: permission checks and menu visibility helpers.
 - `lib/format`: date, status, text, and display formatting.
 - `types/api`: backend DTOs and API response types.
-- `styles/tokens`: Admin Web-owned theme tokens and design variables.
+- `styles/tokens`: Admin Web-owned light-only theme tokens and design variables.
 
 Product-specific UI must not be placed in `components/ui`.
 
 Token implementation must be separated from Public Web styling. Do not import or mirror the Public Web rose/pearl/champagne theme as the Admin Web base.
 
-Future shell and login work must implement the Modern AI Skin Analysis Admin 2026 direction from the brand addendum, including the dark navy plus blue/cyan system and the front-facing AI skin scan logo direction when brand assets are scoped.
+Future shell and login work must implement the Modern AI Skin Analysis Admin 2026 direction from the brand addendum, including the light neutral workspace, dark navy sidebar, blue/cyan accent system, and the front-facing AI skin scan logo direction when brand assets are scoped.
+
+Future token cleanup must happen before additional UI page work. It should align `app/globals.css` with `docs/admin-web-theme-token-contract.md` and remove app-level dark-mode or `prefers-color-scheme` token behavior if present.
 
 ## 4. API Client Rules
 

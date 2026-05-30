@@ -71,9 +71,15 @@ Expected path:
 ## 4. UI/UX Safety Rules
 
 - Future UI tasks must read `docs/admin-web-brand-visual-direction.md` before implementation.
+- Future UI tasks must read `docs/admin-web-theme-token-contract.md` before implementation.
 - Admin Web visual system is independent from Public Web.
 - Do not use Public Web colors or theme as the Admin Web base.
 - Follow the `Modern AI Skin Analysis Admin 2026` direction.
+- Admin Web MVP is light-only: light neutral workspace, dark navy sidebar, blue/cyan AI accents.
+- Do not implement dark mode, a theme toggle, `next-themes`, or app-level `prefers-color-scheme` theme switching unless a future explicit contract changes this.
+- Use Admin Web semantic theme tokens for UI surfaces, text, borders, and actions.
+- Do not add raw hex colors in components unless the task explicitly scopes a one-off SVG/visual detail.
+- Stop and report if a task needs new colors outside existing Admin Web tokens.
 - Logo direction is Logo B: Semi-realistic App Icon Style with a front-facing AI skin scan.
 - Do not use a generic cube or hex mark for Admin Web branding.
 - No UI implementation task can pass full `PASS` if it ignores the brand direction addendum.
@@ -115,7 +121,7 @@ Expected path:
   - `1024x768`
   - `768x1024`
   - `390x844`
-- Light and dark mode must be considered once theme support exists.
+- MVP screenshot review is light-only; dark mode screenshots are not required.
 - Report route, viewport, mode, and issues.
 - No visual task passes without evidence or a clear reason why screenshots cannot run.
 - Future UI tasks cannot pass as full `PASS` without screenshot evidence unless the task is docs-only or screenshots are impossible for a clearly reported reason.

@@ -4,7 +4,7 @@ This document locks the brand and visual direction for `skin-analyzer-admin-web`
 
 ## 1. Purpose
 
-Use this document to prevent future Admin Web work from drifting into the Public Web theme, a generic SaaS look, or an unapproved palette. Future UI tasks must treat this as the brand and visual source of truth alongside the UX/UI contract.
+Use this document to prevent future Admin Web work from drifting into the Public Web theme, a generic SaaS look, or an unapproved palette. Future UI tasks must treat this as the brand and visual source of truth alongside the UX/UI contract and `docs/admin-web-theme-token-contract.md`.
 
 ## 2. Product Surface Separation
 
@@ -13,6 +13,7 @@ Use this document to prevent future Admin Web work from drifting into the Public
 - Admin Web must not use the Public Web rose, pearl, or champagne beauty palette as the base.
 - Public Web may be beauty-tech and emotional; Admin Web must be a modern internal AI skin-analysis admin and content studio.
 - Public brand colors may appear only as tiny supporting accents if explicitly approved, not as the Admin Web system palette.
+- Admin Web brand direction must use Admin-owned light-only theme tokens from `docs/admin-web-theme-token-contract.md`.
 
 ## 3. Visual Direction
 
@@ -64,9 +65,10 @@ Base palette direction:
 
 - Deep navy sidebar or near-black blue.
 - Soft neutral app background.
-- White/off-white or dark-elevated cards depending on theme.
+- White/off-white cards.
 - Subtle cool borders.
-- Readable slate or white text depending on mode.
+- Readable slate or near-black text in the main workspace.
+- Light-only MVP theme. Dark mode is deferred and not part of MVP.
 
 Accent palette direction:
 
@@ -84,6 +86,7 @@ Forbidden palette direction:
 - Random arbitrary colors.
 - Neon-heavy palettes.
 - Gradient-heavy backgrounds.
+- Dark-mode palette implementation during MVP.
 
 ## 6. Brand Mark and Logo Direction
 
@@ -117,7 +120,7 @@ Forbidden logo direction:
 Usage rules:
 
 - For MVP, actual brand asset implementation must be a separate task.
-- Future implementation should support sidebar mark, favicon, app icon, login panel mark, and light/dark variants.
+- Future implementation should support sidebar mark, favicon, app icon, and login panel mark. MVP brand usage is light-only with a dark navy sidebar.
 - Logo must remain readable at 24px, 32px, 48px, and 192px.
 
 ## 7. Responsive Visual Direction
@@ -146,8 +149,10 @@ Mobile:
 Every future UI prompt must include:
 
 - Follow Admin Web Brand and Visual Direction Addendum v1.
+- Follow `docs/admin-web-theme-token-contract.md`.
 - Do not invent a new palette.
 - Do not use Public Web theme or colors as the Admin Web base.
+- Do not implement dark mode, a theme toggle, or `next-themes` in MVP UI tasks.
 - Do not redesign freely.
 - Do not change brand or logo direction without explicit approval.
 - Use the approved mockup as visual direction only.

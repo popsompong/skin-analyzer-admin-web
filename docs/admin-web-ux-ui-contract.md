@@ -2,7 +2,7 @@
 
 This document defines the design direction for `skin-analyzer-admin-web`. It is the main UX/UI source of truth before scaffold or implementation.
 
-Brand and visual direction is further constrained by `docs/admin-web-brand-visual-direction.md`. That addendum overrides any generic scaffold visual direction and must be read before future UI implementation.
+Brand and visual direction is further constrained by `docs/admin-web-brand-visual-direction.md`. Theme and color-token usage is constrained by `docs/admin-web-theme-token-contract.md`. These addenda override any generic scaffold visual direction and must be read before future UI implementation.
 
 ## 1. Design Direction
 
@@ -45,7 +45,7 @@ Any visual flourish must serve task clarity, hierarchy, or state recognition.
 
 Define tokens during scaffold before implementing major screens. Do not introduce one-off colors in components.
 
-Admin Web tokens are Admin Web-owned. They must follow the blue/cyan/navy admin system from `docs/admin-web-brand-visual-direction.md` and must not inherit the Public Web theme as the base.
+Admin Web tokens are Admin Web-owned. They must follow the light-only blue/cyan/navy admin system from `docs/admin-web-theme-token-contract.md` and must not inherit the Public Web theme as the base.
 
 - `background`: page canvas.
 - `surface`: primary panel, card, dialog, table, and form surface.
@@ -86,12 +86,14 @@ Logo direction is a front-facing AI skin scan mark following Logo B: Semi-realis
 
 Do not place cards inside other cards unless the component is a real modal, popover, or repeated item.
 
-## 6. Light and Dark Mode
+## 6. Light-Only Theme Mode
 
-- Both modes must be supported eventually.
-- Do not create one-off dark colors.
-- Theme implementation must use tokens.
-- New UI work must consider how surfaces, borders, text, status badges, and focus rings behave in both modes once theme support exists.
+- Admin Web MVP is light-only.
+- No dark mode is required or approved for MVP.
+- Do not add a theme toggle, `next-themes`, or app-level `prefers-color-scheme` theme switching.
+- No dark mode screenshots are required for MVP UI tasks.
+- Theme implementation must use Admin Web semantic tokens from `docs/admin-web-theme-token-contract.md`.
+- Do not create one-off colors in components.
 
 ## 7. UX States
 

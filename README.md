@@ -8,6 +8,8 @@ This repository contains the initial Admin Web scaffold foundation. The scaffold
 
 Feature implementation must remain scoped and follow the contract docs.
 
+Theme status: Admin Web MVP is light-only. Use the Admin Web-owned light neutral workspace, dark navy sidebar, and blue/cyan AI accent token contract before UI work.
+
 ## Purpose
 
 The Admin Web will provide internal tools for managing Skin Analyzer admin content and operations, including Blog, Tips, media, taxonomy, authors, revalidation events, and settings.
