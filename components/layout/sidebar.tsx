@@ -40,7 +40,7 @@ export function Sidebar() {
   const settingsItems = menuItems.filter((item) => item.href === "/settings");
 
   return (
-    <aside className="hidden min-h-screen w-[248px] shrink-0 border-r border-(--admin-sidebar-border) bg-(--admin-sidebar) text-(--admin-sidebar-text) md:flex md:flex-col">
+    <aside className="hidden min-h-screen w-62 shrink-0 border-r border-(--admin-sidebar-border) bg-(--admin-sidebar) text-(--admin-sidebar-text) md:flex md:flex-col">
       <div className="border-b border-(--admin-sidebar-border) px-5 py-5">
         <div className="flex items-center gap-3">
           <BrandMark />

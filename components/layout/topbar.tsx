@@ -1,24 +1,68 @@
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import {
+  Bell,
+  ChevronDown,
+  CircleHelp,
+  Command,
+  Menu,
+  Search
+} from "lucide-react";
 
 export function Topbar() {
   return (
-    <header className="sticky top-0 z-10 border-b border-(--border) bg-(--surface)">
-      <div className="flex min-h-16 flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-        <div className="min-w-0">
-          <div className="text-xs font-medium uppercase tracking-normal text-(--text-secondary) md:hidden">
-            Skin Analyzer Admin
+    <header className="sticky top-0 z-10 border-b border-(--admin-border) bg-(--admin-surface)">
+      <div className="flex min-h-19 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 flex-1 items-center gap-4">
+          <button
+            aria-label="Open admin navigation"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) text-(--admin-text-muted) transition-colors hover:bg-(--admin-surface-elevated) hover:text-(--admin-text)"
+            type="button"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+
+          <div className="hidden h-11 w-full max-w-sm items-center gap-3 rounded-(--admin-radius-control) border border-(--admin-border) bg-(--admin-surface) px-3 text-(--admin-text-muted) shadow-(--shadow-subtle) md:flex">
+            <Search className="h-5 w-5 shrink-0" />
+            <span className="min-w-0 flex-1 truncate text-sm font-medium">
+              Search content, pages, tags...
+            </span>
+            <span className="flex shrink-0 items-center gap-1 rounded-lg border border-(--admin-border) bg-(--admin-surface-elevated) px-2 py-1 text-xs font-semibold text-(--admin-text-muted)">
+              <Command className="h-3.5 w-3.5" />
+              K
+            </span>
           </div>
-          <p className="text-sm text-(--text-secondary)">
-            Scaffold foundation only. Real auth and data integration are deferred.
-          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="outline">Private / noindex</Badge>
-          <Separator className="hidden h-6 sm:block" orientation="vertical" />
-          <span className="text-sm text-(--text-secondary)">
-            No active session
-          </span>
+
+        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+          <button
+            aria-label="Notifications"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full text-(--admin-text-muted) transition-colors hover:bg-(--admin-surface-elevated) hover:text-(--admin-text)"
+            type="button"
+          >
+            <Bell className="h-5 w-5" />
+            <span className="absolute right-2 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-(--admin-danger) px-1 text-[10px] font-semibold leading-none text-(--admin-surface)">
+              0
+            </span>
+          </button>
+
+          <button
+            aria-label="Help"
+            className="hidden h-10 w-10 items-center justify-center rounded-full text-(--admin-text-muted) transition-colors hover:bg-(--admin-surface-elevated) hover:text-(--admin-text) sm:flex"
+            type="button"
+          >
+            <CircleHelp className="h-5 w-5" />
+          </button>
+
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-(--admin-border) bg-(--admin-primary-soft) text-sm font-semibold text-(--admin-primary)">
+              SC
+            </div>
+            <div className="hidden items-center gap-2 sm:flex">
+              <span className="max-w-32 truncate text-sm font-semibold text-(--admin-text)">
+                Sompong C.
+              </span>
+              <ChevronDown className="h-4 w-4 text-(--admin-text-muted)" />
+            </div>
+          </div>
         </div>
       </div>
     </header>
