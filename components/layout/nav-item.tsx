@@ -16,15 +16,19 @@ export function NavItem({ href, icon, label }: NavItemProps) {
 
   return (
     <Link
+      aria-current={active ? "page" : undefined}
       className={cn(
-        "flex min-h-10 items-center gap-3 rounded-(--radius) px-3 py-2 text-sm font-medium text-(--text-secondary)",
-        "hover:bg-(--surface-muted) hover:text-(--text-primary)",
+        "relative flex min-h-11 items-center gap-3 overflow-hidden rounded-(--admin-radius-control) border border-transparent px-3 py-2.5 text-sm font-semibold text-(--admin-sidebar-muted) transition-colors",
+        "hover:border-(--admin-sidebar-border) hover:bg-(--admin-sidebar-elevated) hover:text-(--admin-sidebar-text)",
         active &&
-          "bg-(--brand-muted) text-(--brand) hover:bg-(--brand-muted) hover:text-(--brand)"
+          "border-(--admin-primary) bg-(--admin-primary) text-(--admin-sidebar-text) hover:border-(--admin-primary) hover:bg-(--admin-primary-hover) hover:text-(--admin-sidebar-text)"
       )}
       href={href}
     >
-      {icon}
+      {active ? (
+        <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-(--admin-accent-cyan)" />
+      ) : null}
+      <span className="shrink-0">{icon}</span>
       <span className="truncate">{label}</span>
     </Link>
   );

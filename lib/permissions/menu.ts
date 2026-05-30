@@ -29,7 +29,7 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
   {
     href: "/categories-tags",
     icon: "taxonomy",
-    label: "Categories and tags",
+    label: "Categories & Tags",
     permission: PERMISSIONS.taxonomyManage
   },
   {
@@ -41,7 +41,7 @@ export const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
   {
     href: "/revalidation-events",
     icon: "revalidation",
-    label: "Revalidation events",
+    label: "Revalidation Events",
     permission: PERMISSIONS.revalidationRetry
   },
   {
