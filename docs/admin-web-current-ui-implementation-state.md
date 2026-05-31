@@ -90,10 +90,24 @@ Accepted component UI checkpoints:
     - `tests/forms/login-form-schema.test.ts`
   - Exports `loginFormSchema`, `LoginFormValues`, and `loginFormDefaultValues`.
 
+- Login Form RHF Zod Migration v1:
+  - Accepted with notes as a scoped `/login` form migration.
+  - Migrated `/login` to the project-approved form stack:
+    - `react-hook-form`
+    - `zod`
+    - `@hookform/resolvers/zod`
+  - Uses `useForm<LoginFormValues>`, `zodResolver(loginFormSchema)`, and `loginFormDefaultValues`.
+  - Touched only:
+    - `app/login/page.tsx`
+    - `tests/admin-auth/login-page.test.tsx`
+  - Preserved the accepted Login Page UI visual layout, existing auth submit behavior, CSRF retention path, success redirect to `/dashboard`, and route guard behavior.
+  - Added field-level email/password validation and updated login page tests.
+  - No real backend smoke was run, and auth final acceptance remains pending.
+
 ## 4. Current Implemented Files and Responsibilities
 
 - `app/globals.css`: Admin Web light-only semantic tokens only. It must not contain app-level dark mode, theme toggle, `next-themes`, or `prefers-color-scheme` theme switching.
-- `app/login/page.tsx`: Login Page UI v1 visual-only sign-in page. It owns the light-only admin login layout, local temporary AI skin-scan visual, and inert form controls, but it does not own authentication behavior.
+- `app/login/page.tsx`: Login Page UI v1 visual layout plus Login Form RHF Zod Migration v1 behavior. It owns the light-only admin login layout, local temporary AI skin-scan visual, React Hook Form + Zod email/password validation, existing auth submit path, safe form-level auth error display, success redirect to `/dashboard`, and CSRF retention call. It is not final auth acceptance because backend smoke remains pending.
 - `components/layout/sidebar.tsx`: Desktop sidebar panel, brand area, nav grouping, icon mapping, and footer/profile area.
 - `components/layout/nav-item.tsx`: Sidebar nav item state, active styling, hover styling, and active cyan rail.
 - `components/layout/brand-mark.tsx`: Temporary vector Logo B-inspired front-facing AI skin-scan brand mark. It is not the final semi-realistic brand asset.
@@ -108,18 +122,13 @@ Accepted component UI checkpoints:
 ## 5. Explicitly Deferred / Not Implemented
 
 - Final dashboard feature page with real data, loading states, empty states, error states, permissions, API integration, and backend wiring.
-- Admin Web Login Auth Flow v1.
-- Real email/password submission.
-- Backend login API call.
-- HttpOnly cookie/session handling.
-- CSRF integration.
-- `/auth/me` bootstrap.
-- Route guard and redirect behavior.
-- Permission-aware redirect after login.
-- Login validation state, loading state, error state, and forgot-password flow.
-- `/login` React Hook Form + Zod migration.
 - Login Auth Flow backend smoke.
+- Auth final acceptance.
+- Real Admin Backend credential, cookie, and session behavior verification.
+- Permission-aware redirect after login.
 - Safe backend field/form error mapping.
+- Existing authenticated-session CSRF recovery when `/auth/me` does not return a `csrfToken`.
+- Forgot-password behavior.
 - Broader feature form migrations.
 - Real API integration.
 - Blog/Tips list UI.
@@ -187,18 +196,11 @@ Accepted component UI checkpoints:
 - The accepted scope is `app/login/page.tsx` visual layout and controls.
 - It replaced the scaffold placeholder with a light-only admin sign-in panel.
 - It added an AI skin-scan brand visual and form control rhythm.
-- It kept the work scoped without auth, API, cookies, sessions, CSRF, or route behavior.
-- `/login` is not a final authenticated feature page.
-- There is no real authentication.
-- There is no form validation.
-- There are no loading states.
-- There are no error states.
+- At the time of Login Page UI v1, it kept the work scoped without auth, API, cookies, sessions, CSRF, or route behavior.
+- Later scoped tasks added auth behavior and React Hook Form + Zod validation, but `/login` is still not a final authenticated feature page until backend smoke passes.
 - There are no empty states.
 - There is no forgot-password behavior.
-- There are no cookies, sessions, or CSRF handling.
-- There is no Admin Backend call.
-- There is no route redirect behavior.
-- Login auth flow remains deferred.
+- Real backend credentials, cookie, and session behavior have not been verified by the login form migration.
 - Login UI visual output was accepted with notes.
 - Technical PASS is not final feature acceptance.
 - Future auth-flow work must not assume Login Page UI v1 completed real authentication.
@@ -222,19 +224,16 @@ Accepted component UI checkpoints:
 
 ### Deferred UI / product areas
 
-- Admin Web Login Auth Flow v1.
-- Real email/password submission.
-- Backend login API call.
-- HttpOnly cookie/session handling.
-- CSRF integration.
-- `/auth/me` bootstrap.
-- Route guard / redirect behavior.
-- Login loading state.
-- Login validation state.
-- Login error state.
+- Login Auth Flow backend smoke.
+- Auth final acceptance.
+- Real Admin Backend credential, cookie, and session behavior verification.
+- Safe backend field/form error mapping.
+- Existing authenticated-session CSRF recovery when `/auth/me` does not return a `csrfToken`.
 - Login forgot-password flow.
+- Topbar logout/profile UI.
 - Final Logo B asset replacement.
 - Permission-aware redirect after login.
+- Permission-aware menu/profile behavior.
 - Real API integration.
 - Blog/Tips list UI.
 - Blog/Tips editor shell.
@@ -268,13 +267,22 @@ Accepted component UI checkpoints:
 - The foundation exports `loginFormSchema`, `LoginFormValues` inferred from `z.infer`, and `loginFormDefaultValues`.
 - The login schema and tests cover valid payloads, email trimming, empty email, invalid email, empty password, and default values.
 - Tests pass with the existing Vitest test harness.
-- Real and API-backed form migration is pending.
-- `/login` has not been migrated to React Hook Form + Zod yet.
-- The current login form still needs Admin Web Login Form RHF Zod Migration v1.
+- Admin Web Login Form RHF Zod Migration v1 is accepted with notes.
+- `/login` has been migrated to React Hook Form + Zod using:
+  - `useForm<LoginFormValues>`
+  - `zodResolver(loginFormSchema)`
+  - `loginFormDefaultValues`
+- The migration touched:
+  - `app/login/page.tsx`
+  - `tests/admin-auth/login-page.test.tsx`
+- Field-level validation now covers email required, valid email, and password required behavior through `loginFormSchema`.
+- Validation error rendering includes accessibility wiring where practical.
+- Login submit behavior, success redirect to `/dashboard`, CSRF retention path, route guard behavior, and accepted visual layout were preserved.
+- Login page tests now cover RHF/Zod validation behavior, empty submit, invalid email, valid submit, safe error behavior, and no sensitive console logging.
+- Existing auth tests and schema tests still pass.
 - Current Login Auth Flow frontend tests exist and cover CSRF retention, auth API calls, provider state, login form behavior, and route guard behavior.
 - Live backend login smoke is still pending.
 - Existing authenticated sessions with an HttpOnly cookie but no stored `csrfToken` may still lack a CSRF token if `/auth/me` does not return one.
-- Login form should be migrated to React Hook Form + Zod before backend smoke unless the user explicitly chooses a different sequence.
 - Login Auth Flow is still `PASS_WITH_NOTES` and is not final auth acceptance.
 - Safe backend field/form error mapping remains deferred.
 - Broader feature forms are not migrated yet.
@@ -290,10 +298,15 @@ Accepted component UI checkpoints:
 
 ### Next recommended task
 
-- The next recommended task after Admin Web Form Validation Foundation v1 is Admin Web Login Form RHF Zod Migration v1.
-- That task must preserve the accepted Login Page UI visual design, auth submit behavior, CSRF retention, route guard behavior, and existing frontend auth tests.
-- That task must not run backend smoke.
-- Backend smoke should happen after login form migration unless the user explicitly chooses otherwise.
+- The next recommended task after Admin Web Login Form RHF Zod Migration v1 is Admin Web Login Auth Flow Backend Smoke v1.
+- That task must verify against local or staging Admin Backend:
+  - Login sets an HttpOnly cookie.
+  - Login returns a `csrfToken` in the response body and/or header.
+  - `/auth/me` bootstrap works through the cookie.
+  - `/dashboard` route guard works.
+  - Login success redirect works.
+  - Logout/session cleanup if scoped.
+- That task must not use secrets in reports.
 
 ## 8. Visual Spec Pack v2 Rules
 
@@ -323,7 +336,7 @@ Required sequence:
 2. Topbar Only v1 - accepted.
 3. Main Surface + Page Header Only v1 - accepted.
 4. Dashboard Card Rhythm Only v1 - accepted with caveats.
-5. Login Page UI v1 - accepted for visual UI only, not auth behavior.
+5. Login Page UI v1 - accepted for visual UI only; Login Form RHF Zod Migration v1 is accepted with notes for scoped form behavior.
 6. List Page Pattern v1.
 7. Media Library UI v1.
 8. Editor Shell v1.
@@ -347,10 +360,10 @@ Rules:
 
 ## 11. Next Recommended Task
 
-The next recommended task after Admin Web Form Validation Foundation v1 is:
+The next recommended task after Admin Web Login Form RHF Zod Migration v1 is:
 
 ```text
-Admin Web Login Form RHF Zod Migration v1
+Admin Web Login Auth Flow Backend Smoke v1
 ```
 
 That task must preserve:
@@ -361,7 +374,7 @@ That task must preserve:
 - Route guard behavior.
 - Existing frontend auth tests.
 
-That task must not run backend smoke. Backend smoke should happen after login form migration unless the user explicitly chooses otherwise.
+That task must verify local or staging Admin Backend login, HttpOnly cookie behavior, CSRF response/body header behavior, `/auth/me` bootstrap, `/dashboard` guard behavior, and login success redirect without exposing secrets in reports.
 
 ## 12. Handoff Notes for Future ChatGPT/Codex Sessions
 
