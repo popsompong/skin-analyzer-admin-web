@@ -76,9 +76,16 @@ Accepted component UI checkpoints:
   - CSS-only donut placeholders.
   - No real analytics, navigation, API behavior, backend integration, or final feature page state.
 
+- Login Page UI v1:
+  - Visual UI only for `app/login/page.tsx`.
+  - Replaced the scaffold placeholder with a light-only private admin sign-in panel.
+  - Added an AI skin-scan brand visual and login form control rhythm.
+  - No authentication, API call, cookies, sessions, CSRF handling, or route behavior.
+
 ## 4. Current Implemented Files and Responsibilities
 
 - `app/globals.css`: Admin Web light-only semantic tokens only. It must not contain app-level dark mode, theme toggle, `next-themes`, or `prefers-color-scheme` theme switching.
+- `app/login/page.tsx`: Login Page UI v1 visual-only sign-in page. It owns the light-only admin login layout, local temporary AI skin-scan visual, and inert form controls, but it does not own authentication behavior.
 - `components/layout/sidebar.tsx`: Desktop sidebar panel, brand area, nav grouping, icon mapping, and footer/profile area.
 - `components/layout/nav-item.tsx`: Sidebar nav item state, active styling, hover styling, and active cyan rail.
 - `components/layout/brand-mark.tsx`: Temporary vector Logo B-inspired front-facing AI skin-scan brand mark. It is not the final semi-realistic brand asset.
@@ -93,8 +100,15 @@ Accepted component UI checkpoints:
 ## 5. Explicitly Deferred / Not Implemented
 
 - Final dashboard feature page with real data, loading states, empty states, error states, permissions, API integration, and backend wiring.
-- Login Page UI v1.
-- Login auth flow.
+- Admin Web Login Auth Flow v1.
+- Real email/password submission.
+- Backend login API call.
+- HttpOnly cookie/session handling.
+- CSRF integration.
+- `/auth/me` bootstrap.
+- Route guard and redirect behavior.
+- Permission-aware redirect after login.
+- Login validation state, loading state, error state, and forgot-password flow.
 - Real API integration.
 - Blog/Tips list UI.
 - Blog/Tips editor shell.
@@ -142,6 +156,7 @@ Accepted component UI checkpoints:
 - Topbar Only v1 is accepted only for topbar, search, and action placeholders.
 - Main Surface + Page Header Only v1 is accepted only for main workspace, page header, and generic placeholder surface rhythm.
 - Dashboard Card Rhythm Only v1 is accepted only for dashboard visual rhythm and static placeholder cards.
+- Login Page UI v1 is accepted only for `app/login/page.tsx` visual layout and controls, not for auth behavior.
 - These scoped acceptances do not make the entire Admin Web UI final.
 
 ### Dashboard Card Rhythm Only v1 caveats
@@ -154,11 +169,37 @@ Accepted component UI checkpoints:
 - Mobile dashboard stack is acceptable for v1 readability but is not final mobile dashboard UX.
 - Dashboard is not a final feature page until real data, loading states, empty states, error states, permissions, API integration, and backend wiring are implemented.
 
+### Login Page UI v1 caveats
+
+- Login Page UI v1 is accepted as visual UI only.
+- The accepted scope is `app/login/page.tsx` visual layout and controls.
+- It replaced the scaffold placeholder with a light-only admin sign-in panel.
+- It added an AI skin-scan brand visual and form control rhythm.
+- It kept the work scoped without auth, API, cookies, sessions, CSRF, or route behavior.
+- `/login` is not a final authenticated feature page.
+- There is no real authentication.
+- There is no form validation.
+- There are no loading states.
+- There are no error states.
+- There are no empty states.
+- There is no forgot-password behavior.
+- There are no cookies, sessions, or CSRF handling.
+- There is no Admin Backend call.
+- There is no route redirect behavior.
+- Login auth flow remains deferred.
+- Login UI visual output was accepted with notes.
+- Technical PASS is not final feature acceptance.
+- Future auth-flow work must not assume Login Page UI v1 completed real authentication.
+- Future visual changes to `/login` should use Visual Spec Pack v2 Clarity login references.
+
 ### Temporary BrandMark caveat
 
 - Current `BrandMark` is a temporary vector approximation.
 - It is not the final semi-realistic Logo B asset.
 - Final Logo B/front-facing AI skin scan asset remains deferred as a separate task.
+- The login page uses a local SVG / temporary AI skin-scan visual.
+- This login visual is not the final Logo B asset.
+- Final Logo B/front-facing AI skin-scan asset remains a separate deferred Brand Mark Asset task.
 
 ### Mobile UX caveats
 
@@ -169,8 +210,19 @@ Accepted component UI checkpoints:
 
 ### Deferred UI / product areas
 
-- Login Page UI v1.
-- Login/auth flow.
+- Admin Web Login Auth Flow v1.
+- Real email/password submission.
+- Backend login API call.
+- HttpOnly cookie/session handling.
+- CSRF integration.
+- `/auth/me` bootstrap.
+- Route guard / redirect behavior.
+- Login loading state.
+- Login validation state.
+- Login error state.
+- Login forgot-password flow.
+- Final Logo B asset replacement.
+- Permission-aware redirect after login.
 - Real API integration.
 - Blog/Tips list UI.
 - Blog/Tips editor shell.
@@ -193,8 +245,10 @@ Accepted component UI checkpoints:
 
 ### Next recommended task
 
-- After Dashboard Card Rhythm Only v1, the next recommended UI task is Login Page UI v1 or another scoped page archetype if the user chooses.
-- If proceeding to Login Page UI v1, use only Visual Spec Pack v2 login crops and do not implement auth flow.
+- After Login Page UI v1, the next task should be chosen by the user.
+- If auth is prioritized, the next task should be Admin Web Login Auth Flow v1.
+- If visual pages are prioritized, the next task should be List Page Pattern v1, Media Library UI v1, or another scoped page archetype.
+- Any auth task must use existing Admin Backend auth, CSRF, and session contracts and must not rewrite the visual design unless explicitly scoped.
 - If mobile issues are prioritized, create a separate Mobile Shell / Mobile Navigation task.
 
 ## 8. Visual Spec Pack v2 Rules
@@ -225,7 +279,7 @@ Required sequence:
 2. Topbar Only v1 - accepted.
 3. Main Surface + Page Header Only v1 - accepted.
 4. Dashboard Card Rhythm Only v1 - accepted with caveats.
-5. Login Page UI v1 - next recommended UI task if the user chooses it.
+5. Login Page UI v1 - accepted for visual UI only, not auth behavior.
 6. List Page Pattern v1.
 7. Media Library UI v1.
 8. Editor Shell v1.
@@ -249,22 +303,24 @@ Rules:
 
 ## 11. Next Recommended Task
 
-Next recommended UI task after Dashboard Card Rhythm Only v1:
+The next task after Login Page UI v1 should be chosen by the user.
+
+If auth is prioritized:
 
 ```text
-Admin Web Login Page UI v1
+Admin Web Login Auth Flow v1
 ```
 
-Or choose another scoped page archetype if the user prioritizes it.
+- Use the existing Admin Backend auth, CSRF, session, and `/auth/me` contracts.
+- Do not rewrite the Login Page UI visual design unless explicitly scoped.
 
-If proceeding to Login Page UI v1:
+If visual pages are prioritized:
 
-- Use only Visual Spec Pack v2 login crops, upscaled login crops, and login notes.
-- Do not implement auth flow.
-- Do not modify sidebar, topbar, dashboard, API behavior, or theme tokens.
-- Keep it page/component scoped.
+- List Page Pattern v1.
+- Media Library UI v1.
+- Another scoped page archetype chosen by the user.
 
-If mobile issues are prioritized instead, create a separate Mobile Shell / Mobile Navigation task.
+If mobile issues are prioritized, create a separate Mobile Shell / Mobile Navigation task.
 
 ## 12. Handoff Notes for Future ChatGPT/Codex Sessions
 
