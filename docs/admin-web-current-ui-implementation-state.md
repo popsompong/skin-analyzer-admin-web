@@ -243,6 +243,16 @@ Accepted component UI checkpoints:
 - A separate docs sync or addendum task should update current-state docs only after user or ChatGPT gatekeeper review confirms the notes.
 - Syntax-only cleanup tasks do not need docs sync unless they change accepted visual state or add caveats.
 
+### Form validation and auth test status
+
+- `docs/admin-web-form-validation-contract.md` exists as the project-wide form validation standard.
+- Real and API-backed form migration is pending.
+- Current Login Auth Flow frontend tests exist and cover CSRF retention, auth API calls, provider state, login form behavior, and route guard behavior.
+- Live backend login smoke is still pending.
+- Existing authenticated sessions with an HttpOnly cookie but no stored `csrfToken` may still lack a CSRF token if `/auth/me` does not return one.
+- Login form should be migrated to React Hook Form + Zod before backend smoke unless the user explicitly chooses a different sequence.
+- This note does not mean Login Auth Flow is final.
+
 ### Next recommended task
 
 - After Login Page UI v1, the next task should be chosen by the user.

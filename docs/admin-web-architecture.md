@@ -10,7 +10,7 @@ Design implementation also depends on `docs/admin-web-brand-visual-direction.md`
 - TypeScript.
 - Tailwind CSS.
 - shadcn/ui.
-- React Hook Form and Zod only if later chosen during scaffold or form implementation.
+- React Hook Form + Zod + @hookform/resolvers is the standard for real/API-backed Admin Web forms, per `docs/admin-web-form-validation-contract.md`.
 - Centralized API client layer.
 
 Do not install dependencies as part of contract work.
@@ -93,7 +93,14 @@ Future token cleanup must happen before additional UI page work. It should align
 - Do not use server actions for backend API mutation unless explicitly approved later.
 - Prefer browser-to-Admin-Backend API calls with credentials included, or a BFF route only if explicitly designed later.
 
-## 5. Auth and Permission Model
+## 5. Form Validation Architecture
+
+- Form validation stack decision lives in `docs/admin-web-form-validation-contract.md`.
+- Future real and API-backed form code should keep schemas and testable validation separate from visual components where practical.
+- Backend payload mapping should remain explicit instead of assuming form state equals backend DTOs.
+- Form library migration must be scoped separately from visual redesign.
+
+## 6. Auth and Permission Model
 
 - Login uses `POST /v1/admin/auth/login`.
 - Logout uses `POST /v1/admin/auth/logout`.
@@ -104,7 +111,7 @@ Future token cleanup must happen before additional UI page work. It should align
 - The UI must handle `401` by redirecting or prompting login.
 - The UI must handle `403` with a clear forbidden state.
 
-## 6. Data State Rules
+## 7. Data State Rules
 
 Every API-backed page should define:
 
@@ -117,7 +124,7 @@ Every API-backed page should define:
 
 Optimistic updates require explicit approval before use.
 
-## 7. Backend API Awareness
+## 8. Backend API Awareness
 
 Admin Web expects the Admin Backend contract to provide these high-level capabilities:
 

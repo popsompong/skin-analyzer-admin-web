@@ -115,6 +115,11 @@ Expected path:
 - Centralize API calls in an API client layer.
 - Do not scatter `fetch` calls across UI components.
 - Separate API DTOs from UI view models where useful.
+- Future Admin Web real/API-backed forms must follow `docs/admin-web-form-validation-contract.md`.
+- Default form stack is `react-hook-form` + `zod` + `@hookform/resolvers/zod`.
+- `useState` is allowed for tiny UI-only state, not as the default for real/API-backed forms.
+- Do not add alternative form libraries or migrate all forms in one task.
+- Future form implementation tasks must include a `Documentation Impact Candidate`; technical `PASS` is not user or gatekeeper acceptance.
 - Permission-aware UI must use permissions returned from backend `GET /v1/admin/auth/me`.
 - Frontend menu hiding is not security; backend guards are security.
 - Do not use server actions for Admin Backend mutations unless explicitly approved later.

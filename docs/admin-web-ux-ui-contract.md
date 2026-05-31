@@ -86,6 +86,8 @@ Logo direction is a front-facing AI skin scan mark following Logo B: Semi-realis
 
 Do not place cards inside other cards unless the component is a real modal, popover, or repeated item.
 
+Real and API-backed forms must follow `docs/admin-web-form-validation-contract.md`. Form library migration must not cause visual redesign.
+
 ## 6. Light-Only Theme Mode
 
 - Admin Web MVP is light-only.
