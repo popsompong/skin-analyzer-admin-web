@@ -70,6 +70,9 @@ Expected path:
 
 ## 4. UI/UX Safety Rules
 
+- Future Admin Web UI tasks must read `docs/admin-web-current-ui-implementation-state.md` after `AGENTS.md` and before implementation.
+- `docs/admin-web-current-ui-implementation-state.md` is the current accepted UI and handoff state.
+- If that document conflicts with actual code, inspect code and report the conflict before editing.
 - Future UI tasks must read `docs/admin-web-brand-visual-direction.md` before implementation.
 - Future UI tasks must read `docs/admin-web-theme-token-contract.md` before implementation.
 - Admin Web visual system is independent from Public Web.
