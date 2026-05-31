@@ -8,14 +8,23 @@ type PageHeaderProps = {
 
 export function PageHeader({ title, description, permission }: PageHeaderProps) {
   return (
-    <header className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div className="max-w-3xl">
-        <h1 className="text-2xl font-semibold tracking-normal">{title}</h1>
-        <p className="mt-2 text-sm leading-6 text-(--text-secondary)">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-normal text-(--admin-primary)">
+          Admin content studio
+        </div>
+        <h1 className="text-3xl font-semibold tracking-normal text-(--admin-text)">
+          {title}
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-(--admin-text-muted)">
           {description}
         </p>
       </div>
-      {permission ? <Badge variant="outline">{permission}</Badge> : null}
+      {permission ? (
+        <div className="flex shrink-0 items-center">
+          <Badge variant="outline">{permission}</Badge>
+        </div>
+      ) : null}
     </header>
   );
 }
