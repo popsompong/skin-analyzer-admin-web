@@ -82,6 +82,14 @@ Accepted component UI checkpoints:
   - Added an AI skin-scan brand visual and login form control rhythm.
   - No authentication, API call, cookies, sessions, CSRF handling, or route behavior.
 
+- Form Validation Foundation v1:
+  - Accepted as a foundation task, not as a login form migration.
+  - Installed the approved runtime form stack: `react-hook-form`, `zod`, and `@hookform/resolvers`.
+  - Added reusable login schema and schema tests:
+    - `lib/forms/login-form-schema.ts`
+    - `tests/forms/login-form-schema.test.ts`
+  - Exports `loginFormSchema`, `LoginFormValues`, and `loginFormDefaultValues`.
+
 ## 4. Current Implemented Files and Responsibilities
 
 - `app/globals.css`: Admin Web light-only semantic tokens only. It must not contain app-level dark mode, theme toggle, `next-themes`, or `prefers-color-scheme` theme switching.
@@ -109,6 +117,10 @@ Accepted component UI checkpoints:
 - Route guard and redirect behavior.
 - Permission-aware redirect after login.
 - Login validation state, loading state, error state, and forgot-password flow.
+- `/login` React Hook Form + Zod migration.
+- Login Auth Flow backend smoke.
+- Safe backend field/form error mapping.
+- Broader feature form migrations.
 - Real API integration.
 - Blog/Tips list UI.
 - Blog/Tips editor shell.
@@ -246,20 +258,42 @@ Accepted component UI checkpoints:
 ### Form validation and auth test status
 
 - `docs/admin-web-form-validation-contract.md` exists as the project-wide form validation standard.
+- Admin Web Form Validation Foundation v1 is accepted as a foundation task with notes.
+- The approved runtime form stack has been installed:
+  - `react-hook-form`
+  - `zod`
+  - `@hookform/resolvers`
+- A reusable login form schema exists at `lib/forms/login-form-schema.ts`.
+- Focused login schema tests exist at `tests/forms/login-form-schema.test.ts`.
+- The foundation exports `loginFormSchema`, `LoginFormValues` inferred from `z.infer`, and `loginFormDefaultValues`.
+- The login schema and tests cover valid payloads, email trimming, empty email, invalid email, empty password, and default values.
+- Tests pass with the existing Vitest test harness.
 - Real and API-backed form migration is pending.
+- `/login` has not been migrated to React Hook Form + Zod yet.
+- The current login form still needs Admin Web Login Form RHF Zod Migration v1.
 - Current Login Auth Flow frontend tests exist and cover CSRF retention, auth API calls, provider state, login form behavior, and route guard behavior.
 - Live backend login smoke is still pending.
 - Existing authenticated sessions with an HttpOnly cookie but no stored `csrfToken` may still lack a CSRF token if `/auth/me` does not return one.
 - Login form should be migrated to React Hook Form + Zod before backend smoke unless the user explicitly chooses a different sequence.
+- Login Auth Flow is still `PASS_WITH_NOTES` and is not final auth acceptance.
+- Safe backend field/form error mapping remains deferred.
+- Broader feature forms are not migrated yet.
 - This note does not mean Login Auth Flow is final.
+
+### Documentation Impact Rule
+
+- Future implementation, test, smoke, and UI tasks must include a `Documentation Impact Candidate` section in the final report.
+- If there is no documentation impact, Codex must write exactly: `Documentation Impact Candidate: none`.
+- Codex must not update `docs/admin-web-current-ui-implementation-state.md` inside implementation, test, smoke, or UI tasks unless explicitly scoped as docs sync.
+- Docs sync and addendum tasks must use only gatekeeper-approved notes.
+- Technical `PASS` is not user or gatekeeper acceptance.
 
 ### Next recommended task
 
-- After Login Page UI v1, the next task should be chosen by the user.
-- If auth is prioritized, the next task should be Admin Web Login Auth Flow v1.
-- If visual pages are prioritized, the next task should be List Page Pattern v1, Media Library UI v1, or another scoped page archetype.
-- Any auth task must use existing Admin Backend auth, CSRF, and session contracts and must not rewrite the visual design unless explicitly scoped.
-- If mobile issues are prioritized, create a separate Mobile Shell / Mobile Navigation task.
+- The next recommended task after Admin Web Form Validation Foundation v1 is Admin Web Login Form RHF Zod Migration v1.
+- That task must preserve the accepted Login Page UI visual design, auth submit behavior, CSRF retention, route guard behavior, and existing frontend auth tests.
+- That task must not run backend smoke.
+- Backend smoke should happen after login form migration unless the user explicitly chooses otherwise.
 
 ## 8. Visual Spec Pack v2 Rules
 
@@ -313,24 +347,21 @@ Rules:
 
 ## 11. Next Recommended Task
 
-The next task after Login Page UI v1 should be chosen by the user.
-
-If auth is prioritized:
+The next recommended task after Admin Web Form Validation Foundation v1 is:
 
 ```text
-Admin Web Login Auth Flow v1
+Admin Web Login Form RHF Zod Migration v1
 ```
 
-- Use the existing Admin Backend auth, CSRF, session, and `/auth/me` contracts.
-- Do not rewrite the Login Page UI visual design unless explicitly scoped.
+That task must preserve:
 
-If visual pages are prioritized:
+- Accepted Login Page UI visual design.
+- Auth submit behavior.
+- CSRF retention.
+- Route guard behavior.
+- Existing frontend auth tests.
 
-- List Page Pattern v1.
-- Media Library UI v1.
-- Another scoped page archetype chosen by the user.
-
-If mobile issues are prioritized, create a separate Mobile Shell / Mobile Navigation task.
+That task must not run backend smoke. Backend smoke should happen after login form migration unless the user explicitly chooses otherwise.
 
 ## 12. Handoff Notes for Future ChatGPT/Codex Sessions
 

@@ -61,6 +61,12 @@ This file is the source of truth for future Codex work in `skin-analyzer-admin-w
 - Do not delete, reset, or overwrite user changes without approval.
 - Do not touch sibling projects.
 - Keep every UI task small and reviewable.
+- Every Admin Web implementation, test, smoke, or UI task final report must include `Documentation Impact Candidate`.
+- If there is no documentation impact, write exactly: `Documentation Impact Candidate: none`.
+- Do not update `docs/admin-web-current-ui-implementation-state.md` inside implementation, test, smoke, or UI tasks unless explicitly scoped as docs sync.
+- Documentation impact includes accepted scope changes, caveats or limitations, temporary assets, deferred behavior, not-final status, rejected output or references, changed next-step recommendations, and foundation changes such as dependencies, test harnesses, auth patterns, form patterns, or API patterns.
+- Separate docs sync or addendum tasks should update current-state docs after user or ChatGPT gatekeeper review.
+- Technical `PASS` is not user or gatekeeper acceptance.
 
 Expected path:
 
