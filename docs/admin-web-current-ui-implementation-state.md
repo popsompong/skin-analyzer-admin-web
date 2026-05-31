@@ -68,7 +68,13 @@ Accepted component UI checkpoints:
   - Main content max-width/container rhythm.
   - Page header hierarchy.
   - Generic placeholder surface/card rhythm.
-  - No dashboard card implementation yet.
+  - No feature-specific dashboard data implementation.
+
+- Dashboard Card Rhythm Only v1:
+  - Dashboard visual rhythm and static placeholder cards.
+  - KPI card row, recent-posts/list rhythm, content-by-type rhythm, quick actions rhythm, and revalidation/status rhythm.
+  - CSS-only donut placeholders.
+  - No real analytics, navigation, API behavior, backend integration, or final feature page state.
 
 ## 4. Current Implemented Files and Responsibilities
 
@@ -80,13 +86,13 @@ Accepted component UI checkpoints:
 - `components/layout/admin-shell.tsx`: Shared shell wrapper, light main workspace background, and main content container rhythm.
 - `components/layout/page-header.tsx`: Admin content studio eyebrow, page title, subtitle, and optional permission badge placement.
 - `components/layout/placeholder-page.tsx`: Generic placeholder surface for scaffold pages, including scaffold-state section and deferred-content tiles.
-- `components/dashboard/dashboard-placeholder.tsx`: Still a placeholder. Dashboard Card Rhythm Only v1 remains pending.
+- `components/dashboard/dashboard-placeholder.tsx`: Dashboard Card Rhythm Only v1 static visual rhythm. It uses placeholder/demo data, CSS-only visual charts, inert quick-action rows, and non-integrated revalidation placeholders.
 - `lib/permissions/menu.ts`: Current scaffold menu metadata and route-to-permission mapping.
 - `types/admin.ts`: Permission, role, user, session, menu icon, and menu item types.
 
 ## 5. Explicitly Deferred / Not Implemented
 
-- Dashboard Card Rhythm Only v1.
+- Final dashboard feature page with real data, loading states, empty states, error states, permissions, API integration, and backend wiring.
 - Login Page UI v1.
 - Login auth flow.
 - Real API integration.
@@ -98,6 +104,8 @@ Accepted component UI checkpoints:
 - Revalidation Events UI.
 - Final semi-realistic Logo B asset.
 - Mobile drawer/search behavior.
+- Permission-aware real menu/profile behavior.
+- Loading, empty, and error states for feature pages.
 - Dark mode.
 - Theme toggle.
 
@@ -113,7 +121,83 @@ Accepted component UI checkpoints:
 - Do not copy reference images into the repository.
 - Do not include reference images in changed-files zips.
 
-## 7. Visual Spec Pack v2 Rules
+## 7. Deferred Visual Notes / Not Final Yet
+
+### Technical PASS is not visual acceptance
+
+- Codex technical `PASS` does not automatically mean user visual acceptance.
+- Only user or ChatGPT gatekeeper review can decide whether UI output becomes accepted current state.
+- Future UI implementation tasks must not treat their own screenshots as final acceptance unless the result is explicitly accepted afterward.
+
+### Rejected references and outputs
+
+- Visual Spec Pack v1 shell images are rejected.
+- Do not use old Visual Spec Pack v1 generated shell images as the source of truth.
+- Previous Modern Shell Direction, Modern Shell Correction, and Shell Spec Implementation attempts were visually rejected or cleaned up and must not be used as the baseline.
+- Use Visual Spec Pack v2 Clarity only.
+
+### Scoped accepted work is not whole-product final
+
+- Sidebar Only v1 is accepted only for sidebar, navigation, and temporary brand mark scope.
+- Topbar Only v1 is accepted only for topbar, search, and action placeholders.
+- Main Surface + Page Header Only v1 is accepted only for main workspace, page header, and generic placeholder surface rhythm.
+- Dashboard Card Rhythm Only v1 is accepted only for dashboard visual rhythm and static placeholder cards.
+- These scoped acceptances do not make the entire Admin Web UI final.
+
+### Dashboard Card Rhythm Only v1 caveats
+
+- Dashboard Card Rhythm Only v1 is accepted for visual rhythm only.
+- All dashboard data remains static placeholder/demo data.
+- Donut charts are CSS-only placeholders, not real analytics or chart implementation.
+- Quick Actions are inert visual rows, not real navigation or API behavior.
+- Revalidation status and events are visual placeholders, not backend-integrated.
+- Mobile dashboard stack is acceptable for v1 readability but is not final mobile dashboard UX.
+- Dashboard is not a final feature page until real data, loading states, empty states, error states, permissions, API integration, and backend wiring are implemented.
+
+### Temporary BrandMark caveat
+
+- Current `BrandMark` is a temporary vector approximation.
+- It is not the final semi-realistic Logo B asset.
+- Final Logo B/front-facing AI skin scan asset remains deferred as a separate task.
+
+### Mobile UX caveats
+
+- Mobile screenshots so far are regression checks unless the task explicitly implements mobile UX.
+- Existing mobile content/topbar clipping or non-final mobile navigation must not be forgotten.
+- Mobile drawer/search behavior remains deferred.
+- Mobile dashboard card stack can be improved in future mobile or dashboard tasks.
+
+### Deferred UI / product areas
+
+- Login Page UI v1.
+- Login/auth flow.
+- Real API integration.
+- Blog/Tips list UI.
+- Blog/Tips editor shell.
+- Block editor.
+- Media Library UI.
+- Taxonomy/Authorship UI.
+- Revalidation Events UI.
+- Final Logo B asset.
+- Mobile drawer/search behavior.
+- Permission-aware real menu/profile behavior.
+- Loading, empty, and error states for feature pages.
+
+### Future documentation workflow
+
+- UI implementation tasks should not directly update current-state docs by default.
+- UI implementation tasks should include a `Documentation Impact Candidate` section in the final report.
+- The `Documentation Impact Candidate` should propose accepted scope, known limitations, temporary assets, deferred follow-up work, rejected/not-final areas, and whether a docs sync task is recommended.
+- A separate docs sync or addendum task should update current-state docs only after user or ChatGPT gatekeeper review confirms the notes.
+- Syntax-only cleanup tasks do not need docs sync unless they change accepted visual state or add caveats.
+
+### Next recommended task
+
+- After Dashboard Card Rhythm Only v1, the next recommended UI task is Login Page UI v1 or another scoped page archetype if the user chooses.
+- If proceeding to Login Page UI v1, use only Visual Spec Pack v2 login crops and do not implement auth flow.
+- If mobile issues are prioritized, create a separate Mobile Shell / Mobile Navigation task.
+
+## 8. Visual Spec Pack v2 Rules
 
 Use only:
 
@@ -133,15 +217,15 @@ For every UI implementation task:
 - Compare screenshots against the selected Visual Spec Pack v2 references.
 - If the Visual Spec Pack v2 path is missing, stop and ask the user to provide it.
 
-## 8. Component-by-Component Workflow
+## 9. Component-by-Component Workflow
 
 Required sequence:
 
 1. Sidebar Only v1 - accepted.
 2. Topbar Only v1 - accepted.
 3. Main Surface + Page Header Only v1 - accepted.
-4. Dashboard Card Rhythm Only v1 - next recommended task.
-5. Login Page UI v1.
+4. Dashboard Card Rhythm Only v1 - accepted with caveats.
+5. Login Page UI v1 - next recommended UI task if the user chooses it.
 6. List Page Pattern v1.
 7. Media Library UI v1.
 8. Editor Shell v1.
@@ -153,7 +237,7 @@ Rules:
 - If a task needs files outside scope, stop and report before editing.
 - Do not combine dashboard card rhythm, login, list pages, media library, editor shell, and mobile shell into one task.
 
-## 9. Screenshot / Visual QA Rules
+## 10. Screenshot / Visual QA Rules
 
 - Screenshots must be written outside the repository.
 - No dark mode screenshots are required because Admin Web MVP is light-only.
@@ -163,36 +247,26 @@ Rules:
 - If any visual match checklist item is `NEEDS_FIX`, the overall result cannot be `PASS`.
 - Do not include screenshots or browser artifacts in changed-files zips.
 
-## 10. Next Recommended Task
+## 11. Next Recommended Task
 
-Next task:
+Next recommended UI task after Dashboard Card Rhythm Only v1:
 
 ```text
-Admin Web Dashboard Card Rhythm Only v1
+Admin Web Login Page UI v1
 ```
 
-It should use dashboard-specific Visual Spec Pack v2 crops:
+Or choose another scoped page archetype if the user prioritizes it.
 
-- `01-crops/dashboard-kpi-cards-reference.png`
-- `01-crops/content-card-rhythm-reference.png`
-- `01-crops/recent-posts-table-reference.png`
-- `01-crops/quick-actions-reference.png`
-- `01-crops/revalidation-status-reference.png`
-- `01-crops/latest-revalidation-events-reference.png`
+If proceeding to Login Page UI v1:
 
-It should also use the matching files under `01-crops-upscaled-3x/` and the relevant dashboard/card notes.
+- Use only Visual Spec Pack v2 login crops, upscaled login crops, and login notes.
+- Do not implement auth flow.
+- Do not modify sidebar, topbar, dashboard, API behavior, or theme tokens.
+- Keep it page/component scoped.
 
-Expected scope:
+If mobile issues are prioritized instead, create a separate Mobile Shell / Mobile Navigation task.
 
-- Modify only dashboard-specific component files.
-- Do not modify sidebar.
-- Do not modify topbar.
-- Do not modify login.
-- Do not modify API/auth behavior.
-- Do not modify theme tokens.
-- Do not implement real backend data.
-
-## 11. Handoff Notes for Future ChatGPT/Codex Sessions
+## 12. Handoff Notes for Future ChatGPT/Codex Sessions
 
 For future Admin Web UI tasks:
 

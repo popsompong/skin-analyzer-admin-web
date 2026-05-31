@@ -73,6 +73,11 @@ Expected path:
 - Future Admin Web UI tasks must read `docs/admin-web-current-ui-implementation-state.md` after `AGENTS.md` and before implementation.
 - `docs/admin-web-current-ui-implementation-state.md` is the current accepted UI and handoff state.
 - If that document conflicts with actual code, inspect code and report the conflict before editing.
+- Future Admin Web UI implementation tasks must include a `Documentation Impact Candidate` section in the final report.
+- Do not update `docs/admin-web-current-ui-implementation-state.md` inside a UI implementation task unless that task explicitly scopes a docs sync.
+- Technical `PASS` is not user visual acceptance.
+- If a UI task leaves temporary assets, known limitations, deferred visual work, or rejected references, report them as docs sync candidates.
+- Future docs sync tasks must use only gatekeeper-approved notes.
 - Future UI tasks must read `docs/admin-web-brand-visual-direction.md` before implementation.
 - Future UI tasks must read `docs/admin-web-theme-token-contract.md` before implementation.
 - Admin Web visual system is independent from Public Web.
