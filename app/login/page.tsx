@@ -1,12 +1,19 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, LifeBuoy, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { AdminApiClientError } from "@/lib/api/client";
 import { getAdminMe, loginAdmin } from "@/lib/api/auth";
 import { setAdminCsrfToken } from "@/lib/auth/csrf-token-store";
+import {
+  loginFormDefaultValues,
+  loginFormSchema,
+  type LoginFormValues
+} from "@/lib/forms/login-form-schema";
 
 function getLoginErrorMessage(error: unknown) {
   if (error instanceof AdminApiClientError) {
@@ -98,12 +105,17 @@ function LoginScanMark() {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const {
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    register
+  } = useForm<LoginFormValues>({
+    defaultValues: loginFormDefaultValues,
+    resolver: zodResolver(loginFormSchema)
+  });
 
   useEffect(() => {
     let active = true;
@@ -134,21 +146,13 @@ export default function LoginPage() {
     };
   }, [router]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const onSubmit = handleSubmit(async (values) => {
     setError(null);
-
-    if (!email.trim() || !password) {
-      setError("Enter email and password to continue.");
-      return;
-    }
-
-    setIsSubmitting(true);
 
     try {
       const snapshot = await loginAdmin({
-        email: email.trim(),
-        password
+        email: values.email,
+        password: values.password
       });
 
       if (!snapshot.user) {
@@ -161,12 +165,13 @@ export default function LoginPage() {
       router.refresh();
     } catch (loginError) {
       setError(getLoginErrorMessage(loginError));
-    } finally {
-      setIsSubmitting(false);
     }
-  }
+  });
 
   const busy = isCheckingSession || isSubmitting;
+  const emailError = errors.email?.message;
+  const hasFieldErrors = Boolean(emailError || errors.password?.message);
+  const passwordError = errors.password?.message;
 
   return (
     <main className="min-h-screen bg-(--admin-bg) px-4 py-6 text-(--admin-text) sm:px-6 lg:px-8">
@@ -196,21 +201,22 @@ export default function LoginPage() {
             <div className="mt-5 rounded-(--admin-radius-card) border border-(--admin-sidebar-border) bg-(--admin-sidebar-elevated) p-4 shadow-(--admin-shadow-card) sm:p-5">
               <form
                 aria-label="Admin sign in"
-                className="space-y-4"
-                onSubmit={handleSubmit}
+                className={hasFieldErrors ? "space-y-3" : "space-y-4"}
+                noValidate
+                onSubmit={onSubmit}
               >
                 <label className="block text-sm font-semibold text-(--admin-sidebar-text)">
                   Email
                   <span className="relative mt-2 block">
                     <input
+                      {...register("email")}
+                      aria-describedby={emailError ? "login-email-error" : undefined}
+                      aria-invalid={emailError ? "true" : "false"}
                       autoComplete="email"
                       className="h-11 w-full rounded-(--admin-radius-control) border border-(--admin-sidebar-border) bg-(--admin-sidebar) px-4 pr-11 text-sm font-medium text-(--admin-sidebar-text) outline-none ring-offset-(--admin-sidebar) placeholder:text-(--admin-sidebar-muted) focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring)"
                       disabled={busy}
-                      onChange={(event) => setEmail(event.target.value)}
                       placeholder="you@example.com"
-                      required
                       type="email"
-                      value={email}
                     />
                     <Mail
                       aria-hidden="true"
@@ -219,19 +225,29 @@ export default function LoginPage() {
                     />
                   </span>
                 </label>
+                {emailError ? (
+                  <span
+                    className="-mt-2 block text-xs font-semibold text-(--admin-danger)"
+                    id="login-email-error"
+                  >
+                    {emailError}
+                  </span>
+                ) : null}
 
                 <label className="block text-sm font-semibold text-(--admin-sidebar-text)">
                   Password
                   <span className="relative mt-2 block">
                     <input
+                      {...register("password")}
+                      aria-describedby={
+                        passwordError ? "login-password-error" : undefined
+                      }
+                      aria-invalid={passwordError ? "true" : "false"}
                       autoComplete="current-password"
                       className="h-11 w-full rounded-(--admin-radius-control) border border-(--admin-sidebar-border) bg-(--admin-sidebar) px-4 pr-11 text-sm font-medium text-(--admin-sidebar-text) outline-none ring-offset-(--admin-sidebar) placeholder:text-(--admin-sidebar-muted) focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring)"
                       disabled={busy}
-                      onChange={(event) => setPassword(event.target.value)}
                       placeholder="Enter password"
-                      required
                       type="password"
-                      value={password}
                     />
                     <Eye
                       aria-hidden="true"
@@ -240,6 +256,14 @@ export default function LoginPage() {
                     />
                   </span>
                 </label>
+                {passwordError ? (
+                  <span
+                    className="-mt-2 block text-xs font-semibold text-(--admin-danger)"
+                    id="login-password-error"
+                  >
+                    {passwordError}
+                  </span>
+                ) : null}
 
                 <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
                   <label className="flex shrink-0 items-center gap-2 whitespace-nowrap font-medium text-(--admin-sidebar-text)">

@@ -43,6 +43,42 @@ describe("LoginPage auth behavior", () => {
     expect(await screen.findByRole("button", { name: "Sign in" })).toBeEnabled();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
+    expect(screen.getByLabelText("Remember me")).toBeInTheDocument();
+  });
+
+  it("shows field validation errors on empty submit", async () => {
+    const user = userEvent.setup();
+
+    render(<LoginPage />);
+
+    await user.click(await screen.findByRole("button", { name: "Sign in" }));
+
+    expect(await screen.findByText("Email is required.")).toBeInTheDocument();
+    expect(screen.getByText("Password is required.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+    expect(screen.getByLabelText("Password")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+    expect(loginAdmin).not.toHaveBeenCalled();
+  });
+
+  it("shows a field validation error for invalid email", async () => {
+    const user = userEvent.setup();
+
+    render(<LoginPage />);
+
+    await user.type(await screen.findByLabelText("Email"), "not-an-email");
+    await user.type(screen.getByLabelText("Password"), "test-password");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    expect(
+      await screen.findByText("Enter a valid email address.")
+    ).toBeInTheDocument();
+    expect(loginAdmin).not.toHaveBeenCalled();
   });
 
   it("submits credentials, stores csrfToken, and redirects to dashboard on success", async () => {
@@ -61,14 +97,17 @@ describe("LoginPage auth behavior", () => {
 
     render(<LoginPage />);
 
-    await user.type(await screen.findByLabelText("Email"), "admin@example.com");
-    await user.type(screen.getByLabelText("Password"), "fake-password");
+    await user.type(
+      await screen.findByLabelText("Email"),
+      "  admin@example.com  "
+    );
+    await user.type(screen.getByLabelText("Password"), "test-password");
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
     await waitFor(() => {
       expect(loginAdmin).toHaveBeenCalledWith({
         email: "admin@example.com",
-        password: "fake-password"
+        password: "test-password"
       });
     });
     expect(setAdminCsrfToken).toHaveBeenCalledWith("test-csrf-token");
@@ -85,7 +124,7 @@ describe("LoginPage auth behavior", () => {
     render(<LoginPage />);
 
     await user.type(await screen.findByLabelText("Email"), "admin@example.com");
-    await user.type(screen.getByLabelText("Password"), "fake-password");
+    await user.type(screen.getByLabelText("Password"), "test-password");
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
     expect(
@@ -118,7 +157,7 @@ describe("LoginPage auth behavior", () => {
     render(<LoginPage />);
 
     await user.type(await screen.findByLabelText("Email"), "admin@example.com");
-    await user.type(screen.getByLabelText("Password"), "fake-password");
+    await user.type(screen.getByLabelText("Password"), "test-password");
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
     await waitFor(() => {
