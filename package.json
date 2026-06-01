@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/dev/ensure-local-env.mjs && next dev -H 127.0.0.1 -p 3000",
+    "dev:check-env": "node scripts/dev/ensure-local-env.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
