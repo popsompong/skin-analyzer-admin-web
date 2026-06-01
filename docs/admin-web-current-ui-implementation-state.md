@@ -113,6 +113,13 @@ Accepted component UI checkpoints:
   - No repository files changed in the smoke task.
   - This smoke does not complete topbar logout UI, protected feature mutation testing, broader feature API CSRF wiring, permission-aware menu/profile behavior, or production security hardening.
 
+- Local Env Bootstrap v1:
+  - Accepted with notes as a local DX/config bootstrap task.
+  - Added safe local backend URL examples for `NEXT_PUBLIC_ADMIN_API_BASE_URL=http://127.0.0.1:8081`.
+  - Added `scripts/dev/ensure-local-env.mjs` to create or verify local `.env.local` for development.
+  - Updated the dev command so Admin Web starts on `http://127.0.0.1:3000`, matching the local backend CORS allowlist used by backend smoke.
+  - Did not change auth behavior, UI behavior, app/component/lib source, package dependencies, or `package-lock.json`.
+
 ## 4. Current Implemented Files and Responsibilities
 
 - `app/globals.css`: Admin Web light-only semantic tokens only. It must not contain app-level dark mode, theme toggle, `next-themes`, or `prefers-color-scheme` theme switching.
@@ -342,6 +349,45 @@ Accepted component UI checkpoints:
   - Production security hardening remains pending: HTTPS/Secure cookie, production CORS origin list, login rate limiting, audit logs, security headers/CSP, XSS hardening, and production env validation.
   - If Admin Web runs on a port other than 3000 in local smoke, backend `CORS_ALLOWED_ORIGINS` must include that origin.
 
+### Local env bootstrap status
+
+- Admin Web Local Env Bootstrap v1 is accepted with notes.
+- It improved local development env/config bootstrap only.
+- It did not change auth behavior, UI behavior, app/component/lib source, package dependencies, or `package-lock.json`.
+- Local Admin Backend URL default/example:
+  - `NEXT_PUBLIC_ADMIN_API_BASE_URL=http://127.0.0.1:8081`
+- This is a public frontend config value and must not contain backend passwords, cookies, session tokens, CSRF tokens, database URLs, backend secrets, or production secrets.
+- Env files and script behavior:
+  - `.env.example` and `.env.local.example` include safe local backend URL examples.
+  - `scripts/dev/ensure-local-env.mjs` creates `.env.local` from `.env.local.example` when missing.
+  - The script ensures `.env.local` contains `NEXT_PUBLIC_ADMIN_API_BASE_URL` for local dev and is rerun-safe.
+  - `.env.local` is generated local-only, ignored by git, and must not be committed.
+- Local dev origin / backend CORS:
+  - `npm run dev` starts Next on `http://127.0.0.1:3000`.
+  - This matches the backend local CORS allowlist used by backend smoke.
+  - Backend also allows `http://localhost:3000`.
+  - If port 3000 is occupied, stop the other process or deliberately update backend `CORS_ALLOWED_ORIGINS` for another origin.
+- Package manager note:
+  - `npm` remains the canonical Admin Web package manager because `package-lock.json` exists.
+  - `pnpm` may be installed on the machine, but no `pnpm` migration has been accepted.
+  - Do not create `pnpm-lock.yaml` or switch package manager unless the user explicitly approves.
+- Recommended local workflow:
+
+  ```sh
+  cd "/Users/sompong/Dev/Project skin analyzer/skin-analyzer-admin-backend"
+  make dev-up
+  make dev-auth-smoke
+
+  cd "/Users/sompong/Dev/Project skin analyzer/skin-analyzer-ux-ui/skin-analyzer-admin-web"
+  npm run dev
+  ```
+
+- Remaining limitations:
+  - The bootstrap script does not require backend availability before starting Admin Web; run backend commands first for backend-connected flows.
+  - Production env configuration remains a deployment/platform concern.
+  - Production security hardening remains pending.
+  - Topbar logout UI and protected feature mutation testing remain deferred from prior auth smoke notes.
+
 ### Documentation Impact Rule
 
 - Future implementation, test, smoke, and UI tasks must include a `Documentation Impact Candidate` section in the final report.
@@ -352,8 +398,8 @@ Accepted component UI checkpoints:
 
 ### Next recommended task
 
-- The next recommended task after Admin Web Login Auth Flow Backend Smoke v1 is Admin Backend Auth Security Hardening v1.
-- Reason: login/auth backend smoke is now verified end-to-end, and the next highest-value step is production/public-readiness hardening for backend auth/security before broad feature work.
+- The next recommended task after Admin Web Local Env Bootstrap v1 remains Admin Backend Auth Security Hardening v1.
+- Reason: Admin Web local env bootstrap is complete, login/auth backend smoke is verified end-to-end, and the next highest-value step remains production/public-readiness hardening for backend auth/security before broad feature work.
 
 ## 8. Visual Spec Pack v2 Rules
 
@@ -383,7 +429,7 @@ Required sequence:
 2. Topbar Only v1 - accepted.
 3. Main Surface + Page Header Only v1 - accepted.
 4. Dashboard Card Rhythm Only v1 - accepted with caveats.
-5. Login Page UI v1 - accepted for visual UI only; Login Form RHF Zod Migration v1 is accepted with notes for scoped form behavior; Login Auth Flow Backend Smoke v1 is accepted with notes for real local backend auth smoke.
+5. Login Page UI v1 - accepted for visual UI only; Login Form RHF Zod Migration v1 is accepted with notes for scoped form behavior; Login Auth Flow Backend Smoke v1 is accepted with notes for real local backend auth smoke; Local Env Bootstrap v1 is accepted with notes for local dev config.
 6. List Page Pattern v1.
 7. Media Library UI v1.
 8. Editor Shell v1.
@@ -407,13 +453,13 @@ Rules:
 
 ## 11. Next Recommended Task
 
-The next recommended task after Admin Web Login Auth Flow Backend Smoke v1 is:
+The next recommended task after Admin Web Local Env Bootstrap v1 is:
 
 ```text
 Admin Backend Auth Security Hardening v1
 ```
 
-Reason: login/auth backend smoke is now verified end-to-end, and production/public-readiness hardening for backend auth/security should happen before broad feature work.
+Reason: Admin Web local env bootstrap is complete, login/auth backend smoke is verified end-to-end, and production/public-readiness hardening for backend auth/security should happen before broad feature work.
 
 ## 12. Handoff Notes for Future ChatGPT/Codex Sessions
 
