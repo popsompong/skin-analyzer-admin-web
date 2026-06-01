@@ -120,10 +120,17 @@ Accepted component UI checkpoints:
   - Updated the dev command so Admin Web starts on `http://127.0.0.1:3000`, matching the local backend CORS allowlist used by backend smoke.
   - Did not change auth behavior, UI behavior, app/component/lib source, package dependencies, or `package-lock.json`.
 
+- Security Headers + XSS Hardening v1:
+  - Accepted with notes as baseline frontend/browser security hardening.
+  - Security Headers Env-Driven CSP Connect Src Fix v1 is accepted as the follow-up fix for CSP `connect-src`.
+  - Added baseline security headers, no-store headers for auth/admin-sensitive routes, report-only CSP, static frontend security checks, and security header tests.
+  - CSP `connect-src` now derives from `NEXT_PUBLIC_ADMIN_API_BASE_URL` instead of permanently hardcoding local backend origins.
+  - Did not change UI behavior, auth behavior, app/component/lib source behavior, Admin Backend files, or current-state docs during the implementation/fix tasks.
+
 ## 4. Current Implemented Files and Responsibilities
 
 - `app/globals.css`: Admin Web light-only semantic tokens only. It must not contain app-level dark mode, theme toggle, `next-themes`, or `prefers-color-scheme` theme switching.
-- `app/login/page.tsx`: Login Page UI v1 visual layout plus Login Form RHF Zod Migration v1 behavior. It owns the light-only admin login layout, local temporary AI skin-scan visual, React Hook Form + Zod email/password validation, existing auth submit path, safe form-level auth error display, success redirect to `/dashboard`, and CSRF retention call. Its real local backend login/auth smoke passed with notes; production security hardening and deferred auth UI/product work remain pending.
+- `app/login/page.tsx`: Login Page UI v1 visual layout plus Login Form RHF Zod Migration v1 behavior. It owns the light-only admin login layout, local temporary AI skin-scan visual, React Hook Form + Zod email/password validation, existing auth submit path, safe form-level auth error display, success redirect to `/dashboard`, and CSRF retention call. Its real local backend login/auth smoke passed with notes; frontend baseline security headers/XSS checks are now in place; enforced CSP, HSTS/HTTPS production policy, and deferred auth UI/product work remain pending.
 - `components/layout/sidebar.tsx`: Desktop sidebar panel, brand area, nav grouping, icon mapping, and footer/profile area.
 - `components/layout/nav-item.tsx`: Sidebar nav item state, active styling, hover styling, and active cyan rail.
 - `components/layout/brand-mark.tsx`: Temporary vector Logo B-inspired front-facing AI skin-scan brand mark. It is not the final semi-realistic brand asset.
@@ -138,7 +145,7 @@ Accepted component UI checkpoints:
 ## 5. Explicitly Deferred / Not Implemented
 
 - Final dashboard feature page with real data, loading states, empty states, error states, permissions, API integration, and backend wiring.
-- Production auth/security hardening.
+- Remaining production auth/security hardening not covered by accepted backend/frontend baseline work.
 - Permission-aware redirect after login.
 - Safe backend field/form error mapping.
 - Forgot-password behavior.
@@ -237,7 +244,7 @@ Accepted component UI checkpoints:
 
 ### Deferred UI / product areas
 
-- Production auth/security hardening.
+- Remaining production auth/security hardening not covered by accepted backend/frontend baseline work.
 - Safe backend field/form error mapping.
 - Login forgot-password flow.
 - Topbar logout/profile UI.
@@ -294,6 +301,7 @@ Accepted component UI checkpoints:
 - Live backend login smoke has passed with notes in Admin Web Login Auth Flow Backend Smoke v1.
 - Backend `/auth/me` now returns stable session-bound `csrfToken` for the tested local auth bootstrap path, so the previous backend rotation and multi-tab CSRF invalidation caveat is resolved for that path.
 - Login Auth Flow backend smoke is `PASS_WITH_NOTES`; production security hardening and deferred auth UI/product work remain pending.
+- Frontend baseline security headers and XSS static checks are now documented separately in Security Headers + XSS Hardening status.
 - Safe backend field/form error mapping remains deferred.
 - Broader feature forms are not migrated yet.
 
@@ -346,7 +354,8 @@ Accepted component UI checkpoints:
   - Safe protected feature mutation such as create/update blog/tip/media was not tested in this smoke.
   - Broader feature API CSRF wiring remains future work.
   - Permission-aware menu/profile behavior remains deferred.
-  - Production security hardening remains pending: HTTPS/Secure cookie, production CORS origin list, login rate limiting, audit logs, security headers/CSP, XSS hardening, and production env validation.
+  - Frontend baseline security headers, report-only CSP, and XSS static checks are now accepted with notes.
+  - Remaining security hardening includes enforced CSP nonce/hash strategy, HSTS/HTTPS production policy, future rich text/media/editor sanitizer policy, protected feature mutation CSRF smoke, and production deployment hardening.
   - If Admin Web runs on a port other than 3000 in local smoke, backend `CORS_ALLOWED_ORIGINS` must include that origin.
 
 ### Local env bootstrap status
@@ -385,8 +394,56 @@ Accepted component UI checkpoints:
 - Remaining limitations:
   - The bootstrap script does not require backend availability before starting Admin Web; run backend commands first for backend-connected flows.
   - Production env configuration remains a deployment/platform concern.
-  - Production security hardening remains pending.
+  - Remaining frontend production hardening is documented in Security Headers + XSS Hardening status.
   - Topbar logout UI and protected feature mutation testing remain deferred from prior auth smoke notes.
+
+### Security Headers + XSS Hardening status
+
+- Admin Web Security Headers + XSS Hardening v1 is accepted with notes.
+- Admin Web Security Headers Env-Driven CSP Connect Src Fix v1 is accepted.
+- The combined result adds baseline frontend/browser security hardening without changing UI or auth behavior.
+- Baseline headers are configured in `next.config.ts`:
+  - `X-Content-Type-Options=nosniff`
+  - `Referrer-Policy=no-referrer`
+  - `X-Frame-Options=DENY`
+  - Restrictive `Permissions-Policy`
+  - `Cross-Origin-Opener-Policy=same-origin`
+  - `Cross-Origin-Resource-Policy=same-origin`
+- No-store cache behavior is configured for auth/admin-sensitive routes including `/`, `/login`, `/dashboard`, `/blog`, `/tips`, `/media`, `/categories-tags`, `/authors`, `/revalidation-events`, and `/settings`.
+- `Strict-Transport-Security` / HSTS is not enabled yet and remains deferred until production HTTPS/domain policy is scoped.
+- CSP status:
+  - `Content-Security-Policy-Report-Only` is configured.
+  - CSP is not enforced yet.
+  - CSP `connect-src` derives from `NEXT_PUBLIC_ADMIN_API_BASE_URL` rather than permanently hardcoding local backend origins.
+  - `connect-src` uses URL origin only, strips path/query, deduplicates sources, and rejects invalid, non-http(s), or credential-bearing URLs.
+  - Production missing or invalid `NEXT_PUBLIC_ADMIN_API_BASE_URL` fails config/CSP construction.
+  - Local/dev/test fallback to `http://127.0.0.1:8081` is scoped to non-production.
+  - Enforced CSP remains deferred until nonce/hash strategy and production domain/connect-src policy are scoped.
+- XSS hardening status:
+  - No unsafe HTML sink patterns were found in the current `app`, `components`, `lib`, `tests`, and `scripts` scan.
+  - Current scan found no `dangerouslySetInnerHTML`, `innerHTML`, `outerHTML`, `insertAdjacentHTML`, untrusted `DOMParser`, `eval`, or `new Function`.
+  - Static frontend security check exists at `scripts/security/check-frontend-security.mjs`.
+  - NPM script exists as `npm run security:check`.
+  - Security header tests exist at `tests/security/security-headers.test.ts`.
+- Token/password storage and logging status:
+  - No raw session/access/JWT storage was found.
+  - No sensitive console logging was found.
+  - CSRF token store remains the allowed exception because `X-CSRF-Token` is required for backend mutation requests.
+  - Admin Web must not log or expose `csrfToken`, passwords, cookies, or raw session material.
+- Validation status from the accepted implementation/fix tasks:
+  - `npm run security:check` passed.
+  - `npm run test`, `npm run lint`, `npm run typecheck`, `npm run build`, and `npm audit --omit=dev` passed.
+  - Runtime header checks for `/login` and `/dashboard` passed and showed baseline headers plus `Content-Security-Policy-Report-Only`.
+  - Runtime CSP showed `connect-src 'self' http://127.0.0.1:8081`, derived from `.env.local`.
+- Remaining deferred/not-final items:
+  - CSP remains report-only.
+  - Enforced CSP nonce/hash strategy remains deferred.
+  - HSTS/HTTPS production policy remains deferred.
+  - Future rich text/media/editor sanitizer policy remains deferred and must be scoped before rendering HTML, Markdown, or user-controlled rich content.
+  - Do not introduce `dangerouslySetInnerHTML` without a scoped sanitizer/review task.
+  - Protected feature mutation CSRF smoke for Blog/Tips/Media remains deferred.
+  - Topbar logout UI remains deferred.
+  - No Admin Web current-state docs were updated in the implementation/fix tasks; this addendum records the notes after gatekeeper review.
 
 ### Documentation Impact Rule
 
@@ -398,8 +455,8 @@ Accepted component UI checkpoints:
 
 ### Next recommended task
 
-- The next recommended task after Admin Web Local Env Bootstrap v1 remains Admin Backend Auth Security Hardening v1.
-- Reason: Admin Web local env bootstrap is complete, login/auth backend smoke is verified end-to-end, and the next highest-value step remains production/public-readiness hardening for backend auth/security before broad feature work.
+- The next recommended task after Security Headers + XSS Hardening Notes Addendum v1 is Admin Web Topbar Auth Menu v1.
+- Reason: Login/logout backend endpoint behavior is verified, Topbar logout UI remains deferred, and report-only CSP baseline is already in place while enforced CSP can remain planned separately.
 
 ## 8. Visual Spec Pack v2 Rules
 
@@ -429,7 +486,7 @@ Required sequence:
 2. Topbar Only v1 - accepted.
 3. Main Surface + Page Header Only v1 - accepted.
 4. Dashboard Card Rhythm Only v1 - accepted with caveats.
-5. Login Page UI v1 - accepted for visual UI only; Login Form RHF Zod Migration v1 is accepted with notes for scoped form behavior; Login Auth Flow Backend Smoke v1 is accepted with notes for real local backend auth smoke; Local Env Bootstrap v1 is accepted with notes for local dev config.
+5. Login Page UI v1 - accepted for visual UI only; Login Form RHF Zod Migration v1 is accepted with notes for scoped form behavior; Login Auth Flow Backend Smoke v1 is accepted with notes for real local backend auth smoke; Local Env Bootstrap v1 is accepted with notes for local dev config; Security Headers + XSS Hardening v1 and Env-Driven CSP Connect Src Fix v1 are accepted with notes for baseline frontend security hardening.
 6. List Page Pattern v1.
 7. Media Library UI v1.
 8. Editor Shell v1.
@@ -453,13 +510,13 @@ Rules:
 
 ## 11. Next Recommended Task
 
-The next recommended task after Admin Web Local Env Bootstrap v1 is:
+The next recommended task after Security Headers + XSS Hardening Notes Addendum v1 is:
 
 ```text
-Admin Backend Auth Security Hardening v1
+Admin Web Topbar Auth Menu v1
 ```
 
-Reason: Admin Web local env bootstrap is complete, login/auth backend smoke is verified end-to-end, and production/public-readiness hardening for backend auth/security should happen before broad feature work.
+Reason: Login/logout backend endpoint behavior is verified, Topbar logout UI remains deferred, and report-only CSP baseline is already in place while enforced CSP can remain planned separately.
 
 ## 12. Handoff Notes for Future ChatGPT/Codex Sessions
 
