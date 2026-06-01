@@ -102,12 +102,21 @@ Accepted component UI checkpoints:
     - `tests/admin-auth/login-page.test.tsx`
   - Preserved the accepted Login Page UI visual layout, existing auth submit behavior, CSRF retention path, success redirect to `/dashboard`, and route guard behavior.
   - Added field-level email/password validation and updated login page tests.
-  - No real backend smoke was run, and auth final acceptance remains pending.
+  - Real backend smoke was still pending at the time of this migration.
+
+- Login Auth Flow Backend Smoke v1:
+  - Accepted with notes as an Admin Web auth smoke against the real local Admin Backend runtime.
+  - Used `NEXT_PUBLIC_ADMIN_API_BASE_URL=http://127.0.0.1:8081`.
+  - Used Admin Web origin `http://127.0.0.1:3000` for the accepted browser smoke because backend local CORS allowed port 3000.
+  - Verified backend readiness with `GET /healthz => 200` and `GET /readyz => 200`.
+  - Verified `/login` live submit, `POST /v1/admin/auth/login => 200`, HttpOnly cookie session, CSRF capture, redirect to `/dashboard`, `/auth/me` bootstrap, stable session-bound CSRF behavior, route guard behavior, reload/session restore, and endpoint/helper logout cleanup.
+  - No repository files changed in the smoke task.
+  - This smoke does not complete topbar logout UI, protected feature mutation testing, broader feature API CSRF wiring, permission-aware menu/profile behavior, or production security hardening.
 
 ## 4. Current Implemented Files and Responsibilities
 
 - `app/globals.css`: Admin Web light-only semantic tokens only. It must not contain app-level dark mode, theme toggle, `next-themes`, or `prefers-color-scheme` theme switching.
-- `app/login/page.tsx`: Login Page UI v1 visual layout plus Login Form RHF Zod Migration v1 behavior. It owns the light-only admin login layout, local temporary AI skin-scan visual, React Hook Form + Zod email/password validation, existing auth submit path, safe form-level auth error display, success redirect to `/dashboard`, and CSRF retention call. It is not final auth acceptance because backend smoke remains pending.
+- `app/login/page.tsx`: Login Page UI v1 visual layout plus Login Form RHF Zod Migration v1 behavior. It owns the light-only admin login layout, local temporary AI skin-scan visual, React Hook Form + Zod email/password validation, existing auth submit path, safe form-level auth error display, success redirect to `/dashboard`, and CSRF retention call. Its real local backend login/auth smoke passed with notes; production security hardening and deferred auth UI/product work remain pending.
 - `components/layout/sidebar.tsx`: Desktop sidebar panel, brand area, nav grouping, icon mapping, and footer/profile area.
 - `components/layout/nav-item.tsx`: Sidebar nav item state, active styling, hover styling, and active cyan rail.
 - `components/layout/brand-mark.tsx`: Temporary vector Logo B-inspired front-facing AI skin-scan brand mark. It is not the final semi-realistic brand asset.
@@ -122,12 +131,9 @@ Accepted component UI checkpoints:
 ## 5. Explicitly Deferred / Not Implemented
 
 - Final dashboard feature page with real data, loading states, empty states, error states, permissions, API integration, and backend wiring.
-- Login Auth Flow backend smoke.
-- Auth final acceptance.
-- Real Admin Backend credential, cookie, and session behavior verification.
+- Production auth/security hardening.
 - Permission-aware redirect after login.
 - Safe backend field/form error mapping.
-- Existing authenticated-session CSRF recovery when `/auth/me` does not return a `csrfToken`.
 - Forgot-password behavior.
 - Broader feature form migrations.
 - Real API integration.
@@ -197,10 +203,10 @@ Accepted component UI checkpoints:
 - It replaced the scaffold placeholder with a light-only admin sign-in panel.
 - It added an AI skin-scan brand visual and form control rhythm.
 - At the time of Login Page UI v1, it kept the work scoped without auth, API, cookies, sessions, CSRF, or route behavior.
-- Later scoped tasks added auth behavior and React Hook Form + Zod validation, but `/login` is still not a final authenticated feature page until backend smoke passes.
+- Later scoped tasks added auth behavior, React Hook Form + Zod validation, and real local backend smoke with notes. `/login` is still not a production-final authenticated feature page until deferred auth UI/product work and production security hardening are completed.
 - There are no empty states.
 - There is no forgot-password behavior.
-- Real backend credentials, cookie, and session behavior have not been verified by the login form migration.
+- Real backend credentials, cookie, and session behavior were verified later by Login Auth Flow Backend Smoke v1 using a dev-only account and without storing secrets in this repo.
 - Login UI visual output was accepted with notes.
 - Technical PASS is not final feature acceptance.
 - Future auth-flow work must not assume Login Page UI v1 completed real authentication.
@@ -224,11 +230,8 @@ Accepted component UI checkpoints:
 
 ### Deferred UI / product areas
 
-- Login Auth Flow backend smoke.
-- Auth final acceptance.
-- Real Admin Backend credential, cookie, and session behavior verification.
+- Production auth/security hardening.
 - Safe backend field/form error mapping.
-- Existing authenticated-session CSRF recovery when `/auth/me` does not return a `csrfToken`.
 - Login forgot-password flow.
 - Topbar logout/profile UI.
 - Final Logo B asset replacement.
@@ -281,12 +284,63 @@ Accepted component UI checkpoints:
 - Login page tests now cover RHF/Zod validation behavior, empty submit, invalid email, valid submit, safe error behavior, and no sensitive console logging.
 - Existing auth tests and schema tests still pass.
 - Current Login Auth Flow frontend tests exist and cover CSRF retention, auth API calls, provider state, login form behavior, and route guard behavior.
-- Live backend login smoke is still pending.
-- Existing authenticated sessions with an HttpOnly cookie but no stored `csrfToken` may still lack a CSRF token if `/auth/me` does not return one.
-- Login Auth Flow is still `PASS_WITH_NOTES` and is not final auth acceptance.
+- Live backend login smoke has passed with notes in Admin Web Login Auth Flow Backend Smoke v1.
+- Backend `/auth/me` now returns stable session-bound `csrfToken` for the tested local auth bootstrap path, so the previous backend rotation and multi-tab CSRF invalidation caveat is resolved for that path.
+- Login Auth Flow backend smoke is `PASS_WITH_NOTES`; production security hardening and deferred auth UI/product work remain pending.
 - Safe backend field/form error mapping remains deferred.
 - Broader feature forms are not migrated yet.
-- This note does not mean Login Auth Flow is final.
+
+### Login auth backend smoke status
+
+- Admin Web Login Auth Flow Backend Smoke v1 is accepted with notes.
+- It verified Admin Web login/auth flow against the real local Admin Backend runtime at `http://127.0.0.1:8081`.
+- Admin Web used `NEXT_PUBLIC_ADMIN_API_BASE_URL=http://127.0.0.1:8081`.
+- Accepted browser smoke used Admin Web origin `http://127.0.0.1:3000`.
+- Future backend-dependent Admin Web smoke should start the backend with `make dev-up` and verify backend readiness with `make dev-auth-smoke`.
+- Backend persistent data root for local smoke is:
+  `/Users/sompong/Dev/Project skin analyzer/Docker/skin-analyzer-admin-backend`
+- Dev-only admin account email is `admin-smoke@example.local`.
+- The dev password is stored outside the Admin Web repo in the backend persistent data root credentials file. Do not store the dev password in this repo.
+- Verified auth flow:
+  - `/login` live submit works against the backend.
+  - `POST /v1/admin/auth/login` returns `200`.
+  - Backend sets an HttpOnly session cookie.
+  - `document.cookie` does not expose the HttpOnly session cookie.
+  - Admin Web does not store a raw session token.
+  - `csrfToken` is captured from login.
+  - Successful login redirects to `/dashboard`.
+  - `/auth/me` bootstrap works through the cookie.
+  - Authenticated `/dashboard` renders.
+  - Unauthenticated `/dashboard` redirects to `/login`.
+  - Logout endpoint works through the smoke helper/API.
+  - Post-logout `/auth/me` returns `401`.
+  - Post-logout `/dashboard` redirects to `/login`.
+- Stable CSRF bootstrap behavior:
+  - Backend `/auth/me` returns stable session-bound `csrfToken`.
+  - Backend `/auth/me` sets `X-CSRF-Token`.
+  - For the same session, login `csrfToken` equals `/auth/me` `csrfToken` and repeated `/auth/me` `csrfToken`.
+  - Repeated `/auth/me` does not rotate or invalidate the current token.
+  - Admin Web keeps/updates `csrfToken` from login and `/auth/me`.
+  - The previous backend rotation/multi-tab CSRF invalidation caveat is resolved for the tested auth bootstrap path.
+- Session restore behavior:
+  - Reloaded `/dashboard` with an authenticated browser session remained authenticated.
+  - CSRF store remained present after reload.
+  - Separate new-tab restore was not run in this smoke.
+  - Explicit multi-tab UI/browser testing remains optional future coverage if desired, while the backend stable contract has been verified.
+- Security/storage smoke assertions:
+  - No raw session token was printed.
+  - `localStorage` token-like key count was `0`.
+  - Unsafe `sessionStorage` token-like key count was `0`; only the CSRF token store is used.
+  - Password, cookie, and CSRF token values were not printed in the report.
+  - `credentials: "include"` remains present in auth fetches.
+- Remaining deferred/not-final items:
+  - Topbar logout UI remains deferred.
+  - Logout was tested through endpoint/helper, not topbar UI.
+  - Safe protected feature mutation such as create/update blog/tip/media was not tested in this smoke.
+  - Broader feature API CSRF wiring remains future work.
+  - Permission-aware menu/profile behavior remains deferred.
+  - Production security hardening remains pending: HTTPS/Secure cookie, production CORS origin list, login rate limiting, audit logs, security headers/CSP, XSS hardening, and production env validation.
+  - If Admin Web runs on a port other than 3000 in local smoke, backend `CORS_ALLOWED_ORIGINS` must include that origin.
 
 ### Documentation Impact Rule
 
@@ -298,15 +352,8 @@ Accepted component UI checkpoints:
 
 ### Next recommended task
 
-- The next recommended task after Admin Web Login Form RHF Zod Migration v1 is Admin Web Login Auth Flow Backend Smoke v1.
-- That task must verify against local or staging Admin Backend:
-  - Login sets an HttpOnly cookie.
-  - Login returns a `csrfToken` in the response body and/or header.
-  - `/auth/me` bootstrap works through the cookie.
-  - `/dashboard` route guard works.
-  - Login success redirect works.
-  - Logout/session cleanup if scoped.
-- That task must not use secrets in reports.
+- The next recommended task after Admin Web Login Auth Flow Backend Smoke v1 is Admin Backend Auth Security Hardening v1.
+- Reason: login/auth backend smoke is now verified end-to-end, and the next highest-value step is production/public-readiness hardening for backend auth/security before broad feature work.
 
 ## 8. Visual Spec Pack v2 Rules
 
@@ -336,7 +383,7 @@ Required sequence:
 2. Topbar Only v1 - accepted.
 3. Main Surface + Page Header Only v1 - accepted.
 4. Dashboard Card Rhythm Only v1 - accepted with caveats.
-5. Login Page UI v1 - accepted for visual UI only; Login Form RHF Zod Migration v1 is accepted with notes for scoped form behavior.
+5. Login Page UI v1 - accepted for visual UI only; Login Form RHF Zod Migration v1 is accepted with notes for scoped form behavior; Login Auth Flow Backend Smoke v1 is accepted with notes for real local backend auth smoke.
 6. List Page Pattern v1.
 7. Media Library UI v1.
 8. Editor Shell v1.
@@ -360,21 +407,13 @@ Rules:
 
 ## 11. Next Recommended Task
 
-The next recommended task after Admin Web Login Form RHF Zod Migration v1 is:
+The next recommended task after Admin Web Login Auth Flow Backend Smoke v1 is:
 
 ```text
-Admin Web Login Auth Flow Backend Smoke v1
+Admin Backend Auth Security Hardening v1
 ```
 
-That task must preserve:
-
-- Accepted Login Page UI visual design.
-- Auth submit behavior.
-- CSRF retention.
-- Route guard behavior.
-- Existing frontend auth tests.
-
-That task must verify local or staging Admin Backend login, HttpOnly cookie behavior, CSRF response/body header behavior, `/auth/me` bootstrap, `/dashboard` guard behavior, and login success redirect without exposing secrets in reports.
+Reason: login/auth backend smoke is now verified end-to-end, and production/public-readiness hardening for backend auth/security should happen before broad feature work.
 
 ## 12. Handoff Notes for Future ChatGPT/Codex Sessions
 
