@@ -4,6 +4,28 @@ This document defines the design direction for `skin-analyzer-admin-web`. It is 
 
 Brand and visual direction is further constrained by `docs/admin-web-brand-visual-direction.md`. Theme and color-token usage is constrained by `docs/admin-web-theme-token-contract.md`. These addenda override any generic scaffold visual direction and must be read before future UI implementation.
 
+## Active Direction Update: Flux Sky
+
+For the upcoming Admin Web redesign, the active visual direction is:
+
+```text
+Flux Sky: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
+```
+
+This supersedes older future-direction language that points Flux Sky work back to:
+
+- Dark navy sidebar.
+- Old Admin Web dark sidebar.
+- Current production sidebar visual style.
+- Blue action palette from earlier attempts.
+- Generic shadcn/admin scaffold styling.
+
+The old dark navy sidebar remains current implemented/historical context only until a scoped production task changes it. Do not use it as the target for future Flux Sky work unless a later accepted direction explicitly changes it.
+
+Flux is a public visual/interaction reference only. The user is not buying the Flux license. Do not copy Flux code, assets, logos, exact class names, proprietary icons, template implementation, user identity, or sample data. The final Admin Web must remain Skin Analyzer-specific.
+
+Admin Web Flux Sky Golden Mockup v1 is an accepted isolated visual direction checkpoint and planning reference only. It is not production implementation, not whole Admin Web final visual acceptance, and must not be copied wholesale into production.
+
 ## 1. Design Direction
 
 - Modern AI Skin Analysis Admin 2026.
@@ -45,7 +67,9 @@ Any visual flourish must serve task clarity, hierarchy, or state recognition.
 
 Define tokens during scaffold before implementing major screens. Do not introduce one-off colors in components.
 
-Admin Web tokens are Admin Web-owned. They must follow the light-only blue/cyan/navy admin system from `docs/admin-web-theme-token-contract.md` and must not inherit the Public Web theme as the base.
+Admin Web tokens are Admin Web-owned. Current implemented tokens are documented in `docs/admin-web-theme-token-contract.md` and must not inherit the Public Web theme as the base.
+
+For upcoming Flux Sky production work, a scoped token/theme task must translate light / neutral sidebar states and shadcn/Tailwind sky action/event states into Admin Web semantic tokens before production implementation. Do not copy raw slate/sky classes from the Golden Mockup into production components.
 
 - `background`: page canvas.
 - `surface`: primary panel, card, dialog, table, and form surface.
@@ -76,6 +100,7 @@ Logo direction is a front-facing AI skin scan mark following Logo B: Semi-realis
 ## 5. Layout
 
 - Sidebar: primary navigation, permission-aware visibility, stable width, clear active states.
+- Flux Sky sidebar work: use light / neutral sidebar direction, soft active pill, sky active/focus accents, and clear active rail. Do not use the current dark production sidebar as the visual target.
 - Topbar: user/session actions, current area context, optional breadcrumbs or page actions.
 - Main content: focused work surface with predictable spacing and page-level actions.
 - Cards: use for repeated items, compact summaries, and contained tools only.
@@ -96,6 +121,7 @@ Real and API-backed forms must follow `docs/admin-web-form-validation-contract.m
 - No dark mode screenshots are required for MVP UI tasks.
 - Theme implementation must use Admin Web semantic tokens from `docs/admin-web-theme-token-contract.md`.
 - Do not create one-off colors in components.
+- For Flux Sky, do not add dark mode or a theme toggle because Flux has one; Skin Analyzer MVP remains light-only.
 
 ## 7. UX States
 
@@ -132,3 +158,46 @@ The editor should protect brand consistency and content safety more than it maxi
 - Admin Web does not need public SEO.
 - Admin Web must remain private and `noindex`.
 - Public presentation can be previewed, but public-facing rendering belongs to the public web contract.
+
+## 10. shadcn/ui Governance Rules
+
+- shadcn/ui is intended as the production component foundation where suitable.
+- Prefer existing project components and shadcn/ui primitives when suitable.
+- Add missing shadcn/ui components only when needed in an explicitly scoped task, and report the command and files.
+- Do not force shadcn/ui if it causes visual mismatch, accessibility risk, layout bugs, or unnecessary complexity.
+- Custom components remain allowed when they are simpler, safer, or necessary for visual parity.
+- `components/ui` is for generic primitives only.
+- Product-specific Skin Analyzer UI belongs in layout or feature folders.
+- Do not copy the Golden Mockup component wholesale into production.
+- Every UI report must state whether shadcn/ui was reused, added, intentionally avoided, or replaced by custom components.
+
+## 11. Flux Sky Anti-Drift Rules
+
+- Do not revert to old dark/navy sidebar unless a later accepted direction explicitly changes it.
+- Do not use current Admin Web production sidebar as the visual target for Flux Sky work.
+- Do not use Tailwind blue or UI Colors blue for new Flux Sky action states.
+- Use shadcn/Tailwind sky for action and event states.
+- Keep hover states quieter than active states.
+- Keep destructive, warning, success, disabled, and forbidden states semantically distinct; do not use sky for every status.
+- Do not treat technical `PASS` as visual acceptance.
+- Screenshot/visual evidence is required for visual implementation tasks after the scaffold exists.
+
+## 12. Future Productionization Rule
+
+The next production planning task should be:
+
+```text
+Admin Web Flux Sky shadcn-backed Productionization Plan v1
+```
+
+This plan must happen before any production implementation.
+
+Expected future sequence:
+
+1. Admin Web Flux Sky shadcn-backed Productionization Plan v1.
+2. Token/theme contract update for light sidebar + sky action states.
+3. Sidebar Production v1.
+4. Topbar / Dropdown / Command Production v1.
+5. Mobile Drawer Production v1.
+6. Dashboard Layout v2.
+7. Visual QA / Screenshot Parity.

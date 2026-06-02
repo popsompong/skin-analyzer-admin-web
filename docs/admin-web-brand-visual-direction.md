@@ -1,4 +1,4 @@
-# Admin Web Brand and Visual Direction Addendum v1
+# Admin Web Brand and Visual Direction Addendum v2
 
 This document locks the brand and visual direction for `skin-analyzer-admin-web` before future UI implementation.
 
@@ -6,7 +6,35 @@ This document locks the brand and visual direction for `skin-analyzer-admin-web`
 
 Use this document to prevent future Admin Web work from drifting into the Public Web theme, a generic SaaS look, or an unapproved palette. Future UI tasks must treat this as the brand and visual source of truth alongside the UX/UI contract and `docs/admin-web-theme-token-contract.md`.
 
-## 2. Product Surface Separation
+## 2. Active Direction Update: Flux Sky
+
+For the upcoming Admin Web redesign, the active accepted direction is:
+
+```text
+Flux Sky: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
+```
+
+Flux Sky means:
+
+- Light neutral admin shell.
+- Light / neutral Flux-like sidebar.
+- shadcn/Tailwind sky action states.
+- Clean SaaS/admin density.
+- Skin Analyzer-specific product content.
+
+Flux boundary:
+
+- Flux is used only as a public visual and interaction reference.
+- The user is not buying the Flux license.
+- Do not copy Flux code, assets, logos, exact class names, proprietary icons, template implementation, user identity, or sample data.
+- The final Admin Web must remain Skin Analyzer-specific.
+
+Superseded direction:
+
+- Any older direction language that points future redesign work to a dark navy sidebar, old Admin Web sidebar, current production sidebar visual style, Tailwind blue action palette, or generic shadcn/admin scaffold is previous / historical / scoped foundation.
+- Do not use that older direction as the Flux Sky production target unless a later accepted direction explicitly changes it.
+
+## 3. Product Surface Separation
 
 - Admin Web is a separate product surface from Public Web.
 - Admin Web must not copy or inherit the Public Web theme or color direction.
@@ -15,7 +43,7 @@ Use this document to prevent future Admin Web work from drifting into the Public
 - Public brand colors may appear only as tiny supporting accents if explicitly approved, not as the Admin Web system palette.
 - Admin Web brand direction must use Admin-owned light-only theme tokens from `docs/admin-web-theme-token-contract.md`.
 
-## 3. Visual Direction
+## 4. Visual Direction
 
 Target direction:
 
@@ -43,11 +71,25 @@ The UI must not feel:
 - Heavy glassmorphism interface.
 - Rose-heavy public theme.
 
-## 4. Approved Visual Reference
+For upcoming Flux Sky redesign work, the active visual target is a Flux Sky light neutral admin shell with shadcn/Tailwind sky action and event states. Current production dark-sidebar visuals are implementation history, not the target.
 
-The user approved the latest dark-navy, blue/cyan admin dashboard mockup as the visual direction.
+## 5. Approved Visual References
 
-This is a direction reference, not a pixel-perfect target. Use it to guide:
+Current active planning references:
+
+- Admin Web Flux Sky Visual + Interaction Contract v1.
+- Admin Web Flux Sky Golden Mockup v1.
+- Admin Web shadcn/ui Component Inventory + Skill/MCP Feasibility v1.
+- Admin Web shadcn/ui Governance Rules v1.
+
+The Flux Sky Golden Mockup is an accepted isolated visual direction checkpoint only. It is not production implementation, not whole Admin Web final visual acceptance, and must not be copied wholesale into production.
+
+Historical reference:
+
+- The earlier dark-navy, blue/cyan admin dashboard mockup and current production sidebar remain historical implemented context.
+- They are superseded as the target for upcoming Flux Sky redesign work.
+
+Use active Flux Sky references to guide:
 
 - Sidebar style.
 - Topbar density.
@@ -57,38 +99,49 @@ This is a direction reference, not a pixel-perfect target. Use it to guide:
 - Responsive behavior.
 - Brand mark placement.
 
-Do not copy random visual details blindly. Do not invent a new style if the approved direction is already established.
+Do not copy random visual details blindly. Do not invent a new style if the active direction is already established.
 
-## 5. Admin Color System Direction
+## 6. Admin Color System Direction
 
-Base palette direction:
+Flux Sky base palette direction:
 
-- Deep navy sidebar or near-black blue.
+- Light / neutral sidebar.
 - Soft neutral app background.
 - White/off-white cards.
 - Subtle cool borders.
 - Readable slate or near-black text in the main workspace.
 - Light-only MVP theme. Dark mode is deferred and not part of MVP.
 
-Accent palette direction:
+Flux Sky accent palette direction:
 
-- Primary blue.
-- Cyan for scan and AI accents.
+- shadcn/Tailwind sky for action and event states.
+- Sky for active menu item, focus ring, primary actions, command selected row, notification highlights, and drawer active state.
+- Cyan may remain a small AI scan accent only when token-approved.
 - Optional violet for analytics accent.
 - Emerald success.
 - Amber warning.
 - Red danger.
+
+Historical implemented palette:
+
+- Deep navy sidebar / near-black blue.
+- Blue/cyan active state.
+- Existing current production sidebar styling.
+
+This historical palette remains current implementation context only. It is superseded as the target for upcoming Flux Sky redesign work.
 
 Forbidden palette direction:
 
 - Public Web rose, pearl, or champagne as the admin base.
 - Heavy pink UI.
 - Random arbitrary colors.
+- Tailwind blue or UI Colors blue for new Flux Sky action states.
+- Current production dark/sidebar palette as the Flux Sky target.
 - Neon-heavy palettes.
 - Gradient-heavy backgrounds.
 - Dark-mode palette implementation during MVP.
 
-## 6. Brand Mark and Logo Direction
+## 7. Brand Mark and Logo Direction
 
 Preferred direction:
 
@@ -104,8 +157,9 @@ Required meaning:
 - Scan brackets.
 - AI mesh or node pattern.
 - Skin analysis overlay or dots on forehead, cheeks, and T-zone.
-- Blue/cyan tech accent.
-- Readable on dark navy sidebar and light surfaces.
+- Sky/cyan tech accent when token-approved.
+- Readable on the Flux Sky light / neutral sidebar and light surfaces.
+- For legacy implemented sidebar work only, also preserve readability on the current dark navy sidebar until it is replaced.
 
 Forbidden logo direction:
 
@@ -120,14 +174,15 @@ Forbidden logo direction:
 Usage rules:
 
 - For MVP, actual brand asset implementation must be a separate task.
-- Future implementation should support sidebar mark, favicon, app icon, and login panel mark. MVP brand usage is light-only with a dark navy sidebar.
+- Future implementation should support sidebar mark, favicon, app icon, and login panel mark.
+- MVP brand usage is light-only. For Flux Sky shell work, verify logo readability on the new light / neutral sidebar and on light surfaces.
 - Logo must remain readable at 24px, 32px, 48px, and 192px.
 
-## 7. Responsive Visual Direction
+## 8. Responsive Visual Direction
 
 Desktop:
 
-- Full sidebar.
+- Full light / neutral sidebar for Flux Sky shell work.
 - Full topbar.
 - Dense dashboard and list layout.
 
@@ -144,22 +199,27 @@ Mobile:
 - Limited editor mode.
 - No forced desktop table or editor squeezed into mobile.
 
-## 8. Future UI Task Requirements
+## 9. Future UI Task Requirements
 
 Every future UI prompt must include:
 
-- Follow Admin Web Brand and Visual Direction Addendum v1.
+- Follow Admin Web Brand and Visual Direction Addendum v2.
 - Follow `docs/admin-web-theme-token-contract.md`.
+- For Flux Sky work, follow the light / neutral sidebar and shadcn/Tailwind sky action-state direction.
+- Do not drift back to the old dark/navy sidebar unless a later accepted direction explicitly changes it.
+- Do not use current Admin Web production sidebar as the Flux Sky visual target.
 - Do not invent a new palette.
 - Do not use Public Web theme or colors as the Admin Web base.
 - Do not implement dark mode, a theme toggle, or `next-themes` in MVP UI tasks.
 - Do not redesign freely.
 - Do not change brand or logo direction without explicit approval.
-- Use the approved mockup as visual direction only.
+- Use the approved Flux Sky Golden Mockup as visual reference only, not production code.
+- Follow accepted shadcn/ui governance: `components/ui` is for generic primitives only; product-specific Skin Analyzer UI belongs in layout or feature folders.
 - Generate screenshot evidence outside the repo.
 - No screenshots means `PASS_WITH_NOTES` at best for UI implementation tasks.
+- Technical `PASS` is not user or gatekeeper visual acceptance.
 
-## 9. Gatekeeper Review Criteria
+## 10. Gatekeeper Review Criteria
 
 A UI task should not pass if:
 
@@ -169,3 +229,7 @@ A UI task should not pass if:
 - It makes Admin Web look like a marketing landing page.
 - It ignores responsive behavior.
 - It does not provide screenshot evidence for UI changes.
+- It implements a Flux Sky task with the old dark/navy sidebar or current production sidebar visual target.
+- It uses Tailwind blue or UI Colors blue instead of shadcn/Tailwind sky for new Flux Sky action states.
+- It copies Flux source, assets, exact class names, proprietary icons, logo, or template implementation.
+- It copies the Golden Mockup component wholesale into production.

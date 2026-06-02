@@ -1,12 +1,20 @@
 # Admin Web Theme Token Contract v1
 
-This document locks the Admin Web MVP theme and token rules before further UI implementation.
+This document records the current implemented Admin Web MVP theme and token rules, and the planning boundary for the upcoming Flux Sky redesign.
 
 ## 1. Purpose
 
 Use this document to prevent future Admin Web work from inventing a new palette, copying the Public Web theme, adding dark mode, or scattering raw color values through components.
 
 This contract is the source of truth for Admin Web MVP theme mode, semantic color tokens, and component color usage.
+
+For the upcoming Admin Web redesign, the active visual direction is:
+
+```text
+Flux Sky: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
+```
+
+The current dark-sidebar token values below are implemented v1 state and historical foundation. They are superseded as the future visual target for Flux Sky work, but remain the current production token contract until a scoped token/theme task changes them.
 
 ## 2. Theme Mode Decision
 
@@ -27,7 +35,7 @@ This contract is the source of truth for Admin Web MVP theme mode, semantic colo
 - Public Web brand colors may appear only as tiny approved accents, not as the Admin Web system palette.
 - Admin Web should feel like a modern AI skin-analysis admin and content studio, not a beauty landing page.
 
-## 4. Light-Only Theme Direction
+## 4. Current Implemented Light-Only Theme Direction
 
 - Light neutral main workspace.
 - Dark navy sidebar.
@@ -40,6 +48,8 @@ This contract is the source of truth for Admin Web MVP theme mode, semantic colo
 - Emerald success.
 - Amber warning.
 - Red danger.
+
+For upcoming Flux Sky work, the dark navy sidebar and blue action palette language in this section is previous / historical / scoped foundation. Future Flux Sky production work must not reuse those values as the visual target if they conflict with the accepted light / neutral sidebar and sky action-state direction.
 
 ## 5. Required Semantic Theme Tokens
 
@@ -84,7 +94,7 @@ Shape and effects:
 
 ## 6. Baseline Token Values
 
-Recommended baseline values:
+Current implemented baseline values:
 
 ```css
 --admin-bg: #F7FAFC;
@@ -117,9 +127,25 @@ Recommended baseline values:
 --admin-focus-ring: #06B6D4;
 ```
 
-These are baseline tokens. Changing token values later must be a scoped token task. Do not change tokens casually in page or component tasks.
+These are current implemented baseline tokens. Changing token values later must be a scoped token task. Do not change tokens casually in page or component tasks.
 
-## 7. Component Usage Rules
+Do not treat the current dark `--admin-sidebar*` values or blue `--admin-primary*` values as the final Flux Sky production mapping. They remain current production implementation until a future token/theme task updates the semantic mapping.
+
+## 7. Flux Sky Token Planning Requirement
+
+Do not define final Flux Sky production token values in this v1 contract. A future scoped token/theme task is required for:
+
+- Light / neutral sidebar tokens.
+- shadcn/Tailwind sky action states.
+- Active, hover, focus-visible, selected, dropdown, command, notification, and drawer states.
+- Mobile drawer and collapsed rail states.
+- Avoidance of old dark-sidebar token drift.
+- Avoidance of Tailwind blue or UI Colors blue for new Flux Sky action states.
+- Translation of Golden Mockup raw slate/sky classes into Admin Web semantic tokens.
+
+Current token contract remains implemented state until a scoped production token task changes `app/globals.css` or related token definitions. If current tokens cannot express Flux Sky safely, stop and scope the token/theme task before production implementation.
+
+## 8. Component Usage Rules
 
 - Components must use semantic Admin Web tokens for core surfaces, text, borders, and actions.
 - Do not add raw hex values inside components.
@@ -129,7 +155,12 @@ These are baseline tokens. Changing token values later must be a scoped token ta
 - Raw hex values may exist only in token definitions or one-off SVG/gradient details when explicitly approved.
 - Use Tailwind canonical syntax for CSS variable utilities, such as `bg-(--admin-bg)`, `text-(--admin-text)`, `border-(--admin-border)`, and `shadow-(--admin-shadow-card)`.
 
-## 8. Forbidden Theme Work
+Flux Sky note:
+
+- Use shadcn/Tailwind sky for new action/event state planning, but production components must consume Admin Web semantic tokens after the token task defines them.
+- Do not copy raw Tailwind color classes from the Golden Mockup into production components as token compliance.
+
+## 9. Forbidden Theme Work
 
 - Do not implement dark mode.
 - Do not add a theme toggle.
@@ -139,22 +170,43 @@ These are baseline tokens. Changing token values later must be a scoped token ta
 - Do not use a rose, pearl, or champagne base palette.
 - Do not introduce neon-heavy, glassmorphism-heavy, or marketing palettes.
 - Do not scatter raw hex colors through components.
+- Do not revert Flux Sky work to old dark/navy sidebar tokens unless a later accepted direction explicitly changes it.
+- Do not use Tailwind blue or UI Colors blue for new Flux Sky action states.
+- Do not use the current production dark sidebar token values as the Flux Sky visual target.
 
-## 9. Future Implementation Order
+## 10. Future Implementation Order
 
-- This task is docs-only.
-- Future code task should be: Admin Web Light Theme Token Cleanup v1.
-- That future task may update `app/globals.css` and remove app-level dark-mode or `prefers-color-scheme` token behavior if present.
-- UI component work must wait until token cleanup is accepted.
-- Visual Spec Pack v2 should be based on approved reference crops and this theme contract.
+- Flux Sky production implementation must not start from this document alone.
+- Next planning task should be: Admin Web Flux Sky shadcn-backed Productionization Plan v1.
+- A future token/theme contract update for light sidebar + sky action states must happen before production Flux Sky shell implementation.
+- That future token task may update `app/globals.css` only when explicitly scoped.
+- UI component work that changes the production shell must wait until productionization planning and token/theme decisions are accepted.
+- Visual Spec Pack v2 remains historical reference for the previous implemented direction unless a future task explicitly scopes legacy UI work.
 
-## 10. Visual QA Requirements
+Expected future sequence:
+
+1. Admin Web Flux Sky shadcn-backed Productionization Plan v1.
+2. Token/theme contract update for light sidebar + sky action states.
+3. Sidebar Production v1.
+4. Topbar / Dropdown / Command Production v1.
+5. Mobile Drawer Production v1.
+6. Dashboard Layout v2.
+7. Visual QA / Screenshot Parity.
+
+## 11. Visual QA Requirements
 
 - UI screenshot review should focus on light-only output.
 - No dark mode screenshot is required.
-- Check that output uses a dark navy sidebar.
 - Check that output uses a light neutral workspace.
-- Check that output uses blue/cyan accents.
 - Check that output does not use the Public Web palette as the base.
 - Check that output does not introduce random colors.
 - Future UI tasks must report token compliance.
+
+For current implemented legacy UI tasks, validate against the current production tokens. For Flux Sky visual implementation tasks, validate:
+
+- Light / neutral sidebar, not dark/navy/black.
+- shadcn/Tailwind sky action and event states.
+- No Tailwind blue or UI Colors blue for new Flux Sky action states.
+- No current production dark sidebar visual target.
+- Screenshot/visual evidence at the required viewports.
+- Technical `PASS` is not user or gatekeeper visual acceptance.

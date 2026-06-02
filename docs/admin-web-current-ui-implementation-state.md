@@ -1,4 +1,4 @@
-# Admin Web Current UI Implementation State v1
+# Admin Web Current UI Implementation State v2
 
 This document is the current source of truth for Admin Web UI implementation status and handoff. It complements the contract and guardrail documents, and future UI tasks must read it before implementation.
 
@@ -17,7 +17,46 @@ This file records:
 
 If this document conflicts with actual code, inspect the code and report the conflict before editing.
 
-## 2. Current Accepted Visual Foundation
+## 2. Active Direction Update: Flux Sky
+
+For the upcoming Admin Web redesign and productionization planning, the active visual direction is:
+
+```text
+Flux Sky: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
+```
+
+This direction is accepted as planning input and supersedes earlier future-direction language that implied the redesign target should keep:
+
+- Dark navy sidebar.
+- Old Admin Web dark sidebar.
+- Current production sidebar visual style.
+- Blue action palette from earlier attempts.
+- Generic shadcn/admin scaffold styling.
+
+Those older references are historical implemented context only. Do not use them as the visual target for future Flux Sky work unless a later accepted direction explicitly changes this.
+
+Flux usage boundary:
+
+- Flux is used only as a public visual and interaction reference.
+- The user is not buying the Flux license.
+- Do not copy Flux code, assets, logos, exact class names, proprietary icons, template files, user identity, or sample data.
+- The final Admin Web must remain Skin Analyzer-specific.
+
+Golden Mockup boundary:
+
+- Admin Web Flux Sky Golden Mockup v1 is an accepted isolated visual direction checkpoint.
+- It is not production implementation.
+- It is not whole Admin Web final visual acceptance.
+- It must not be copied wholesale into production.
+- It should be used as visual reference for future productionization planning only.
+
+Production implementation status:
+
+- Whole Admin Web visual acceptance is still not final.
+- Flux Sky production implementation has not started.
+- A separate shadcn-backed productionization plan must happen before any production implementation.
+
+## 3. Current Implemented / Historical Visual Foundation
 
 - Admin Web MVP is light-only.
 - No dark mode.
@@ -26,14 +65,35 @@ If this document conflicts with actual code, inspect the code and report the con
 - No app-level `prefers-color-scheme` theme switching.
 - Admin Web owns its visual system and does not inherit the Public Web theme.
 - Public Web rose, pearl, or champagne colors must not be used as the Admin Web base.
-- The accepted direction is a light neutral workspace, dark navy sidebar, and blue/cyan AI skin-analysis accent.
+- The current production implementation still contains the previous light neutral workspace, dark navy sidebar, and blue/cyan AI skin-analysis accent foundation.
+- For upcoming Flux Sky work, that dark navy sidebar language is historical / scoped foundation / superseded as the future redesign target.
 - `docs/admin-web-theme-token-contract.md` is the source of truth for theme tokens.
 - `docs/admin-web-brand-visual-direction.md` is the source of truth for brand and visual direction.
-- Visual Spec Pack v2 Clarity is the current reference source:
+- Visual Spec Pack v2 Clarity remains historical reference for the previous accepted foundation:
   `/tmp/skin-analyzer-codex-reports/skin-analyzer-admin-web/visual-spec-v2/`
 - Visual Spec Pack v1 shell images are rejected and must not be used.
 
-## 3. Accepted UI Checkpoints
+## 4. Accepted UI Checkpoints
+
+Accepted Flux Sky planning checkpoints:
+
+- Admin Web Flux Sky Visual + Interaction Contract v1:
+  - Accepted as planning/input artifact.
+  - Establishes the light / neutral Flux-like sidebar direction.
+  - Establishes shadcn/Tailwind sky for action and event states.
+  - Establishes no-copy boundary for Flux.
+- Admin Web Flux Sky Golden Mockup v1:
+  - Accepted as an isolated visual direction checkpoint only.
+  - Not production implementation.
+  - Not whole Admin Web final visual acceptance.
+  - Not to be copied wholesale into production.
+- Admin Web shadcn/ui Component Inventory + Skill/MCP Feasibility v1:
+  - Accepted as planning input.
+  - Confirms local shadcn-style setup and existing Button, Badge, and Separator primitives.
+- Admin Web shadcn/ui Governance Rules v1:
+  - Accepted as planning input.
+  - Defines shadcn/ui as governed primitive foundation where suitable.
+  - Keeps product-specific UI outside `components/ui`.
 
 Accepted foundation and docs checkpoints:
 
@@ -50,7 +110,8 @@ Accepted foundation and docs checkpoints:
 Accepted component UI checkpoints:
 
 - Sidebar Only v1:
-  - Dark navy sidebar.
+  - Historical implemented state: dark navy sidebar.
+  - Superseded as the future visual target for upcoming Flux Sky redesign.
   - Grouped nav labels.
   - Blue/cyan active state.
   - Temporary front-facing AI skin-scan brand mark.
@@ -127,12 +188,12 @@ Accepted component UI checkpoints:
   - CSP `connect-src` now derives from `NEXT_PUBLIC_ADMIN_API_BASE_URL` instead of permanently hardcoding local backend origins.
   - Did not change UI behavior, auth behavior, app/component/lib source behavior, Admin Backend files, or current-state docs during the implementation/fix tasks.
 
-## 4. Current Implemented Files and Responsibilities
+## 5. Current Implemented Files and Responsibilities
 
 - `app/globals.css`: Admin Web light-only semantic tokens only. It must not contain app-level dark mode, theme toggle, `next-themes`, or `prefers-color-scheme` theme switching.
 - `app/login/page.tsx`: Login Page UI v1 visual layout plus Login Form RHF Zod Migration v1 behavior. It owns the light-only admin login layout, local temporary AI skin-scan visual, React Hook Form + Zod email/password validation, existing auth submit path, safe form-level auth error display, success redirect to `/dashboard`, and CSRF retention call. Its real local backend login/auth smoke passed with notes; frontend baseline security headers/XSS checks are now in place; enforced CSP, HSTS/HTTPS production policy, and deferred auth UI/product work remain pending.
-- `components/layout/sidebar.tsx`: Desktop sidebar panel, brand area, nav grouping, icon mapping, and footer/profile area.
-- `components/layout/nav-item.tsx`: Sidebar nav item state, active styling, hover styling, and active cyan rail.
+- `components/layout/sidebar.tsx`: Current production desktop sidebar panel, brand area, nav grouping, icon mapping, and footer/profile area. Its dark sidebar visual is current implemented state, not the target for upcoming Flux Sky productionization.
+- `components/layout/nav-item.tsx`: Current sidebar nav item state, active styling, hover styling, and active cyan rail. Future Flux Sky work must remap active/hover/focus states through a scoped token/production task.
 - `components/layout/brand-mark.tsx`: Temporary vector Logo B-inspired front-facing AI skin-scan brand mark. It is not the final semi-realistic brand asset.
 - `components/layout/topbar.tsx`: Light topbar, menu affordance, search placeholder, shortcut pill, and notification/help/profile placeholders.
 - `components/layout/admin-shell.tsx`: Shared shell wrapper, light main workspace background, and main content container rhythm.
@@ -142,8 +203,12 @@ Accepted component UI checkpoints:
 - `lib/permissions/menu.ts`: Current scaffold menu metadata and route-to-permission mapping.
 - `types/admin.ts`: Permission, role, user, session, menu icon, and menu item types.
 
-## 5. Explicitly Deferred / Not Implemented
+## 6. Explicitly Deferred / Not Implemented
 
+- Flux Sky shadcn-backed productionization plan.
+- Flux Sky token/theme contract update for light / neutral sidebar and sky action states.
+- Flux Sky production sidebar.
+- Flux Sky production topbar, dropdown, command palette, and mobile drawer.
 - Final dashboard feature page with real data, loading states, empty states, error states, permissions, API integration, and backend wiring.
 - Remaining production auth/security hardening not covered by accepted backend/frontend baseline work.
 - Permission-aware redirect after login.
@@ -164,25 +229,30 @@ Accepted component UI checkpoints:
 - Dark mode.
 - Theme toggle.
 
-## 6. Rejected / Do Not Use
+## 7. Rejected / Do Not Use
 
 - Do not use Visual Spec Pack v1 shell images.
 - Do not use old generated shell references.
 - Do not treat previous rejected shell outputs as accepted.
 - Do not use Public Web theme or colors as the Admin Web base.
 - Do not use rose, pearl, or champagne as the Admin Web system palette.
+- Do not revert Flux Sky work to the old dark/navy sidebar unless a later accepted direction explicitly changes it.
+- Do not use the current Admin Web production sidebar as the visual target for Flux Sky work.
+- Do not use Tailwind blue or UI Colors blue for new Flux Sky action states.
+- Use shadcn/Tailwind sky for Flux Sky action and event states.
 - Do not implement broad shell/page redesigns.
 - Do not implement multiple page archetypes in one task.
 - Do not copy reference images into the repository.
 - Do not include reference images in changed-files zips.
 
-## 7. Deferred Visual Notes / Not Final Yet
+## 8. Deferred Visual Notes / Not Final Yet
 
 ### Technical PASS is not visual acceptance
 
 - Codex technical `PASS` does not automatically mean user visual acceptance.
 - Only user or ChatGPT gatekeeper review can decide whether UI output becomes accepted current state.
 - Future UI implementation tasks must not treat their own screenshots as final acceptance unless the result is explicitly accepted afterward.
+- Screenshot/visual evidence is required for visual implementation tasks after the scaffold exists.
 
 ### Rejected references and outputs
 
@@ -194,6 +264,7 @@ Accepted component UI checkpoints:
 ### Scoped accepted work is not whole-product final
 
 - Sidebar Only v1 is accepted only for sidebar, navigation, and temporary brand mark scope.
+- Sidebar Only v1 remains historical current implementation context and is superseded as the future target for upcoming Flux Sky redesign.
 - Topbar Only v1 is accepted only for topbar, search, and action placeholders.
 - Main Surface + Page Header Only v1 is accepted only for main workspace, page header, and generic placeholder surface rhythm.
 - Dashboard Card Rhythm Only v1 is accepted only for dashboard visual rhythm and static placeholder cards.
@@ -262,6 +333,18 @@ Accepted component UI checkpoints:
 - Mobile drawer/search behavior.
 - Permission-aware real menu/profile behavior.
 - Loading, empty, and error states for feature pages.
+
+### Flux Sky productionization sequence
+
+Do not implement these steps in this docs sync. The expected future sequence is:
+
+1. Admin Web Flux Sky shadcn-backed Productionization Plan v1.
+2. Token/theme contract update for light sidebar + sky action states.
+3. Sidebar Production v1.
+4. Topbar / Dropdown / Command Production v1.
+5. Mobile Drawer Production v1.
+6. Dashboard Layout v2.
+7. Visual QA / Screenshot Parity.
 
 ### Future documentation workflow
 
@@ -455,10 +538,10 @@ Accepted component UI checkpoints:
 
 ### Next recommended task
 
-- The next recommended task after Security Headers + XSS Hardening Notes Addendum v1 is Admin Web Topbar Auth Menu v1.
-- Reason: Login/logout backend endpoint behavior is verified, Topbar logout UI remains deferred, and report-only CSP baseline is already in place while enforced CSP can remain planned separately.
+- The next recommended task is Admin Web Flux Sky shadcn-backed Productionization Plan v1.
+- Reason: Flux Sky direction, Golden Mockup boundary, and shadcn/ui governance are now planning inputs, but production implementation must not start until a shadcn-backed plan resolves token, component, route, and QA sequencing.
 
-## 8. Visual Spec Pack v2 Rules
+## 9. Visual Spec Pack v2 Rules
 
 Use only:
 
@@ -466,7 +549,7 @@ Use only:
 /tmp/skin-analyzer-codex-reports/skin-analyzer-admin-web/visual-spec-v2/
 ```
 
-For every UI implementation task:
+For legacy or non-Flux UI implementation tasks:
 
 - Use the full source image, the relevant crop, the upscaled crop, and the notes.
 - Do not use a small crop alone.
@@ -478,9 +561,11 @@ For every UI implementation task:
 - Compare screenshots against the selected Visual Spec Pack v2 references.
 - If the Visual Spec Pack v2 path is missing, stop and ask the user to provide it.
 
-## 9. Component-by-Component Workflow
+For upcoming Flux Sky redesign work, use the accepted Flux Sky artifacts and docs updates above as the active direction. Visual Spec Pack v2 remains previous/historical reference unless a future task explicitly scopes legacy UI work.
 
-Required sequence:
+## 10. Component-by-Component Workflow
+
+Previous implemented sequence:
 
 1. Sidebar Only v1 - accepted.
 2. Topbar Only v1 - accepted.
@@ -498,7 +583,9 @@ Rules:
 - If a task needs files outside scope, stop and report before editing.
 - Do not combine dashboard card rhythm, login, list pages, media library, editor shell, and mobile shell into one task.
 
-## 10. Screenshot / Visual QA Rules
+Flux Sky future sequence is listed in Section 8 and must start with productionization planning before implementation.
+
+## 11. Screenshot / Visual QA Rules
 
 - Screenshots must be written outside the repository.
 - No dark mode screenshots are required because Admin Web MVP is light-only.
@@ -508,17 +595,17 @@ Rules:
 - If any visual match checklist item is `NEEDS_FIX`, the overall result cannot be `PASS`.
 - Do not include screenshots or browser artifacts in changed-files zips.
 
-## 11. Next Recommended Task
+## 12. Next Recommended Task
 
-The next recommended task after Security Headers + XSS Hardening Notes Addendum v1 is:
+The next recommended task is:
 
 ```text
-Admin Web Topbar Auth Menu v1
+Admin Web Flux Sky shadcn-backed Productionization Plan v1
 ```
 
-Reason: Login/logout backend endpoint behavior is verified, Topbar logout UI remains deferred, and report-only CSP baseline is already in place while enforced CSP can remain planned separately.
+Reason: Flux Sky production implementation has not started, and a scoped plan must decide token/theme migration, shadcn primitive adoption, layout component ownership, visual QA parity, and task sequence before code changes.
 
-## 12. Handoff Notes for Future ChatGPT/Codex Sessions
+## 13. Handoff Notes for Future ChatGPT/Codex Sessions
 
 For future Admin Web UI tasks:
 
@@ -531,8 +618,8 @@ For future Admin Web UI tasks:
    - `docs/admin-web-architecture.md`
    - `docs/admin-web-route-map.md`
    - `docs/admin-web-visual-qa-contract.md`
-4. Read the Visual Spec Pack v2 root instructions.
-5. Read only the scoped task notes and crops for the current task.
+4. For Flux Sky work, read the accepted Flux Sky artifacts and updated source-of-truth docs before implementation.
+5. For legacy visual work, read the Visual Spec Pack v2 root instructions and only the scoped task notes/crops for the current task.
 6. Inspect current code before editing.
 7. Do not assume missing context.
 8. Do not continue from rejected outputs.
