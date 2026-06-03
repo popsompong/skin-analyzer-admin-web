@@ -70,13 +70,15 @@ styles/
 - `types/api`: backend DTOs and API response types.
 - `styles/tokens`: Admin Web-owned light-only theme tokens and design variables.
 
-Product-specific UI must not be placed in `components/ui`.
+Product-specific UI must not be placed in `components/ui`; it belongs in `components/layout` or feature folders.
 
 Token implementation must be separated from Public Web styling. Do not import or mirror the Public Web rose/pearl/champagne theme as the Admin Web base.
 
-Future shell and login work must implement the Modern AI Skin Analysis Admin 2026 direction from the brand addendum, including the light neutral workspace, dark navy sidebar, blue/cyan accent system, and the front-facing AI skin scan logo direction when brand assets are scoped.
+Future shell, login, and admin UI architecture must follow the active Flux Sky planning direction from the brand, UX/UI, and theme-token docs: light / neutral Flux-like sidebar plus shadcn/Tailwind sky action and event states. The existing production shell may still contain the older dark navy sidebar and blue/cyan foundation; treat that as current implemented / historical context, not the future production target.
 
-Future token cleanup must happen before additional UI page work. It should align `app/globals.css` with `docs/admin-web-theme-token-contract.md` and remove app-level dark-mode or `prefers-color-scheme` token behavior if present.
+Before production shell implementation, run `Admin Web Flux Sky shadcn-backed Productionization Plan v1`, then scope any token/theme contract update needed for light / neutral sidebar and sky action states. Future production shell work should be shadcn-backed where suitable, but must remain Skin Analyzer-specific and split into focused tasks rather than a broad rewrite.
+
+Auth, API, permission, CSRF, and security boundaries remain unchanged by Flux Sky visual planning. Future token cleanup must still align `app/globals.css` with `docs/admin-web-theme-token-contract.md` and remove app-level dark-mode or `prefers-color-scheme` token behavior if present.
 
 ## 4. API Client Rules
 

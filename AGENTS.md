@@ -88,8 +88,10 @@ Expected path:
 - Future UI tasks must read `docs/admin-web-theme-token-contract.md` before implementation.
 - Admin Web visual system is independent from Public Web.
 - Do not use Public Web colors or theme as the Admin Web base.
-- Follow the `Modern AI Skin Analysis Admin 2026` direction.
-- Admin Web MVP is light-only: light neutral workspace, dark navy sidebar, blue/cyan AI accents.
+- Follow the `Modern AI Skin Analysis Admin 2026` direction with the accepted Flux Sky update.
+- Current/legacy Admin Web implementation may still include a light neutral workspace, dark navy sidebar, and blue/cyan AI accents; treat that as historical/current implementation context only.
+- Upcoming active redesign direction is `Flux Sky`: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
+- Do not use the old dark navy/current production sidebar, old Admin Web dark sidebar, Tailwind blue, or UI Colors blue as the Flux Sky production target unless a later accepted direction explicitly changes it.
 - Do not implement dark mode, a theme toggle, `next-themes`, or app-level `prefers-color-scheme` theme switching unless a future explicit contract changes this.
 - Use Admin Web semantic theme tokens for UI surfaces, text, borders, and actions.
 - Do not add raw hex colors in components unless the task explicitly scopes a one-off SVG/visual detail.
@@ -112,7 +114,7 @@ Expected path:
 - Do not force shadcn/ui if it causes visual mismatch, accessibility risk, layout bugs, or unnecessary complexity.
 - Use custom components when they are simpler and safer.
 - `components/ui` is only for generic primitives.
-- Product-specific UI belongs in feature folders.
+- Product-specific UI belongs in layout or feature folders.
 - Every UI report must say whether shadcn/ui was reused, added, intentionally avoided, or replaced by a custom component.
 
 ## 6. Architecture Rules
@@ -143,6 +145,7 @@ Expected path:
 - MVP screenshot review is light-only; dark mode screenshots are not required.
 - Report route, viewport, mode, and issues.
 - No visual task passes without evidence or a clear reason why screenshots cannot run.
+- Visual tasks require screenshot evidence and user or gatekeeper visual acceptance; technical `PASS` is not visual acceptance.
 - Future UI tasks cannot pass as full `PASS` without screenshot evidence unless the task is docs-only or screenshots are impossible for a clearly reported reason.
 - If screenshots cannot run for a UI implementation task, the best allowed result is `PASS_WITH_NOTES` unless the user explicitly waives screenshot evidence.
 

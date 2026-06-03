@@ -84,9 +84,12 @@ Every visual review must check:
 Visual drift checklist:
 
 - No Public Web palette as the base.
-- Dark navy sidebar.
 - Light neutral workspace.
-- Blue/cyan accents.
+- For Flux Sky work, light / neutral sidebar, not dark/navy/black and not the current production dark sidebar.
+- For Flux Sky work, shadcn/Tailwind sky action and event states.
+- Fail Flux Sky work if it reverts to the old dark navy sidebar, old Admin Web dark sidebar, or current production sidebar visual target unless a later accepted direction explicitly changes it.
+- Fail new Flux Sky action states if they use Tailwind blue or UI Colors blue instead of sky.
+- For explicitly scoped current/legacy UI tasks only, validate current implemented dark-sidebar tokens as current-state context, not as Flux Sky acceptance criteria.
 - No generic cube or hex branding.
 - No marketing-page styling.
 - No arbitrary palette.
@@ -113,6 +116,7 @@ Codex final reports for UI tasks must include:
 - Validation commands.
 - shadcn/ui usage outcome: reused, added, intentionally avoided, or replaced by custom component.
 - Token compliance outcome.
+- User or gatekeeper visual acceptance status; technical `PASS` is not visual acceptance.
 
 Screenshots, browser workflow artifacts, and generated reports must be stored outside the repo unless explicitly requested.
 
