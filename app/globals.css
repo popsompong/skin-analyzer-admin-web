@@ -1,34 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  --admin-bg: #f7fafc;
+  --admin-bg: #f8fafc;
   --admin-surface: #ffffff;
   --admin-surface-elevated: #f8fafc;
   --admin-border: #e2e8f0;
   --admin-text: #0f172a;
   --admin-text-muted: #64748b;
 
-  --admin-sidebar: #081220;
-  --admin-sidebar-elevated: #0b1a2e;
-  --admin-sidebar-border: #1e3350;
-  --admin-sidebar-text: #f8fafc;
-  --admin-sidebar-muted: #94a3b8;
+  --admin-sidebar: #f8fafc;
+  --admin-sidebar-elevated: #f1f5f9;
+  --admin-sidebar-border: #e2e8f0;
+  --admin-sidebar-text: #020617;
+  --admin-sidebar-muted: #64748b;
+  --admin-sidebar-hover: #f1f5f9;
+  --admin-sidebar-hover-foreground: #020617;
+  --admin-sidebar-active: oklch(95.1% 0.026 236.824);
+  --admin-sidebar-active-foreground: oklch(39.1% 0.09 240.876);
+  --admin-sidebar-active-accent: oklch(58.8% 0.158 241.966);
+  --admin-sidebar-focus-ring: oklch(68.5% 0.169 237.323);
+  --admin-sidebar-badge: oklch(58.8% 0.158 241.966);
+  --admin-sidebar-badge-foreground: #ffffff;
+  --admin-sidebar-rail: #f8fafc;
+  --admin-sidebar-drawer: #f8fafc;
+  --admin-sidebar-drawer-backdrop: rgb(15 23 42 / 0.45);
 
-  --admin-primary: #2563eb;
-  --admin-primary-hover: #1d4ed8;
-  --admin-primary-soft: #dbeafe;
-  --admin-accent-cyan: #06b6d4;
-  --admin-accent-violet: #8b5cf6;
+  --admin-action: oklch(54% 0.145 242.5);
+  --admin-action-hover: oklch(50% 0.134 242.749);
+  --admin-action-foreground: #ffffff;
+  --admin-selected: oklch(95.1% 0.026 236.824);
+  --admin-selected-foreground: oklch(39.1% 0.09 240.876);
+  --admin-primary: var(--admin-action);
+  --admin-primary-hover: var(--admin-action-hover);
+  --admin-primary-soft: var(--admin-selected);
+  --admin-accent-cyan: oklch(68.5% 0.169 237.323);
+  --admin-accent-violet: var(--admin-selected-foreground);
+  --admin-topbar: #ffffff;
+  --admin-topbar-border: #e2e8f0;
+  --admin-command-focus: var(--admin-sidebar-focus-ring);
+  --admin-command-highlight: var(--admin-action);
+  --admin-command-highlight-foreground: var(--admin-action-foreground);
+  --admin-dropdown: #ffffff;
+  --admin-dropdown-highlight: var(--admin-selected);
+  --admin-dropdown-highlight-foreground: var(--admin-selected-foreground);
+  --admin-notification-accent: oklch(58.8% 0.158 241.966);
+  --admin-notification-accent-soft: var(--admin-selected);
 
   --admin-success: #10b981;
   --admin-warning: #f59e0b;
   --admin-danger: #ef4444;
-  --admin-info: #0ea5e9;
+  --admin-info: var(--admin-notification-accent);
 
   --admin-radius-card: 24px;
   --admin-radius-control: 14px;
   --admin-shadow-card: 0 18px 45px rgba(15, 23, 42, 0.08);
-  --admin-focus-ring: #06b6d4;
+  --admin-focus-ring: var(--admin-command-focus);
 
   --background: var(--admin-bg);
   --foreground: var(--admin-text);
@@ -37,8 +63,8 @@
   --border: var(--admin-border);
   --text-primary: var(--admin-text);
   --text-secondary: var(--admin-text-muted);
-  --brand: var(--admin-primary);
-  --brand-muted: var(--admin-primary-soft);
+  --brand: var(--admin-action);
+  --brand-muted: var(--admin-selected);
   --success: var(--admin-success);
   --warning: var(--admin-warning);
   --error: var(--admin-danger);
