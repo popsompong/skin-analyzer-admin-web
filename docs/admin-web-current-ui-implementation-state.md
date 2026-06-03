@@ -54,7 +54,8 @@ Production implementation status:
 
 - Whole Admin Web visual acceptance is still not final.
 - Flux Sky production implementation has not started.
-- A separate shadcn-backed productionization plan must happen before any production implementation.
+- Admin Web Flux Sky shadcn-backed Productionization Plan v1 and Token Theme Contract v2 are planning inputs only.
+- Production implementation must still wait for a scoped shadcn component add decision, any approved primitive add task, and focused implementation sprints.
 
 ## 3. Current Implemented / Historical Visual Foundation
 
@@ -94,6 +95,14 @@ Accepted Flux Sky planning checkpoints:
   - Accepted as planning input.
   - Defines shadcn/ui as governed primitive foundation where suitable.
   - Keeps product-specific UI outside `components/ui`.
+- Admin Web Flux Sky shadcn-backed Productionization Plan v1:
+  - Accepted as planning input with notes.
+  - Defines the future sprint sequence: token contract, shadcn component add decision, sidebar, collapsed rail, mobile drawer, topbar/dropdown/command, dashboard, visual QA, and docs sync after acceptance.
+- Admin Web Flux Sky Token Theme Contract v2:
+  - Defined as a planning/source-of-truth contract for Flux Sky token roles.
+  - Defines light / neutral sidebar roles and shadcn/Tailwind sky action-state roles.
+  - Does not implement token values in `app/globals.css`.
+  - Does not migrate production sidebar, topbar, drawer, or shadcn components.
 
 Accepted foundation and docs checkpoints:
 
@@ -205,8 +214,7 @@ Accepted component UI checkpoints:
 
 ## 6. Explicitly Deferred / Not Implemented
 
-- Flux Sky shadcn-backed productionization plan.
-- Flux Sky token/theme contract update for light / neutral sidebar and sky action states.
+- Flux Sky token implementation in `app/globals.css` and production components.
 - Flux Sky production sidebar.
 - Flux Sky production topbar, dropdown, command palette, and mobile drawer.
 - Final dashboard feature page with real data, loading states, empty states, error states, permissions, API integration, and backend wiring.
@@ -338,13 +346,15 @@ Accepted component UI checkpoints:
 
 Do not implement these steps in this docs sync. The expected future sequence is:
 
-1. Admin Web Flux Sky shadcn-backed Productionization Plan v1.
-2. Token/theme contract update for light sidebar + sky action states.
-3. Sidebar Production v1.
-4. Topbar / Dropdown / Command Production v1.
-5. Mobile Drawer Production v1.
-6. Dashboard Layout v2.
-7. Visual QA / Screenshot Parity.
+1. Admin Web shadcn Component Add Plan v1.
+2. Admin Web Flux Sky shadcn Primitive Add v1, if the component add plan approves a primitive cluster.
+3. Admin Web Flux Sky Sidebar Production v1.
+4. Admin Web Flux Sky Collapsed Rail v1.
+5. Admin Web Flux Sky Mobile Drawer v1.
+6. Admin Web Flux Sky Topbar Dropdown Command v1.
+7. Admin Web Flux Sky Dashboard Layout v2.
+8. Admin Web Flux Sky Visual QA Screenshot Parity v1.
+9. Admin Web Flux Sky Implementation Docs Sync Addendum v1 after user/gatekeeper acceptance.
 
 ### Future documentation workflow
 
@@ -538,8 +548,8 @@ Do not implement these steps in this docs sync. The expected future sequence is:
 
 ### Next recommended task
 
-- The next recommended task is Admin Web Flux Sky shadcn-backed Productionization Plan v1.
-- Reason: Flux Sky direction, Golden Mockup boundary, and shadcn/ui governance are now planning inputs, but production implementation must not start until a shadcn-backed plan resolves token, component, route, and QA sequencing.
+- The next recommended task is Admin Web shadcn Component Add Plan v1.
+- Reason: Flux Sky direction, Golden Mockup boundary, shadcn/ui governance, productionization sequence, and Token Theme Contract v2 are now planning inputs. Production implementation must still wait for a scoped shadcn component add decision and any approved primitive add task.
 
 ## 9. Visual Spec Pack v2 Rules
 
@@ -583,7 +593,7 @@ Rules:
 - If a task needs files outside scope, stop and report before editing.
 - Do not combine dashboard card rhythm, login, list pages, media library, editor shell, and mobile shell into one task.
 
-Flux Sky future sequence is listed in Section 8 and must start with productionization planning before implementation.
+Flux Sky future sequence is listed in Section 8 and must start with the shadcn component add decision before implementation.
 
 ## 11. Screenshot / Visual QA Rules
 
@@ -600,10 +610,10 @@ Flux Sky future sequence is listed in Section 8 and must start with productioniz
 The next recommended task is:
 
 ```text
-Admin Web Flux Sky shadcn-backed Productionization Plan v1
+Admin Web shadcn Component Add Plan v1
 ```
 
-Reason: Flux Sky production implementation has not started, and a scoped plan must decide token/theme migration, shadcn primitive adoption, layout component ownership, visual QA parity, and task sequence before code changes.
+Reason: Flux Sky production implementation has not started. Productionization planning and Token Theme Contract v2 are now defined as planning inputs, so the next safe step is a scoped shadcn component add decision before any primitive install or production UI work.
 
 ## 13. Handoff Notes for Future ChatGPT/Codex Sessions
 
