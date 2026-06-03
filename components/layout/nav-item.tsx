@@ -3,14 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/format/class-names";
+import { Badge } from "@/components/ui/badge";
 
 type NavItemProps = {
+  badge?: string;
   href: string;
   icon: React.ReactNode;
   label: string;
 };
 
-export function NavItem({ href, icon, label }: NavItemProps) {
+export function NavItem({ badge, href, icon, label }: NavItemProps) {
   const pathname = usePathname();
   const active = pathname === href || pathname.startsWith(`${href}/`);
 
@@ -29,7 +31,12 @@ export function NavItem({ href, icon, label }: NavItemProps) {
         <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-(--admin-sidebar-active-accent)" />
       ) : null}
       <span className="shrink-0">{icon}</span>
-      <span className="truncate">{label}</span>
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {badge ? (
+        <Badge className="ml-auto h-5 min-w-5 shrink-0 justify-center border-transparent bg-(--admin-sidebar-badge) px-1.5 text-[11px] font-semibold leading-none text-(--admin-sidebar-badge-foreground)">
+          {badge}
+        </Badge>
+      ) : null}
     </Link>
   );
 }
