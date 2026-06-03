@@ -3,22 +3,16 @@ import {
   ChevronDown,
   CircleHelp,
   Command,
-  Menu,
   Search
 } from "lucide-react";
+import { MobileSidebarDrawer } from "@/components/layout/sidebar";
 
 export function Topbar() {
   return (
     <header className="sticky top-0 z-10 border-b border-(--admin-border) bg-(--admin-surface)">
       <div className="flex min-h-19 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 flex-1 items-center gap-4">
-          <button
-            aria-label="Open admin navigation"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) text-(--admin-text-muted) transition-colors hover:bg-(--admin-surface-elevated) hover:text-(--admin-text)"
-            type="button"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+          <MobileSidebarDrawer />
 
           <div className="hidden h-11 w-full max-w-sm items-center gap-3 rounded-(--admin-radius-control) border border-(--admin-border) bg-(--admin-surface) px-3 text-(--admin-text-muted) shadow-(--shadow-subtle) md:flex">
             <Search className="h-5 w-5 shrink-0" />
