@@ -8,34 +8,25 @@ import {
   FileSearch,
   Gauge,
   ImageIcon,
-  Layers3,
   Microscope,
   RadioTower,
   RefreshCcw,
   ShieldCheck,
   Sparkles,
-  UploadCloud,
-  WandSparkles
+  UploadCloud
 } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { PERMISSIONS } from "@/lib/permissions/permissions";
 
-type StatusTone = "success" | "warning" | "danger" | "info" | "muted";
-type AccentTone =
-  | "primary"
-  | "cyan"
-  | "violet"
-  | "success"
-  | "warning"
-  | "danger"
-  | "info"
-  | "muted";
+type StatusTone = "success" | "warning" | "danger" | "info" | "neutral";
+type AccentTone = "action" | "selected" | "success" | "warning" | "danger" | "info" | "neutral";
 
-type KpiItem = {
-  comparison: string;
+type MetricItem = {
+  detail: string;
   icon: LucideIcon;
   label: string;
   signal: string;
@@ -43,197 +34,251 @@ type KpiItem = {
   value: string;
 };
 
-const kpiItems: KpiItem[] = [
+type QueueItem = {
+  count: string;
+  detail: string;
+  label: string;
+  owner: string;
+  priority: string;
+  tone: StatusTone;
+};
+
+const overviewSignals = [
   {
-    comparison: "7 high-priority items waiting for admin review",
+    label: "Review queue",
+    value: "18",
+    note: "7 high priority"
+  },
+  {
+    label: "AI signal readiness",
+    value: "94%",
+    note: "Mapped to guidance"
+  },
+  {
+    label: "Publishing health",
+    value: "99.2%",
+    note: "No failed events"
+  }
+];
+
+const metricItems: MetricItem[] = [
+  {
+    detail: "Skin guidance, concern labels, and routine copy waiting for admin QA.",
     icon: ClipboardCheck,
-    label: "Skin Insight Review Queue",
+    label: "Skin Content Review Queue",
     signal: "+4 since yesterday",
     tone: "warning",
     value: "18"
   },
   {
-    comparison: "Face, concern, and routine labels aligned",
+    detail: "Face-readiness, concern taxonomy, and routine flows have guidance coverage.",
     icon: Sparkles,
-    label: "AI Scan Signal Coverage",
-    signal: "94% mapped",
-    tone: "cyan",
+    label: "AI Scan Signal Readiness",
+    signal: "12 signals mapped",
+    tone: "action",
     value: "94%"
   },
   {
-    comparison: "Blog and Tips items ready for publish QA",
-    icon: Layers3,
-    label: "Content Studio Pipeline",
-    signal: "12 ready",
-    tone: "primary",
-    value: "37"
+    detail: "Images and scan-support assets ready for Blog and Tips usage.",
+    icon: ImageIcon,
+    label: "Media Readiness",
+    signal: "4 gaps remain",
+    tone: "info",
+    value: "86%"
   },
   {
-    comparison: "Public cache health over the last 24 hours",
+    detail: "Static preview of publish and public-cache revalidation reliability.",
     icon: RadioTower,
-    label: "Publishing & Revalidation Health",
-    signal: "0 failed",
+    label: "Publishing / Revalidation",
+    signal: "0 failed events",
     tone: "success",
     value: "99.2%"
   }
 ];
 
-const commandSignals = [
-  { label: "AI readiness", value: "94%", tone: "cyan" as const },
-  { label: "Review queue", value: "18", tone: "warning" as const },
-  { label: "Publish health", value: "99.2%", tone: "success" as const }
-];
-
-const insightQueue = [
+const reviewQueue: QueueItem[] = [
   {
-    detail: "Thai and English instructions need clinical copy parity.",
-    label: "Skin type guidance copy",
+    count: "6",
+    detail: "Thai and English guidance need final meaning parity before publication.",
+    label: "Face-readiness instruction copy",
+    owner: "Clinical copy",
     priority: "High",
-    tone: "warning" as const,
-    value: "6"
+    tone: "warning"
   },
   {
-    detail: "Concern labels need consistency before public publishing.",
-    label: "Concern taxonomy labels",
+    count: "4",
+    detail: "Concern labels need wording consistency across Blog, Tips, and scan education.",
+    label: "Skin concern taxonomy labels",
+    owner: "Content ops",
     priority: "Review",
-    tone: "info" as const,
-    value: "4"
+    tone: "info"
   },
   {
-    detail: "Face-scan language and AI caveats are ready for final read.",
-    label: "AI scan glossary",
+    count: "3",
+    detail: "AI scan glossary items are ready for final admin read-through.",
+    label: "AI signal glossary",
+    owner: "Quality gate",
     priority: "Ready",
-    tone: "success" as const,
-    value: "3"
+    tone: "success"
   },
   {
-    detail: "Routine CTA wording should stay operational, not marketing-heavy.",
-    label: "Routine recommendation copy",
+    count: "5",
+    detail: "Routine recommendation copy should stay operational and clinically careful.",
+    label: "Routine recommendation guidance",
+    owner: "Editorial QA",
     priority: "Editorial",
-    tone: "muted" as const,
-    value: "5"
+    tone: "neutral"
   }
 ];
 
 const qualitySignals = [
-  { label: "Instruction clarity", value: 92, tone: "success" as const },
-  { label: "Thai guidance parity", value: 88, tone: "cyan" as const },
-  { label: "Safety caveat coverage", value: 96, tone: "success" as const },
-  { label: "Over-claim risk", value: 8, tone: "warning" as const }
+  { label: "Instruction clarity", note: "Admin guidance can be reviewed without guesswork.", tone: "success" as const, value: 92 },
+  { label: "Thai guidance parity", note: "Localized wording maps to the same operational meaning.", tone: "action" as const, value: 88 },
+  { label: "Safety caveat coverage", note: "Clinical caveats are present in scan-related content.", tone: "success" as const, value: 96 },
+  { label: "Over-claim risk", note: "Lower is better; flagged copy remains limited.", tone: "warning" as const, value: 8 }
 ];
 
-const scanSignalRows = [
+const signalReadinessRows = [
   {
     label: "Face readiness education",
+    meta: "32 guidance entries",
     status: "Stable",
-    tone: "success" as const,
-    value: "32 guides"
+    tone: "success" as const
   },
   {
-    label: "Skin concern taxonomy",
+    label: "Concern taxonomy",
+    meta: "4 labels in admin review",
     status: "Needs review",
-    tone: "warning" as const,
-    value: "4 labels"
+    tone: "warning" as const
   },
   {
-    label: "Routine recommendation flow",
+    label: "Routine recommendation paths",
+    meta: "11 mapped preview paths",
     status: "Mapped",
-    tone: "info" as const,
-    value: "11 paths"
+    tone: "info" as const
   }
 ];
 
-const contentPipeline = [
+const mediaReadiness = [
   {
-    label: "Clinical Content Quality",
-    meta: "Drafts with scan-language caveats",
+    icon: ImageIcon,
+    label: "Approved scan assets",
     tone: "success" as const,
-    value: "21"
+    value: "24"
   },
   {
-    label: "Content Studio Pipeline",
-    meta: "Blog and Tips awaiting publish window",
-    tone: "primary" as const,
-    value: "12"
-  },
-  {
-    label: "Media / Asset Health",
-    meta: "Assets missing alt or usage context",
+    icon: UploadCloud,
+    label: "Missing alt / usage context",
     tone: "warning" as const,
     value: "4"
+  },
+  {
+    icon: Microscope,
+    label: "Clinical reference images",
+    tone: "action" as const,
+    value: "18"
   }
 ];
 
-const revalidationEvents = [
+const publishingEvents = [
   {
     path: "/blog/skin-types-guide",
     status: "Completed",
+    summary: "Public cache refreshed after copy review.",
     time: "2m ago",
     tone: "success" as const
   },
   {
     path: "/tips/moisturiser-tips",
     status: "Completed",
+    summary: "Tips page revalidated from static preview event.",
     time: "1h ago",
     tone: "success" as const
   },
   {
     path: "/blog/niacinamide-benefits",
     status: "Queued",
+    summary: "Waiting for publish window confirmation.",
     time: "2h ago",
     tone: "info" as const
   },
   {
     path: "/blog/sunscreen-guide",
     status: "Review",
+    summary: "Clinical caveat needs final approval.",
     time: "3h ago",
     tone: "warning" as const
   }
 ];
 
 const quickActions = [
-  { icon: FileSearch, label: "Open review queue", meta: "Prioritize skin guidance" },
-  { icon: UploadCloud, label: "Check media health", meta: "Resolve asset gaps" },
-  { icon: RefreshCcw, label: "Inspect revalidation", meta: "Verify publishing flow" }
+  {
+    icon: FileSearch,
+    label: "Open clinical review queue",
+    meta: "Prioritize Thai guidance parity and concern labels."
+  },
+  {
+    icon: UploadCloud,
+    label: "Resolve media readiness gaps",
+    meta: "Check missing alt text and usage context."
+  },
+  {
+    icon: RefreshCcw,
+    label: "Inspect revalidation events",
+    meta: "Confirm queued publish previews before release."
+  }
 ];
 
-const assetHealthItems = [
-  { icon: ImageIcon, label: "Media", tone: "primary" as const },
-  { icon: Microscope, label: "Clinical", tone: "cyan" as const },
-  { icon: WandSparkles, label: "AI copy", tone: "primary" as const }
+const systemTrustItems = [
+  {
+    icon: ShieldCheck,
+    label: "Protected route",
+    meta: "Dashboard remains behind AdminAuthGuard.",
+    tone: "success" as const
+  },
+  {
+    icon: Gauge,
+    label: "Static preview data",
+    meta: "No dashboard API read is performed in this sprint.",
+    tone: "info" as const
+  },
+  {
+    icon: CheckCircle2,
+    label: "Shell preserved",
+    meta: "Sidebar, drawer, rail, and topbar are unchanged.",
+    tone: "action" as const
+  }
 ];
 
 const accentText: Record<AccentTone, string> = {
-  cyan: "text-(--admin-accent-cyan)",
+  action: "text-(--admin-action)",
   danger: "text-(--admin-danger)",
   info: "text-(--admin-info)",
-  muted: "text-(--admin-text-muted)",
-  primary: "text-(--admin-primary)",
+  neutral: "text-(--admin-text-muted)",
+  selected: "text-(--admin-selected-foreground)",
   success: "text-(--admin-success)",
-  violet: "text-(--admin-accent-violet)",
   warning: "text-(--admin-warning)"
 };
 
-const accentBg: Record<AccentTone, string> = {
-  cyan: "bg-(--admin-primary-soft)",
+const accentBackground: Record<AccentTone, string> = {
+  action: "bg-(--admin-selected)",
   danger: "bg-(--admin-surface-elevated)",
-  info: "bg-(--admin-primary-soft)",
-  muted: "bg-(--admin-surface-elevated)",
-  primary: "bg-(--admin-primary-soft)",
+  info: "bg-(--admin-notification-accent-soft)",
+  neutral: "bg-(--admin-surface-elevated)",
+  selected: "bg-(--admin-selected)",
   success: "bg-(--admin-surface-elevated)",
-  violet: "bg-(--admin-surface-elevated)",
   warning: "bg-(--admin-surface-elevated)"
 };
 
 const statusText: Record<StatusTone, string> = {
   danger: "text-(--admin-danger)",
   info: "text-(--admin-info)",
-  muted: "text-(--admin-text-muted)",
+  neutral: "text-(--admin-text-muted)",
   success: "text-(--admin-success)",
   warning: "text-(--admin-warning)"
 };
 
-function DashboardCard({
+function DashboardPanel({
   action,
   children,
   className = "",
@@ -248,20 +293,20 @@ function DashboardCard({
 }) {
   return (
     <section
-      className={`h-fit min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-5 shadow-(--admin-shadow-card) ${className}`}
+      className={`min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-5 shadow-(--shadow-subtle) ${className}`}
     >
-      <div className="mb-5 flex items-start justify-between gap-3">
+      <div className="mb-5 flex min-w-0 items-start justify-between gap-4">
         <div className="min-w-0">
           {eyebrow ? (
-            <div className="mb-1 text-xs font-semibold uppercase tracking-normal text-(--admin-primary)">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-normal text-(--admin-action)">
               {eyebrow}
-            </div>
+            </p>
           ) : null}
           <h2 className="text-base font-semibold tracking-normal text-(--admin-text)">
             {title}
           </h2>
         </div>
-        {action}
+        {action ? <div className="shrink-0">{action}</div> : null}
       </div>
       {children}
     </section>
@@ -279,16 +324,30 @@ function StatusBadge({ label, tone }: { label: string; tone: StatusTone }) {
   );
 }
 
-function Dot({ tone }: { tone: AccentTone }) {
-  return <span className={`size-2.5 rounded-full ${accentText[tone]} bg-current`} />;
+function SignalDot({ tone }: { tone: AccentTone }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`mt-1 size-2.5 shrink-0 rounded-full ${accentText[tone]} bg-current`}
+    />
+  );
 }
 
-function KpiCard({ item }: { item: KpiItem }) {
+function ReviewButton({ children = "Review" }: { children?: ReactNode }) {
+  return (
+    <Button size="sm" type="button" variant="secondary">
+      {children}
+      <ArrowRight aria-hidden="true" size={14} />
+    </Button>
+  );
+}
+
+function MetricCard({ item }: { item: MetricItem }) {
   const Icon = item.icon;
 
   return (
-    <article className="min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-4 shadow-(--admin-shadow-card)">
-      <div className="flex items-start justify-between gap-3">
+    <article className="min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-4 shadow-(--shadow-subtle)">
+      <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold leading-5 text-(--admin-text-muted)">
             {item.label}
@@ -298,127 +357,113 @@ function KpiCard({ item }: { item: KpiItem }) {
           </p>
         </div>
         <span
-          className={`flex size-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) border border-(--admin-border) ${accentBg[item.tone]} ${accentText[item.tone]}`}
+          className={`flex size-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) border border-(--admin-border) ${accentBackground[item.tone]} ${accentText[item.tone]}`}
         >
           <Icon aria-hidden="true" size={20} strokeWidth={2.2} />
         </span>
       </div>
-      <div className="mt-5 space-y-1 text-xs font-semibold">
-        <div className={accentText[item.tone]}>{item.signal}</div>
-        <div className="leading-5 text-(--admin-text-muted)">{item.comparison}</div>
+      <div className="mt-5 space-y-1">
+        <p className={`text-xs font-semibold ${accentText[item.tone]}`}>
+          {item.signal}
+        </p>
+        <p className="text-xs leading-5 text-(--admin-text-muted)">
+          {item.detail}
+        </p>
       </div>
     </article>
   );
 }
 
-function ScanMotif() {
+function FaceScanSignal() {
   return (
     <div
-      aria-hidden="true"
-      className="relative flex size-32 shrink-0 items-center justify-center rounded-full border border-(--admin-border) bg-(--admin-surface)"
+      aria-label="Static AI scan readiness motif"
+      className="relative flex size-28 shrink-0 items-center justify-center rounded-full border border-(--admin-border) bg-(--admin-surface-elevated)"
     >
-      <div className="absolute inset-4 rounded-full border border-(--admin-primary-soft)" />
-      <div className="absolute inset-x-8 top-3 h-5 border-l-2 border-r-2 border-t-2 border-(--admin-accent-cyan)" />
-      <div className="absolute inset-x-8 bottom-3 h-5 border-b-2 border-l-2 border-r-2 border-(--admin-accent-cyan)" />
-      <div className="absolute h-24 w-px bg-(--admin-accent-cyan)" />
-      <div className="absolute size-20 rounded-full border border-(--admin-border) bg-(--admin-surface-elevated)" />
-      <div className="absolute left-14 top-11 size-2 rounded-full bg-(--admin-primary)" />
-      <div className="absolute right-12 top-13 size-2 rounded-full bg-(--admin-accent-cyan)" />
-      <div className="absolute bottom-12 left-17 size-2 rounded-full bg-(--admin-accent-violet)" />
-      <div className="absolute right-10 bottom-10 size-1.5 rounded-full bg-(--admin-success)" />
+      <span className="absolute inset-3 rounded-full border border-(--admin-selected)" />
+      <span className="absolute inset-x-7 top-3 h-4 border-l-2 border-r-2 border-t-2 border-(--admin-action)" />
+      <span className="absolute inset-x-7 bottom-3 h-4 border-b-2 border-l-2 border-r-2 border-(--admin-action)" />
+      <span className="absolute h-20 w-px bg-(--admin-action)" />
+      <span className="absolute size-16 rounded-full border border-(--admin-border) bg-(--admin-surface)" />
+      <span className="absolute left-12 top-10 size-2 rounded-full bg-(--admin-action)" />
+      <span className="absolute right-11 top-12 size-2 rounded-full bg-(--admin-info)" />
+      <span className="absolute bottom-10 left-14 size-2 rounded-full bg-(--admin-success)" />
+      <span className="absolute right-9 bottom-9 size-1.5 rounded-full bg-(--admin-warning)" />
     </div>
   );
 }
 
-function QualityBar({
-  label,
-  tone,
-  value
-}: {
-  label: string;
-  tone: AccentTone;
-  value: number;
-}) {
-  const barWidth = `${value}%`;
-
+function OverviewHero() {
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between gap-3 text-sm font-semibold">
-        <span className="min-w-0 text-(--admin-text)">{label}</span>
-        <span className={accentText[tone]}>{value}%</span>
-      </div>
-      <div className="h-2 rounded-full bg-(--admin-surface-elevated)">
-        <div
-          className={`h-full rounded-full bg-current ${accentText[tone]}`}
-          style={{ width: barWidth }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function CommandCenterHero() {
-  return (
-    <section className="relative overflow-hidden rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-4 shadow-(--admin-shadow-card) sm:p-5 lg:p-6">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-80"
-        style={{
-          background:
-            "radial-gradient(circle at 78% 18%, color-mix(in srgb, var(--admin-accent-cyan) 16%, transparent), transparent 34%), radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--admin-primary) 10%, transparent), transparent 30%)"
-        }}
-      />
-      <div className="relative grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-center">
+    <section className="overflow-hidden rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) shadow-(--admin-shadow-card)">
+      <div className="grid min-w-0 gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="default">AI operations</Badge>
-            <Badge variant="outline">Preview data</Badge>
+            <Badge variant="outline">Static preview data</Badge>
           </div>
           <h2 className="mt-4 max-w-3xl text-2xl font-semibold tracking-normal text-(--admin-text) sm:text-3xl">
-            AI Skin Analysis Control Center
+            Skin Analyzer command overview for review, readiness, and revalidation.
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-(--admin-text-muted)">
-            Track skin insight review, AI scan readiness, clinical content
-            quality, media health, and publishing status from one admin
-            workspace.
+            Monitor clinical copy quality, AI scan signal readiness, media gaps,
+            publishing status, and admin trust indicators without calling the
+            Admin Backend in this layout sprint.
           </p>
-          <div className="mt-5 grid gap-3 sm:mt-6 sm:grid-cols-3">
-            {commandSignals.map((signal) => (
+
+          <div className="mt-6 grid min-w-0 gap-3 sm:grid-cols-3">
+            {overviewSignals.map((signal) => (
               <div
-                className="min-w-0 border-l-2 border-(--admin-border) pl-3"
+                className="min-w-0 border-l-2 border-(--admin-selected) pl-3"
                 key={signal.label}
               >
-                <div className={`text-xl font-semibold ${accentText[signal.tone]}`}>
+                <p className="text-2xl font-semibold tracking-normal text-(--admin-action)">
                   {signal.value}
-                </div>
-                <div className="mt-1 text-xs font-semibold uppercase tracking-normal text-(--admin-text-muted)">
+                </p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-normal text-(--admin-text-muted)">
                   {signal.label}
-                </div>
+                </p>
+                <p className="mt-1 text-xs leading-5 text-(--admin-text-muted)">
+                  {signal.note}
+                </p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="hidden min-w-0 flex-col gap-5 sm:flex sm:flex-row sm:items-center lg:flex-col lg:items-start">
-          <ScanMotif />
-          <div className="min-w-0 space-y-3">
-            <div className="text-sm font-semibold text-(--admin-text)">
-              AI Scan Signals
+        <div className="min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface-elevated) p-4">
+          <div className="flex min-w-0 items-start gap-4">
+            <FaceScanSignal />
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-(--admin-text)">
+                AI scan signal board
+              </p>
+              <p className="mt-2 text-xs leading-5 text-(--admin-text-muted)">
+                Preview-only readiness snapshot for guidance and content quality checks.
+              </p>
             </div>
-            <div className="space-y-2">
-              {scanSignalRows.map((row) => (
-                <div
-                  className="grid min-w-0 grid-cols-[auto_1fr_auto] items-center gap-3 text-sm"
-                  key={row.label}
-                >
-                  <Dot tone={row.tone} />
-                  <span className="min-w-0 truncate font-medium text-(--admin-text)">
-                    {row.label}
-                  </span>
-                  <StatusBadge label={row.status} tone={row.tone} />
+          </div>
+          <Separator className="my-4 bg-(--admin-border)" />
+          <div className="space-y-3">
+            {signalReadinessRows.map((row) => (
+              <div
+                className="grid min-w-0 grid-cols-[auto_1fr] gap-3 text-sm"
+                key={row.label}
+              >
+                <SignalDot tone={row.tone === "success" ? "success" : row.tone === "warning" ? "warning" : "info"} />
+                <div className="min-w-0">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <span className="min-w-0 font-semibold text-(--admin-text)">
+                      {row.label}
+                    </span>
+                    <StatusBadge label={row.status} tone={row.tone} />
+                  </div>
+                  <p className="mt-1 text-xs leading-5 text-(--admin-text-muted)">
+                    {row.meta}
+                  </p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -426,12 +471,41 @@ function CommandCenterHero() {
   );
 }
 
-function ViewAllButton() {
+function QualityBar({
+  label,
+  note,
+  tone,
+  value
+}: {
+  label: string;
+  note: string;
+  tone: AccentTone;
+  value: number;
+}) {
   return (
-    <Button size="sm" type="button" variant="secondary">
-      Review
-      <ArrowRight aria-hidden="true" size={14} />
-    </Button>
+    <div className="min-w-0 space-y-2">
+      <div className="flex min-w-0 items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-(--admin-text)">{label}</p>
+          <p className="mt-1 text-xs leading-5 text-(--admin-text-muted)">
+            {note}
+          </p>
+        </div>
+        <span className={`shrink-0 text-sm font-semibold ${accentText[tone]}`}>
+          {value}%
+        </span>
+      </div>
+      <div
+        aria-label={`${label}: ${value}%`}
+        className="h-2 overflow-hidden rounded-full bg-(--admin-surface-elevated)"
+        role="img"
+      >
+        <div
+          className={`h-full rounded-full bg-current ${accentText[tone]}`}
+          style={{ width: `${value}%` }}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -439,228 +513,211 @@ export function DashboardPlaceholder() {
   return (
     <div className="min-w-0 space-y-6 overflow-hidden">
       <PageHeader
-        description="Monitor review queues, AI scan signals, clinical content quality, media readiness, and publishing health for the Skin Analyzer admin workspace."
+        description="Monitor Skin Analyzer review queues, AI scan signals, media readiness, publishing health, and system trust using static preview data."
         permission={PERMISSIONS.dashboardView}
         title="AI Skin Analysis Operations"
       />
 
-      <div className="flex min-w-0 flex-col items-start justify-between gap-3 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) px-4 py-3 shadow-(--admin-shadow-card) sm:flex-row sm:items-center">
+      <div className="flex min-w-0 flex-col items-start justify-between gap-3 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) px-4 py-3 shadow-(--shadow-subtle) sm:flex-row sm:items-center">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <Badge variant="outline">Protected workspace</Badge>
-          <Badge variant="muted">Operations preview</Badge>
+          <Badge variant="outline">Protected dashboard</Badge>
+          <Badge variant="muted">No backend reads</Badge>
+          <Badge variant="muted">Static operational preview</Badge>
         </div>
-        <div className="flex items-center gap-2 text-sm font-medium text-(--admin-text-muted)">
-          <CalendarDays aria-hidden="true" size={16} />
-          May 23 - May 30, 2026
+        <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-(--admin-text-muted)">
+          <CalendarDays aria-hidden="true" className="shrink-0" size={16} />
+          <span className="min-w-0">Preview window: May 23 - May 30, 2026</span>
         </div>
       </div>
 
-      <CommandCenterHero />
+      <OverviewHero />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpiItems.map((item) => (
-          <KpiCard item={item} key={item.label} />
+      <section aria-label="Dashboard operational metrics" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {metricItems.map((item) => (
+          <MetricCard item={item} key={item.label} />
         ))}
-      </div>
+      </section>
 
-      <div className="grid items-start gap-5 xl:grid-cols-12">
-        <DashboardCard
-          action={<ViewAllButton />}
+      <div className="grid min-w-0 items-start gap-5 xl:grid-cols-12">
+        <DashboardPanel
+          action={<ReviewButton />}
           className="xl:col-span-7"
-          eyebrow="Clinical review"
-          title="Skin Insight Review Queue"
+          eyebrow="Content review"
+          title="Skin / Content Review Queue"
         >
-          <div className="space-y-3">
-            {insightQueue.map((item) => (
+          <div className="divide-y divide-(--admin-border)">
+            {reviewQueue.map((item) => (
               <div
-                className="grid gap-3 rounded-(--admin-radius-control) border border-(--admin-border) bg-(--admin-surface) px-3 py-3 sm:grid-cols-[auto_1fr_auto] sm:items-center"
+                className="grid min-w-0 gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[auto_1fr_auto] sm:items-start"
                 key={item.label}
               >
-                <div className="flex size-10 items-center justify-center rounded-(--admin-radius-control) bg-(--admin-surface-elevated)">
-                  <Dot tone={item.tone} />
+                <div className={`flex size-11 shrink-0 items-center justify-center rounded-(--admin-radius-control) ${accentBackground[item.tone === "info" ? "info" : item.tone === "success" ? "success" : item.tone === "warning" ? "warning" : "neutral"]} ${statusText[item.tone]}`}>
+                  <span className="text-lg font-semibold">{item.count}</span>
                 </div>
                 <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="font-semibold text-(--admin-text)">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <h3 className="font-semibold text-(--admin-text)">
                       {item.label}
-                    </div>
+                    </h3>
                     <StatusBadge label={item.priority} tone={item.tone} />
                   </div>
                   <p className="mt-1 text-sm leading-5 text-(--admin-text-muted)">
                     {item.detail}
                   </p>
                 </div>
-                <div className="text-left sm:text-right">
-                  <div className={`text-2xl font-semibold ${accentText[item.tone]}`}>
-                    {item.value}
-                  </div>
-                  <div className="text-xs font-semibold uppercase tracking-normal text-(--admin-text-muted)">
-                    items
-                  </div>
-                </div>
+                <p className="text-sm font-medium text-(--admin-text-muted) sm:text-right">
+                  {item.owner}
+                </p>
               </div>
             ))}
           </div>
-        </DashboardCard>
+        </DashboardPanel>
 
-        <DashboardCard
+        <DashboardPanel
           className="xl:col-span-5"
-          eyebrow="Quality gate"
-          title="Clinical Content Quality"
+          eyebrow="AI readiness"
+          title="Signal Readiness / Quality"
         >
           <div className="space-y-5">
             {qualitySignals.map((signal) => (
               <QualityBar
                 key={signal.label}
                 label={signal.label}
+                note={signal.note}
                 tone={signal.tone}
                 value={signal.value}
               />
             ))}
           </div>
-        </DashboardCard>
+        </DashboardPanel>
 
-        <DashboardCard
+        <DashboardPanel
           className="xl:col-span-4"
-          eyebrow="Pipeline"
-          title="Content Studio Pipeline"
+          eyebrow="Media readiness"
+          title="Asset Health"
         >
-          <div className="space-y-3">
-            {contentPipeline.map((item) => (
-              <div
-                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-(--admin-radius-control) border border-(--admin-border) px-3 py-3"
-                key={item.label}
-              >
-                <Dot tone={item.tone} />
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-semibold text-(--admin-text)">
-                    {item.label}
-                  </div>
-                  <div className="mt-1 truncate text-xs font-medium text-(--admin-text-muted)">
-                    {item.meta}
-                  </div>
-                </div>
-                <div className={`text-lg font-semibold ${accentText[item.tone]}`}>
-                  {item.value}
-                </div>
-              </div>
-            ))}
-          </div>
-        </DashboardCard>
-
-        <DashboardCard
-          className="xl:col-span-4"
-          eyebrow="Assets"
-          title="Media / Asset Health"
-        >
-          <div className="grid grid-cols-3 gap-3">
-            {assetHealthItems.map((item) => {
+          <div className="divide-y divide-(--admin-border)">
+            {mediaReadiness.map((item) => {
               const Icon = item.icon;
 
               return (
                 <div
-                  className="flex aspect-square min-w-0 flex-col items-center justify-center rounded-(--admin-radius-control) border border-(--admin-border) bg-(--admin-surface-elevated) text-center"
+                  className="grid min-w-0 grid-cols-[auto_1fr_auto] items-center gap-3 py-3 first:pt-0 last:pb-0"
                   key={item.label}
                 >
-                  <Icon
-                    aria-hidden="true"
-                    className={accentText[item.tone]}
-                    size={22}
-                  />
-                  <span className="mt-2 px-2 text-xs font-semibold leading-4 text-(--admin-text-muted)">
+                  <span
+                    className={`flex size-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) ${accentBackground[item.tone]} ${accentText[item.tone]}`}
+                  >
+                    <Icon aria-hidden="true" size={18} />
+                  </span>
+                  <span className="min-w-0 text-sm font-semibold leading-5 text-(--admin-text)">
                     {item.label}
+                  </span>
+                  <span className={`text-lg font-semibold ${accentText[item.tone]}`}>
+                    {item.value}
                   </span>
                 </div>
               );
             })}
           </div>
-          <div className="mt-4 space-y-2 text-sm">
-            <div className="flex items-center justify-between gap-3">
-              <span className="font-semibold text-(--admin-text)">
-                Approved scan assets
-              </span>
-              <span className="font-semibold text-(--admin-success)">24</span>
-            </div>
-            <div className="flex items-center justify-between gap-3">
-              <span className="font-semibold text-(--admin-text-muted)">
-                Missing alt / usage context
-              </span>
-              <span className="font-semibold text-(--admin-warning)">4</span>
-            </div>
-          </div>
-        </DashboardCard>
+          <p className="mt-4 rounded-(--admin-radius-control) bg-(--admin-surface-elevated) px-3 py-2 text-xs leading-5 text-(--admin-text-muted)">
+            Media data is a static dashboard preview; upload and library workflows remain deferred.
+          </p>
+        </DashboardPanel>
 
-        <DashboardCard
-          action={<ViewAllButton />}
+        <DashboardPanel
+          action={<ReviewButton>Inspect</ReviewButton>}
           className="xl:col-span-4"
           eyebrow="Publishing"
-          title="Publishing & Revalidation Health"
+          title="Revalidation Health"
         >
-          <div className="space-y-3">
-            {revalidationEvents.map((event) => (
-              <div
-                className="grid min-w-0 gap-2 rounded-(--admin-radius-control) border border-transparent px-2 py-2 text-sm sm:grid-cols-[1fr_auto_auto] sm:items-center xl:grid-cols-1"
-                key={event.path}
-              >
-                <span className="min-w-0 truncate font-semibold text-(--admin-text)">
-                  {event.path}
-                </span>
-                <StatusBadge label={event.status} tone={event.tone} />
-                <span className="text-(--admin-text-muted) sm:text-right xl:text-left">
-                  {event.time}
-                </span>
+          <div className="space-y-4">
+            {publishingEvents.map((event) => (
+              <div className="grid min-w-0 grid-cols-[auto_1fr] gap-3" key={event.path}>
+                <SignalDot tone={event.tone === "success" ? "success" : event.tone === "warning" ? "warning" : "info"} />
+                <div className="min-w-0">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <span className="min-w-0 break-words text-sm font-semibold text-(--admin-text)">
+                      {event.path}
+                    </span>
+                    <StatusBadge label={event.status} tone={event.tone} />
+                  </div>
+                  <p className="mt-1 text-xs leading-5 text-(--admin-text-muted)">
+                    {event.summary}
+                  </p>
+                  <p className="mt-1 text-xs font-medium text-(--admin-text-muted)">
+                    {event.time}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
-        </DashboardCard>
+        </DashboardPanel>
+
+        <DashboardPanel
+          className="xl:col-span-4"
+          eyebrow="Next moves"
+          title="Quick Admin Actions"
+        >
+          <div className="space-y-2">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+
+              return (
+                <button
+                  className="group grid w-full min-w-0 grid-cols-[auto_1fr_auto] items-center gap-3 rounded-(--admin-radius-control) px-2 py-3 text-left transition-colors hover:bg-(--admin-surface-elevated) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring) focus-visible:ring-offset-2 ring-offset-(--admin-surface)"
+                  key={action.label}
+                  type="button"
+                >
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) bg-(--admin-selected) text-(--admin-action)">
+                    <Icon aria-hidden="true" size={18} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-(--admin-text)">
+                      {action.label}
+                    </span>
+                    <span className="mt-1 block text-xs leading-5 text-(--admin-text-muted)">
+                      {action.meta}
+                    </span>
+                  </span>
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="shrink-0 text-(--admin-text-muted) transition-colors group-hover:text-(--admin-action)"
+                    size={16}
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </DashboardPanel>
       </div>
 
-      <DashboardCard eyebrow="Admin system" title="Admin System Health">
-        <div className="grid gap-3 md:grid-cols-3">
-          {quickActions.map((action) => {
-            const Icon = action.icon;
+      <DashboardPanel eyebrow="Admin system trust" title="Operational Boundary">
+        <div className="grid min-w-0 gap-3 md:grid-cols-3">
+          {systemTrustItems.map((item) => {
+            const Icon = item.icon;
 
             return (
-              <button
-                className="flex min-w-0 items-center gap-3 rounded-(--admin-radius-control) border border-(--admin-border) bg-(--admin-surface) px-4 py-3 text-left transition-colors hover:bg-(--admin-surface-elevated)"
-                key={action.label}
-                type="button"
+              <div
+                className="grid min-w-0 grid-cols-[auto_1fr] gap-3 rounded-(--admin-radius-control) bg-(--admin-surface-elevated) px-3 py-3"
+                key={item.label}
               >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) bg-(--admin-primary-soft) text-(--admin-primary)">
+                <span className={`${accentText[item.tone]} mt-0.5 shrink-0`}>
                   <Icon aria-hidden="true" size={18} />
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-semibold text-(--admin-text)">
-                    {action.label}
+                  <span className="block text-sm font-semibold text-(--admin-text)">
+                    {item.label}
                   </span>
-                  <span className="mt-1 block truncate text-xs font-medium text-(--admin-text-muted)">
-                    {action.meta}
+                  <span className="mt-1 block text-xs leading-5 text-(--admin-text-muted)">
+                    {item.meta}
                   </span>
                 </span>
-                <ArrowRight
-                  aria-hidden="true"
-                  className="ml-auto shrink-0 text-(--admin-text-muted)"
-                  size={16}
-                />
-              </button>
+              </div>
             );
           })}
-          <div className="grid min-w-0 gap-2 rounded-(--admin-radius-control) border border-(--admin-border) bg-(--admin-surface-elevated) px-4 py-3 text-sm md:col-span-3 lg:grid-cols-3">
-            <div className="flex items-center gap-2 font-semibold text-(--admin-success)">
-              <CheckCircle2 aria-hidden="true" size={16} />
-              Session protected
-            </div>
-            <div className="flex items-center gap-2 font-semibold text-(--admin-info)">
-              <Gauge aria-hidden="true" size={16} />
-              Preview metrics
-            </div>
-            <div className="flex items-center gap-2 font-semibold text-(--admin-primary)">
-              <ShieldCheck aria-hidden="true" size={16} />
-              Operational snapshot
-            </div>
-          </div>
         </div>
-      </DashboardCard>
+      </DashboardPanel>
     </div>
   );
 }
