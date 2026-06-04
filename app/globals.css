@@ -78,6 +78,8 @@
   --admin-motion-fast: 140ms;
   --admin-motion-base: 180ms;
   --admin-motion-slow: 220ms;
+  --admin-motion-sidebar-toggle: 280ms;
+  --admin-motion-drawer-toggle: 280ms;
   --admin-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --admin-motion-ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
 
@@ -155,6 +157,50 @@ select {
   }
 }
 
+@keyframes admin-sidebar-drawer-in {
+  from {
+    opacity: 0.98;
+    transform: translate3d(-104%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes admin-sidebar-drawer-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 0.98;
+    transform: translate3d(-104%, 0, 0);
+  }
+}
+
+@keyframes admin-sidebar-overlay-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes admin-sidebar-overlay-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes admin-collapsible-down {
   from {
     height: 0;
@@ -195,6 +241,39 @@ select {
     var(--admin-motion-ease) both;
 }
 
+.admin-sidebar-drawer-motion {
+  transform-origin: left center;
+  will-change: transform, opacity;
+}
+
+.admin-sidebar-drawer-motion[data-state="open"] {
+  animation: admin-sidebar-drawer-in var(--admin-motion-drawer-toggle)
+    var(--admin-motion-ease-emphasized) both !important;
+}
+
+.admin-sidebar-drawer-motion[data-state="closed"] {
+  animation: admin-sidebar-drawer-out var(--admin-motion-drawer-toggle)
+    var(--admin-motion-ease-emphasized) both !important;
+}
+
+[data-slot="sheet-overlay"]:has(+ [data-admin-mobile-sidebar-drawer="true"]) {
+  background: var(--admin-sidebar-drawer-backdrop);
+}
+
+[data-slot="sheet-overlay"][data-state="open"]:has(
+    + [data-admin-mobile-sidebar-drawer="true"]
+  ) {
+  animation: admin-sidebar-overlay-in var(--admin-motion-drawer-toggle)
+    var(--admin-motion-ease) both !important;
+}
+
+[data-slot="sheet-overlay"][data-state="closed"]:has(
+    + [data-admin-mobile-sidebar-drawer="true"]
+  ) {
+  animation: admin-sidebar-overlay-out var(--admin-motion-drawer-toggle)
+    var(--admin-motion-ease) both !important;
+}
+
 .admin-motion-collapsible {
   overflow: hidden;
 }
@@ -213,7 +292,11 @@ select {
   .admin-motion-panel-in,
   .admin-motion-dropdown-in,
   .admin-motion-backdrop-in,
-  .admin-motion-collapsible {
+  .admin-motion-collapsible,
+  .admin-sidebar-drawer-motion,
+  [data-slot="sheet-overlay"]:has(+ [data-admin-mobile-sidebar-drawer="true"]) {
     animation: none;
+    transform: none;
+    transition: none;
   }
 }

@@ -19,6 +19,7 @@ type NavItemProps = {
   label: string;
   onNavigate?: () => void;
   surface?: "sidebar" | "drawer";
+  visualCollapsed?: boolean;
 };
 
 const navTooltipContentClassName =
@@ -31,7 +32,8 @@ export function NavItem({
   icon,
   label,
   onNavigate,
-  surface = "sidebar"
+  surface = "sidebar",
+  visualCollapsed = collapsed
 }: NavItemProps) {
   const pathname = usePathname();
   const active = pathname === href || pathname.startsWith(`${href}/`);
@@ -59,15 +61,15 @@ export function NavItem({
 
   const link = (
     <Link
-      aria-label={collapsed ? accessibleLabel : undefined}
+      aria-label={visualCollapsed ? accessibleLabel : undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group/nav-item relative flex min-h-10 items-center gap-2.5 overflow-hidden rounded-(--admin-radius-control) border border-transparent px-3 py-2 text-sm font-medium transition-[background-color,border-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-[0.985] motion-reduce:transition-none motion-reduce:transform-none",
+        "group/nav-item relative grid min-h-10 grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center overflow-hidden rounded-(--admin-radius-control) border border-transparent py-2 pr-3 text-sm font-medium transition-[background-color,border-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-[0.985] motion-reduce:transition-none motion-reduce:transform-none",
         ringOffsetClass,
         active
           ? "border-(--admin-sidebar-active) bg-(--admin-sidebar-active) text-(--admin-sidebar-active-foreground)! hover:border-(--admin-sidebar-active) hover:bg-(--admin-sidebar-active) hover:text-(--admin-sidebar-active-foreground)!"
           : "hover:border-(--admin-sidebar-border) hover:bg-(--admin-sidebar-hover)",
-        collapsed && "justify-center gap-0 px-0"
+        collapsed && "w-11 pr-0"
       )}
       href={href}
       onClick={handleClick}
@@ -77,7 +79,7 @@ export function NavItem({
       ) : null}
       <span
         className={cn(
-          "shrink-0 transition-[color,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) motion-reduce:transition-none motion-reduce:transform-none",
+          "flex w-10 shrink-0 items-center justify-center transition-[color,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) motion-reduce:transition-none motion-reduce:transform-none",
           active
             ? "text-(--admin-sidebar-active-foreground)"
             : "text-(--admin-sidebar-muted) group-hover/nav-item:text-(--admin-sidebar-hover-foreground)"
@@ -86,12 +88,15 @@ export function NavItem({
         {icon}
       </span>
       <span
+        aria-hidden={visualCollapsed ? true : undefined}
         className={cn(
-          "min-w-0 flex-1 truncate",
+          "min-w-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform,color] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none motion-reduce:transform-none",
           active
             ? "text-(--admin-sidebar-active-foreground)"
             : "text-(--admin-sidebar-muted) group-hover/nav-item:text-(--admin-sidebar-hover-foreground)",
-          collapsed && "sr-only"
+          visualCollapsed
+            ? "max-w-0 translate-x-1 opacity-0"
+            : "max-w-40 translate-x-0 opacity-100"
         )}
       >
         {label}
@@ -105,7 +110,15 @@ export function NavItem({
             {badge}
           </span>
         ) : (
-          <Badge className="ml-auto h-5 min-w-5 shrink-0 justify-center border-transparent bg-(--admin-sidebar-badge) px-1.5 text-[11px] font-semibold leading-none text-(--admin-sidebar-badge-foreground)">
+          <Badge
+            aria-hidden={visualCollapsed ? true : undefined}
+            className={cn(
+              "h-5 min-w-5 shrink-0 justify-self-end overflow-hidden border-transparent bg-(--admin-sidebar-badge) text-[11px] font-semibold leading-none text-(--admin-sidebar-badge-foreground) transition-[max-width,opacity,transform,padding] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none motion-reduce:transform-none",
+              visualCollapsed
+                ? "max-w-0 translate-x-1 px-0 opacity-0"
+                : "max-w-16 translate-x-0 px-1.5 opacity-100"
+            )}
+          >
             {badge}
           </Badge>
         )

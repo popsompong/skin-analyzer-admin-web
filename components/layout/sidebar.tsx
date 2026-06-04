@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import {
   ChevronDown,
@@ -59,23 +59,84 @@ const icons: Record<AdminMenuIcon, React.ComponentType<{ className?: string }>> 
 const sidebarTooltipContentClassName =
   "rounded-(--admin-radius-control) border border-(--admin-sidebar-border) !bg-(--admin-dropdown) px-3 py-2 text-xs font-semibold leading-4 !text-(--admin-selected-foreground) shadow-(--admin-shadow-card) [&_polygon]:!fill-(--admin-dropdown) [&_svg]:!bg-(--admin-dropdown) [&_svg]:!fill-(--admin-dropdown)";
 
+const SIDEBAR_TOGGLE_DURATION_MS = 280;
+
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [railCollapsed, setRailCollapsed] = useState(false);
+  const [collapseTooltipOpen, setCollapseTooltipOpen] = useState(false);
+  const sidebarRef = useRef<HTMLElement | null>(null);
+  const sidebarToggleTimerRef = useRef<number | null>(null);
   const CollapseIcon = collapsed ? PanelLeftOpen : PanelLeftClose;
   const collapseLabel = collapsed ? "Expand sidebar" : "Collapse sidebar";
+
+  useEffect(() => {
+    return () => {
+      if (sidebarToggleTimerRef.current !== null) {
+        window.clearTimeout(sidebarToggleTimerRef.current);
+      }
+    };
+  }, []);
+
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function resetSidebarScroll() {
+    if (sidebarRef.current && sidebarRef.current.scrollLeft !== 0) {
+      sidebarRef.current.scrollLeft = 0;
+    }
+  }
+
+  function scheduleSidebarScrollReset() {
+    resetSidebarScroll();
+    window.requestAnimationFrame(resetSidebarScroll);
+    window.setTimeout(resetSidebarScroll, SIDEBAR_TOGGLE_DURATION_MS);
+  }
+
+  function handleToggleSidebar() {
+    setCollapseTooltipOpen(false);
+    scheduleSidebarScrollReset();
+    setCollapsed((current) => {
+      const nextCollapsed = !current;
+
+      if (sidebarToggleTimerRef.current !== null) {
+        window.clearTimeout(sidebarToggleTimerRef.current);
+        sidebarToggleTimerRef.current = null;
+      }
+
+      if (!nextCollapsed || prefersReducedMotion()) {
+        setRailCollapsed(nextCollapsed);
+      } else {
+        sidebarToggleTimerRef.current = window.setTimeout(() => {
+          setRailCollapsed(true);
+          sidebarToggleTimerRef.current = null;
+        }, SIDEBAR_TOGGLE_DURATION_MS);
+      }
+
+      scheduleSidebarScrollReset();
+      return nextCollapsed;
+    });
+  }
 
   return (
     <TooltipProvider delayDuration={120}>
       <aside
         className={cn(
-          "sticky top-0 hidden h-screen shrink-0 border-r border-(--admin-sidebar-border) text-(--admin-sidebar-text) transition-[width,background-color,border-color] duration-(--admin-motion-slow) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none lg:flex lg:flex-col",
+          "sticky top-0 hidden h-screen shrink-0 overflow-hidden border-r border-(--admin-sidebar-border) text-(--admin-sidebar-text) transition-[width,background-color,border-color] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none lg:flex lg:flex-col",
           collapsed
             ? "w-18 bg-(--admin-sidebar-rail)"
             : "w-62 bg-(--admin-sidebar)"
         )}
         data-state={collapsed ? "collapsed" : "expanded"}
+        onScroll={resetSidebarScroll}
+        ref={sidebarRef}
       >
-        <Tooltip>
+        <Tooltip
+          key={collapseLabel}
+          onOpenChange={setCollapseTooltipOpen}
+          open={collapseTooltipOpen}
+        >
           <TooltipTrigger asChild>
             <button
               aria-expanded={!collapsed}
@@ -87,7 +148,11 @@ export function Sidebar() {
                   : "bg-(--admin-sidebar)",
                 "hover:bg-(--admin-sidebar-hover) hover:text-(--admin-sidebar-hover-foreground)"
               )}
-              onClick={() => setCollapsed((current) => !current)}
+              onClick={handleToggleSidebar}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                resetSidebarScroll();
+              }}
               type="button"
             >
               <CollapseIcon aria-hidden="true" className="h-3.5 w-3.5" />
@@ -105,10 +170,13 @@ export function Sidebar() {
         <SidebarBrand collapsed={collapsed} />
         <Separator className="bg-(--admin-sidebar-border)" />
 
-        <SidebarMenuContent collapsed={collapsed} />
+        <SidebarMenuContent
+          collapsed={railCollapsed}
+          visualCollapsed={collapsed}
+        />
 
         <Separator className="bg-(--admin-sidebar-border)" />
-        <SidebarUserBlock collapsed={collapsed} />
+        <SidebarUserBlock compact={railCollapsed} collapsed={collapsed} />
       </aside>
     </TooltipProvider>
   );
@@ -119,12 +187,9 @@ export function MobileSidebarDrawer() {
 
   return (
     <Sheet onOpenChange={setOpen} open={open}>
-      <style>
-        {`[data-slot="sheet-overlay"]:has(+ [data-admin-mobile-sidebar-drawer="true"]) { background: var(--admin-sidebar-drawer-backdrop); }`}
-      </style>
       <SheetTrigger asChild>
         <button
-          aria-label="Open admin navigation"
+          aria-label="Open navigation menu"
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) text-(--admin-text-muted) transition-[background-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) hover:bg-(--admin-surface-elevated) hover:text-(--admin-text) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-topbar) lg:hidden"
           type="button"
         >
@@ -132,7 +197,7 @@ export function MobileSidebarDrawer() {
         </button>
       </SheetTrigger>
       <SheetContent
-        className="w-[min(17.5rem,calc(100vw-1.5rem))] max-w-70 gap-0 border-(--admin-sidebar-border) bg-(--admin-sidebar-drawer) p-0 text-(--admin-sidebar-text) shadow-(--admin-shadow-card) ease-(--admin-motion-ease-emphasized) data-[state=closed]:duration-(--admin-motion-base) data-[state=open]:duration-(--admin-motion-slow) motion-reduce:transition-none sm:max-w-70"
+        className="admin-sidebar-drawer-motion w-[min(17.5rem,calc(100vw-1.5rem))] max-w-70 gap-0 overflow-hidden border-(--admin-sidebar-border) bg-(--admin-sidebar-drawer) p-0 text-(--admin-sidebar-text) shadow-(--admin-shadow-card) motion-reduce:transition-none sm:max-w-70"
         data-admin-mobile-sidebar-drawer="true"
         showCloseButton={false}
         side="left"
@@ -159,7 +224,7 @@ export function MobileSidebarDrawer() {
             </div>
             <SheetClose asChild>
               <button
-                aria-label="Close admin navigation"
+                aria-label="Close navigation menu"
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-(--admin-radius-control) text-(--admin-sidebar-muted) transition-[background-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) hover:bg-(--admin-sidebar-hover) hover:text-(--admin-sidebar-hover-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-sidebar-drawer)"
                 type="button"
               >
@@ -182,15 +247,20 @@ export function MobileSidebarDrawer() {
 
 function SidebarBrand({ collapsed = false }: { collapsed?: boolean }) {
   return (
-    <div className={cn("shrink-0 py-4", collapsed ? "px-3" : "px-4")}>
-      <div
-        className={cn(
-          "flex items-center",
-          collapsed ? "justify-center" : "gap-2.5"
-        )}
-      >
-        <BrandMark className="h-10 w-10 [&>svg]:h-9 [&>svg]:w-9" />
-        <div className={cn("min-w-0", collapsed && "sr-only")}>
+    <div
+      className="shrink-0 px-3 py-4"
+    >
+      <div className="grid grid-cols-[2.75rem_minmax(0,1fr)] items-center overflow-hidden">
+        <BrandMark className="ml-1 h-10 w-10 [&>svg]:h-9 [&>svg]:w-9" />
+        <div
+          aria-hidden={collapsed ? true : undefined}
+          className={cn(
+            "box-border min-w-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform,padding] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none motion-reduce:transform-none",
+            collapsed
+              ? "max-w-0 translate-x-1 pl-0 opacity-0"
+              : "max-w-36 translate-x-0 pl-2.5 opacity-100"
+          )}
+        >
           <div className="truncate text-sm font-semibold tracking-normal">
             Skin Analyzer
           </div>
@@ -203,14 +273,25 @@ function SidebarBrand({ collapsed = false }: { collapsed?: boolean }) {
   );
 }
 
-function SidebarUserBlock({ collapsed = false }: { collapsed?: boolean }) {
+function SidebarUserBlock({
+  collapsed = false,
+  compact = false
+}: {
+  collapsed?: boolean;
+  compact?: boolean;
+}) {
   return (
-    <div className={cn("shrink-0", collapsed ? "p-2.5" : "p-3")}>
+    <div
+      className={cn(
+        "shrink-0 transition-[padding] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none",
+        compact ? "p-2.5" : "p-3"
+      )}
+    >
       <div
         aria-label="Sompong C., Super Admin"
         className={cn(
-          "flex items-center rounded-(--admin-radius-control) bg-(--admin-sidebar-elevated)",
-          collapsed ? "justify-center p-2" : "gap-2.5 px-2.5 py-2"
+          "flex items-center rounded-(--admin-radius-control) bg-(--admin-sidebar-elevated) transition-[gap,padding] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none",
+          compact ? "justify-center gap-0 p-2" : "gap-2.5 px-2 py-2"
         )}
       >
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-(--admin-sidebar-border) bg-(--admin-sidebar)">
@@ -218,13 +299,44 @@ function SidebarUserBlock({ collapsed = false }: { collapsed?: boolean }) {
             SC
           </span>
         </div>
-        <div className={cn("min-w-0 flex-1", collapsed && "sr-only")}>
+        <SidebarTextReveal
+          className="flex-1"
+          collapsed={collapsed}
+          widthClassName="max-w-36"
+        >
           <div className="truncate text-sm font-medium">Sompong C.</div>
           <div className="mt-0.5 truncate text-[0.6875rem] leading-4 text-(--admin-sidebar-muted)">
             Super Admin
           </div>
-        </div>
+        </SidebarTextReveal>
       </div>
+    </div>
+  );
+}
+
+function SidebarTextReveal({
+  children,
+  className,
+  collapsed,
+  widthClassName = "max-w-44"
+}: {
+  children: ReactNode;
+  className?: string;
+  collapsed: boolean;
+  widthClassName?: string;
+}) {
+  return (
+    <div
+      aria-hidden={collapsed ? true : undefined}
+      className={cn(
+        "min-w-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none motion-reduce:transform-none",
+        collapsed
+          ? "max-w-0 translate-x-1 opacity-0"
+          : cn(widthClassName, "translate-x-0 opacity-100"),
+        className
+      )}
+    >
+      {children}
     </div>
   );
 }
@@ -235,12 +347,14 @@ type SidebarMenuContentProps = {
   collapsed?: boolean;
   onNavigate?: () => void;
   surface?: SidebarSurface;
+  visualCollapsed?: boolean;
 };
 
 function SidebarMenuContent({
   collapsed = false,
   onNavigate,
-  surface = "sidebar"
+  surface = "sidebar",
+  visualCollapsed = collapsed
 }: SidebarMenuContentProps) {
   const menuItems = getVisibleAdminMenuItems(SCAFFOLD_VISIBLE_PERMISSIONS);
   const dashboardItem = menuItems.find((item) => item.href === "/dashboard");
@@ -260,8 +374,8 @@ function SidebarMenuContent({
         surface === "drawer" ? "Admin mobile navigation" : "Admin navigation"
       }
       className={cn(
-        "min-h-0 flex-1 overflow-y-auto py-3",
-        collapsed ? "px-3" : "px-4"
+        "min-h-0 w-full min-w-0 flex-1 overflow-x-hidden overflow-y-auto py-3",
+        surface === "drawer" ? "px-4" : "px-3"
       )}
     >
       {dashboardItem ? (
@@ -271,6 +385,7 @@ function SidebarMenuContent({
           item={dashboardItem}
           onNavigate={onNavigate}
           surface={surface}
+          visualCollapsed={visualCollapsed}
         />
       ) : null}
 
@@ -280,6 +395,7 @@ function SidebarMenuContent({
         label="CONTENT"
         onNavigate={onNavigate}
         surface={surface}
+        visualCollapsed={visualCollapsed}
       />
       <SidebarSection
         collapsed={collapsed}
@@ -287,6 +403,7 @@ function SidebarMenuContent({
         label="OPERATIONS"
         onNavigate={onNavigate}
         surface={surface}
+        visualCollapsed={visualCollapsed}
       />
       <SidebarSection
         collapsed={collapsed}
@@ -294,6 +411,7 @@ function SidebarMenuContent({
         label="SETTINGS"
         onNavigate={onNavigate}
         surface={surface}
+        visualCollapsed={visualCollapsed}
       />
     </nav>
   );
@@ -305,6 +423,7 @@ type SidebarSectionProps = {
   label: string;
   onNavigate?: () => void;
   surface?: SidebarSurface;
+  visualCollapsed?: boolean;
 };
 
 function SidebarSection({
@@ -312,7 +431,8 @@ function SidebarSection({
   items,
   label,
   onNavigate,
-  surface = "sidebar"
+  surface = "sidebar",
+  visualCollapsed = collapsed
 }: SidebarSectionProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(true);
@@ -340,6 +460,7 @@ function SidebarSection({
             key={item.href}
             onNavigate={onNavigate}
             surface={surface}
+            visualCollapsed
           />
         ))}
       </div>
@@ -347,16 +468,27 @@ function SidebarSection({
   }
 
   return (
-    <Collapsible className="mt-4" onOpenChange={setOpen} open={open}>
+    <Collapsible
+      className={cn(
+        "transition-[margin] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none",
+        visualCollapsed ? "mt-2.5" : "mt-4"
+      )}
+      onOpenChange={setOpen}
+      open={open}
+    >
       <CollapsibleTrigger
         className={cn(
-          "group relative flex min-h-7 w-full items-center gap-2 rounded-(--admin-radius-control) border border-transparent px-3 text-left text-(--admin-sidebar-muted) transition-[background-color,border-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none",
+          "group relative flex w-full items-center gap-2 overflow-hidden rounded-(--admin-radius-control) border border-transparent text-left text-(--admin-sidebar-muted) transition-[min-height,height,padding,opacity,background-color,border-color,color,box-shadow,transform] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none",
           ringOffsetClass,
           "hover:border-(--admin-sidebar-border) hover:bg-(--admin-sidebar-hover) hover:text-(--admin-sidebar-hover-foreground)",
           hasActiveItem &&
             !open &&
-            "border-(--admin-sidebar-active) bg-(--admin-sidebar-active) text-(--admin-sidebar-active-foreground)"
+            "border-(--admin-sidebar-active) bg-(--admin-sidebar-active) text-(--admin-sidebar-active-foreground)",
+          visualCollapsed
+            ? "pointer-events-none h-px min-h-px px-0 py-0 opacity-0"
+            : "min-h-7 px-3 py-0 opacity-100"
         )}
+        tabIndex={visualCollapsed ? -1 : undefined}
         type="button"
       >
         {hasActiveItem && !open ? (
@@ -380,6 +512,7 @@ function SidebarSection({
             key={item.href}
             onNavigate={onNavigate}
             surface={surface}
+            visualCollapsed={visualCollapsed}
           />
         ))}
       </CollapsibleContent>
@@ -393,6 +526,7 @@ type SidebarNavItemProps = {
   item: ReturnType<typeof getVisibleAdminMenuItems>[number];
   onNavigate?: () => void;
   surface?: SidebarSurface;
+  visualCollapsed?: boolean;
 };
 
 function SidebarNavItem({
@@ -400,7 +534,8 @@ function SidebarNavItem({
   iconClassName = "h-4 w-4",
   item,
   onNavigate,
-  surface = "sidebar"
+  surface = "sidebar",
+  visualCollapsed = collapsed
 }: SidebarNavItemProps) {
   const Icon = icons[item.icon];
 
@@ -413,6 +548,7 @@ function SidebarNavItem({
       badge={item.href === "/revalidation-events" ? "0" : undefined}
       onNavigate={onNavigate}
       surface={surface}
+      visualCollapsed={visualCollapsed}
     />
   );
 }
