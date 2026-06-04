@@ -448,31 +448,32 @@ function SidebarSection({
 
   if (collapsed) {
     return (
-      <div aria-label={label} className="mt-2.5 space-y-1" role="group">
+      <div aria-label={label} className="mt-4" role="group">
         <div
           aria-hidden="true"
-          className="mx-auto h-px w-7 bg-(--admin-sidebar-border)"
-        />
-        {items.map((item) => (
-          <SidebarNavItem
-            collapsed
-            item={item}
-            key={item.href}
-            onNavigate={onNavigate}
-            surface={surface}
-            visualCollapsed
-          />
-        ))}
+          className="flex min-h-7 items-center px-3"
+        >
+          <span className="mx-auto h-px w-7 bg-(--admin-sidebar-border)" />
+        </div>
+        <div className="mt-2 space-y-1">
+          {items.map((item) => (
+            <SidebarNavItem
+              collapsed
+              item={item}
+              key={item.href}
+              onNavigate={onNavigate}
+              surface={surface}
+              visualCollapsed
+            />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
     <Collapsible
-      className={cn(
-        "transition-[margin] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none",
-        visualCollapsed ? "mt-2.5" : "mt-4"
-      )}
+      className="mt-4 transition-[margin] duration-(--admin-motion-sidebar-toggle) ease-(--admin-motion-ease-emphasized) motion-reduce:transition-none"
       onOpenChange={setOpen}
       open={open}
     >
@@ -485,7 +486,7 @@ function SidebarSection({
             !open &&
             "border-(--admin-sidebar-active) bg-(--admin-sidebar-active) text-(--admin-sidebar-active-foreground)",
           visualCollapsed
-            ? "pointer-events-none h-px min-h-px px-0 py-0 opacity-0"
+            ? "pointer-events-none min-h-7 px-3 py-0 opacity-0"
             : "min-h-7 px-3 py-0 opacity-100"
         )}
         tabIndex={visualCollapsed ? -1 : undefined}
