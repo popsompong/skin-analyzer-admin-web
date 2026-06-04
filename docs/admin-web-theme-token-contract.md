@@ -1,20 +1,20 @@
 # Admin Web Theme Token Contract v2
 
-This document records the current implemented Admin Web MVP theme, the production token strategy for the upcoming Flux Sky redesign, and the boundary between documentation contract work and implementation work.
+This document records the current implemented Admin Web MVP theme, the Flux Sky shell/dashboard token checkpoint, and the boundary between token documentation and future feature-page implementation work.
 
 ## 1. Purpose
 
 Use this document to prevent future Admin Web work from inventing a new palette, copying the Public Web theme, adding dark mode, scattering raw color values through components, or drifting back to the old dark sidebar during Flux Sky productionization.
 
-This contract is the source of truth for Admin Web MVP theme mode, semantic color-token responsibilities, Flux Sky planning roles, and component color usage.
+This contract is the source of truth for Admin Web MVP theme mode, semantic color-token responsibilities, Flux Sky shell/dashboard token roles, and component color usage.
 
-For the upcoming Admin Web redesign, the active visual direction is:
+The active Admin Web visual direction is:
 
 ```text
 Flux Sky: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
 ```
 
-This v2 update defines the Flux Sky token/theme planning contract. It does not implement token values in `app/globals.css`, does not migrate production components, and does not add shadcn/ui components.
+The Flux Sky shell/dashboard token work has progressed beyond planning. `app/globals.css` now contains Flux Sky light sidebar, drawer, rail, topbar, action, selected, dropdown, notification, responsive typography, and motion token roles used by the current shell/dashboard checkpoint.
 
 ## 2. Theme Mode Decision
 
@@ -39,23 +39,24 @@ Flux includes a theme toggle in the public reference, but Skin Analyzer Admin We
 
 ## 4. Current Implemented Theme Context
 
-The current production implementation still uses the previous MVP foundation:
+The current production shell/dashboard implementation uses the Flux Sky checkpoint foundation:
 
 - Light neutral main workspace.
-- Dark navy sidebar.
+- Light neutral sidebar, collapsed rail, and mobile drawer.
 - White or off-white cards.
 - Cool gray borders.
 - Slate or near-black text.
-- Blue primary action.
-- Cyan AI scan accent.
-- Optional violet analytics accent.
+- Sky action and selected states through Admin Web semantic tokens.
+- Token-approved cyan/sky AI scan accent where scoped.
 - Emerald success.
 - Amber warning.
 - Red danger.
+- Responsive typography roles.
+- Bounded motion duration/easing tokens.
 
-For upcoming Flux Sky work, this dark navy sidebar and blue/cyan action language is current implementation / historical context only. It is not the future Flux Sky production target.
+The previous dark navy sidebar and blue/cyan action language is historical context only. It is not the Flux Sky production target.
 
-Existing production components may continue to render the current values until a later scoped implementation task changes tokens and components. Future Flux Sky implementation must not treat the current dark `--admin-sidebar*` values or blue `--admin-primary*` values as accepted Flux Sky output.
+Future feature-page work must preserve the current Flux Sky shell/dashboard token direction and must not reintroduce the old dark `--admin-sidebar*` mapping or old Tailwind blue/UI Colors blue action palette.
 
 ## 5. Existing Core Semantic Tokens
 
@@ -100,58 +101,90 @@ Current shape and effects:
 
 ## 6. Current Implemented Baseline Values
 
-Current implemented baseline values in `app/globals.css`:
+Current implemented checkpoint values in `app/globals.css` include:
 
 ```css
---admin-bg: #F7FAFC;
---admin-surface: #FFFFFF;
---admin-surface-elevated: #F8FAFC;
---admin-border: #E2E8F0;
---admin-text: #0F172A;
---admin-text-muted: #64748B;
+--admin-bg: #f8fafc;
+--admin-surface: #ffffff;
+--admin-surface-elevated: #f8fafc;
+--admin-border: #e2e8f0;
+--admin-text: #0f172a;
+--admin-text-muted: #64748b;
 
---admin-sidebar: #081220;
---admin-sidebar-elevated: #0B1A2E;
---admin-sidebar-border: #1E3350;
---admin-sidebar-text: #F8FAFC;
---admin-sidebar-muted: #94A3B8;
+--admin-sidebar: #f8fafc;
+--admin-sidebar-elevated: #f1f5f9;
+--admin-sidebar-border: #e2e8f0;
+--admin-sidebar-text: #020617;
+--admin-sidebar-muted: #64748b;
+--admin-sidebar-hover: #f1f5f9;
+--admin-sidebar-hover-foreground: #020617;
+--admin-sidebar-active: oklch(95.1% 0.026 236.824);
+--admin-sidebar-active-foreground: oklch(39.1% 0.09 240.876);
+--admin-sidebar-active-accent: oklch(58.8% 0.158 241.966);
+--admin-sidebar-focus-ring: oklch(68.5% 0.169 237.323);
+--admin-sidebar-badge: oklch(58.8% 0.158 241.966);
+--admin-sidebar-badge-foreground: #ffffff;
+--admin-sidebar-rail: #f8fafc;
+--admin-sidebar-drawer: #f8fafc;
+--admin-sidebar-drawer-backdrop: rgb(15 23 42 / 0.45);
 
---admin-primary: #2563EB;
---admin-primary-hover: #1D4ED8;
---admin-primary-soft: #DBEAFE;
---admin-accent-cyan: #06B6D4;
---admin-accent-violet: #8B5CF6;
+--admin-action: oklch(54% 0.145 242.5);
+--admin-action-hover: oklch(50% 0.134 242.749);
+--admin-action-foreground: #ffffff;
+--admin-selected: oklch(95.1% 0.026 236.824);
+--admin-selected-foreground: oklch(39.1% 0.09 240.876);
+--admin-primary: var(--admin-action);
+--admin-primary-hover: var(--admin-action-hover);
+--admin-primary-soft: var(--admin-selected);
+--admin-accent-cyan: oklch(68.5% 0.169 237.323);
+--admin-accent-violet: var(--admin-selected-foreground);
 
---admin-success: #10B981;
---admin-warning: #F59E0B;
---admin-danger: #EF4444;
---admin-info: #0EA5E9;
+--admin-topbar: #ffffff;
+--admin-topbar-border: #e2e8f0;
+--admin-command-focus: var(--admin-sidebar-focus-ring);
+--admin-command-highlight: var(--admin-action);
+--admin-command-highlight-foreground: var(--admin-action-foreground);
+--admin-dropdown: #ffffff;
+--admin-dropdown-highlight: var(--admin-selected);
+--admin-dropdown-highlight-foreground: var(--admin-selected-foreground);
+--admin-notification-accent: oklch(58.8% 0.158 241.966);
+--admin-notification-accent-soft: var(--admin-selected);
+
+--admin-success: #10b981;
+--admin-warning: #f59e0b;
+--admin-danger: #ef4444;
+--admin-info: var(--admin-notification-accent);
 
 --admin-radius-card: 24px;
 --admin-radius-control: 14px;
 --admin-shadow-card: 0 18px 45px rgba(15, 23, 42, 0.08);
---admin-focus-ring: #06B6D4;
+--admin-focus-ring: var(--admin-command-focus);
+--admin-motion-fast: 140ms;
+--admin-motion-base: 180ms;
+--admin-motion-slow: 220ms;
+--admin-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+--admin-motion-ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
 ```
 
-These values are current implemented baseline tokens. They remain current production implementation until a future token implementation task updates `app/globals.css`.
+Responsive typography roles are also implemented in `app/globals.css` for page title, page eyebrow, hero title/body, section title, card title, metric, label, body, and caption. Future typography work should reuse or intentionally extend these roles instead of scattering one-off font sizes.
 
-Do not treat the current dark `--admin-sidebar*` values or blue `--admin-primary*` values as the final Flux Sky production mapping.
+Motion tokens and helper classes are implemented for panel, dropdown, backdrop, and collapsible transitions, with reduced-motion CSS disabling animation-heavy helpers.
 
 ## 7. Flux Sky Token Direction
 
 Flux Sky token work must follow these direction rules:
 
-- The upcoming sidebar surface is light / neutral, not dark navy, black, or old Admin Web dark sidebar.
+- The sidebar surface is light / neutral, not dark navy, black, or old Admin Web dark sidebar.
 - Sidebar text hierarchy should use neutral/slate-style semantic roles for primary text, muted group labels, helper labels, and icons.
 - Sky is used for action/event states.
 - Sky must not become the whole sidebar background.
-- Old dark/sidebar tokens remain current implementation / historical context only until a scoped implementation task changes code.
+- Old dark/sidebar tokens are historical context only.
 - Use semantic Admin Web tokens in production components, not raw Golden Mockup `slate`, `zinc`, or `sky` class copies.
 - Flux is a public visual/interaction reference only. Do not copy Flux code, assets, logos, exact class names, proprietary icons, template implementation, user identity, or sample data.
 
 ## 8. Flux Sky Token Role Groups
 
-The next implementation task may keep existing variable names where safe or introduce new names. The requirement is that these responsibilities are represented by Admin Web semantic tokens before production Flux Sky shell work.
+Future scoped work may keep existing variable names where safe or introduce new names. The requirement is that these responsibilities remain represented by Admin Web semantic tokens.
 
 | Role | Recommended token name | Responsibility |
 | --- | --- | --- |
@@ -210,7 +243,7 @@ Future Flux Sky work must fail visual QA if it reverts to an old dark/navy/black
 
 Failure conditions for Flux Sky work:
 
-- Uses the old dark navy/current production sidebar as the Flux Sky production target.
+- Uses the old dark navy / previous production sidebar as the Flux Sky production target.
 - Uses dark/navy/black sidebar or drawer surfaces for Flux Sky shell work.
 - Uses Tailwind blue or UI Colors blue for new Flux Sky action states.
 - Turns the whole sidebar sky instead of keeping a light neutral sidebar with sky action/event accents.
@@ -230,7 +263,7 @@ Required support:
 - Menu content scroll region: menu scroll surface must be distinct from header and footer boundaries without dark-sidebar contrast.
 - Header/content/footer visual boundaries: sidebar header, content, and footer separators must use quiet neutral border tokens.
 - Footer/user block: footer surface, avatar fallback, user text, role text, hover, focus-visible, and profile/menu affordance must work on the light sidebar.
-- Collapsed rail: rail surface, active rail, active icon, hover, focus-visible, tooltip, and badge/context metadata must be planned before implementation.
+- Collapsed rail: rail surface, active rail, active icon, hover, focus-visible, tooltip, and badge/context metadata must remain explicit in future changes.
 - Mobile drawer: drawer surface, backdrop, close button, active item, hover, focus-visible, internal scroll, header/footer boundaries, and group behavior must match desktop semantics.
 - Badge alignment: `Revalidation Events` badge or equivalent metadata must remain aligned in expanded and scrolled states; collapsed rail behavior must be explicit as count, dot, tooltip metadata, or intentionally hidden with rationale.
 - Focus-visible state: keyboard focus must be visible on nav rows, group triggers, collapse/expand triggers, drawer close, search/command, dropdown rows, and icon-only controls.
@@ -273,32 +306,26 @@ If a sidebar group header shows a chevron, it must collapse/expand. If groups ar
 - Do not revert Flux Sky work to old dark/navy sidebar tokens unless a later accepted direction explicitly changes it.
 - Do not use Tailwind blue or UI Colors blue for new Flux Sky action states.
 - Do not use Flux purple/violet directly.
-- Do not use the current production dark sidebar token values as the Flux Sky visual target.
+- Do not use previous dark sidebar token values as the Flux Sky visual target.
 
-## 15. Future Implementation Order
+## 15. Implemented Checkpoint And Future Scope
 
-Flux Sky production implementation must not start from this document alone.
+Flux Sky shell/dashboard token implementation has progressed through the shell/dashboard checkpoint.
 
-The expected next planning task after this contract passes is:
+Implemented checkpoint sequence:
 
-```text
-Admin Web shadcn Component Add Plan v1
-```
+1. Token Theme Contract v2.
+2. Token Implementation v1.
+3. Token Consumption Gap Fix v1.
+4. Sidebar Production v1.
+5. Collapsed Rail v1.
+6. Mobile Drawer v1.
+7. Topbar Dropdown Command v1.
+8. Dashboard Layout v2.
+9. Typography, responsive typography, motion, visual QA, and proportion polish checkpoints.
+10. Visual QA Rerun v4 and Docs Sync Addendum v1.
 
-Expected future sequence:
-
-1. Admin Web Flux Sky Token Theme Contract v2.
-2. Admin Web shadcn Component Add Plan v1.
-3. Admin Web Flux Sky shadcn Primitive Add v1, if the component add plan approves a primitive cluster.
-4. Admin Web Flux Sky Sidebar Production v1.
-5. Admin Web Flux Sky Collapsed Rail v1.
-6. Admin Web Flux Sky Mobile Drawer v1.
-7. Admin Web Flux Sky Topbar Dropdown Command v1.
-8. Admin Web Flux Sky Dashboard Layout v2.
-9. Admin Web Flux Sky Visual QA Screenshot Parity v1.
-10. Admin Web Flux Sky Implementation Docs Sync Addendum v1 after user/gatekeeper acceptance.
-
-A later token implementation task must update `app/globals.css` and production components in a scoped sprint before production Flux Sky shell work can rely on these roles.
+Future feature-page work must consume the existing semantic token direction or explicitly scope a token extension. Do not restart shell token implementation unless a later visual QA or implementation task identifies a concrete blocker.
 
 ## 16. Visual QA Requirements
 
@@ -309,8 +336,6 @@ A later token implementation task must update `app/globals.css` and production c
 - Check that output does not introduce random colors.
 - Future UI tasks must report token compliance.
 
-For current implemented legacy UI tasks, validate against the current production tokens.
-
 For Flux Sky visual implementation tasks, validate:
 
 - Light / neutral sidebar, not dark/navy/black.
@@ -318,7 +343,7 @@ For Flux Sky visual implementation tasks, validate:
 - shadcn/Tailwind sky action and event states.
 - No Tailwind blue or UI Colors blue for new Flux Sky action states.
 - No Flux purple/violet direct copy.
-- No current production dark sidebar visual target.
+- No previous dark sidebar visual target.
 - Hover states quieter than active states.
 - Visible focus-visible rings on menu items, group triggers, command/search, dropdown rows, drawer controls, and icon-only rail controls.
 - Visible or accessible collapsed rail labels/tooltips and explicit badge behavior.
@@ -330,12 +355,11 @@ For Flux Sky visual implementation tasks, validate:
 
 This document defines the contract.
 
-It does not implement the tokens.
-It does not update `app/globals.css`.
-It does not migrate the production sidebar.
-It does not migrate the production topbar.
+The current shell/dashboard checkpoint implements the Flux Sky token direction in `app/globals.css` and consumes it in production shell/dashboard components.
 It does not add shadcn/ui components.
 It does not make the Golden Mockup production.
 It does not make whole Admin Web visual acceptance final.
+It does not make feature pages production-ready.
+It does not implement real API-backed dashboard data.
 
-A later scoped implementation task must update `app/globals.css` and production components in a scoped sprint, then validate with required screenshots when UI output changes.
+Future scoped implementation tasks must preserve these tokens, extend them only when needed, and validate with required screenshots when UI output changes.

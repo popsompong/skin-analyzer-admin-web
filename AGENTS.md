@@ -77,6 +77,7 @@ Expected path:
 ## 4. UI/UX Safety Rules
 
 - Future Admin Web UI tasks must read `docs/admin-web-current-ui-implementation-state.md` after `AGENTS.md` and before implementation.
+- Future Admin Web UI, Flux Sky, Tailwind, shadcn/ui, typography, motion, layout, or visual QA tasks must also read `.agents/skills/skin-analyzer-admin-tailwind-shadcn-governor/SKILL.md` before implementation.
 - `docs/admin-web-current-ui-implementation-state.md` is the current accepted UI and handoff state.
 - If that document conflicts with actual code, inspect code and report the conflict before editing.
 - Future Admin Web UI implementation tasks must include a `Documentation Impact Candidate` section in the final report.
@@ -89,9 +90,9 @@ Expected path:
 - Admin Web visual system is independent from Public Web.
 - Do not use Public Web colors or theme as the Admin Web base.
 - Follow the `Modern AI Skin Analysis Admin 2026` direction with the accepted Flux Sky update.
-- Current/legacy Admin Web implementation may still include a light neutral workspace, dark navy sidebar, and blue/cyan AI accents; treat that as historical/current implementation context only.
-- Upcoming active redesign direction is `Flux Sky`: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
-- Do not use the old dark navy/current production sidebar, old Admin Web dark sidebar, Tailwind blue, or UI Colors blue as the Flux Sky production target unless a later accepted direction explicitly changes it.
+- The previous dark navy sidebar and blue/cyan AI accents are historical implementation context only.
+- Active visual direction is `Flux Sky`: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
+- Do not use the old dark navy/sidebar foundation, old Admin Web dark sidebar, Tailwind blue, or UI Colors blue as the Flux Sky production target unless a later accepted direction explicitly changes it.
 - Do not implement dark mode, a theme toggle, `next-themes`, or app-level `prefers-color-scheme` theme switching unless a future explicit contract changes this.
 - Use Admin Web semantic theme tokens for UI surfaces, text, borders, and actions.
 - Do not add raw hex colors in components unless the task explicitly scopes a one-off SVG/visual detail.

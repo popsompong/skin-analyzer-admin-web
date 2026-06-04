@@ -4,13 +4,13 @@ Private Admin Web for Skin Analyzer.
 
 ## Current Status
 
-This repository contains the Admin Web scaffold and accepted foundation checkpoints for routes, shell layout, placeholders, design tokens, API/auth/permission placeholders, and documentation contracts.
+This repository contains the Admin Web scaffold, accepted foundation checkpoints for routes, API/auth/permission placeholders, documentation contracts, and the Flux Sky shell/dashboard implementation checkpoint.
 
 Feature implementation must remain scoped and follow the contract docs.
 
-Theme status: Admin Web MVP is light-only. The active upcoming visual direction is Flux Sky: light / neutral Flux-like sidebar plus shadcn/Tailwind sky action and event states. Production Flux Sky implementation has not started; the current production shell may still contain the older dark sidebar and blue/cyan foundation until a scoped productionization and token/theme task changes it.
+Theme status: Admin Web MVP is light-only. The active visual direction is Flux Sky: light / neutral Flux-like sidebar plus shadcn/Tailwind sky action and event states. The shell/dashboard checkpoint has passed `Admin Web Flux Sky Visual QA Rerun v4` with notes. This does not make the whole Admin Web product final, and feature pages remain deferred/not final.
 
-Current UI implementation state and handoff notes are documented in `docs/admin-web-current-ui-implementation-state.md`.
+Current UI implementation state, handoff notes, and required future UI skill are documented in `docs/admin-web-current-ui-implementation-state.md`.
 
 ## Purpose
 
@@ -32,11 +32,11 @@ skin-analyzer-admin-backend
 
 ## Planned Implementation Order
 
-1. Keep scaffold changes small and reviewable.
-2. Run `Admin Web Flux Sky shadcn-backed Productionization Plan v1` before production UI implementation.
-3. Plan the scoped token/theme update for light / neutral sidebar and sky action states before changing the production shell.
-4. Split Flux Sky productionization into focused shell, topbar/dropdown/command, mobile drawer, dashboard, and visual QA tasks.
-5. Treat feature work such as Topbar Auth Menu, Blog/Tips/Media, dashboard hardening, editor/list implementation, taxonomy, authors, revalidation, and settings as later scoped work unless the user explicitly reprioritizes it.
+1. Keep Admin Web changes small and reviewable.
+2. Preserve the accepted Flux Sky shell/sidebar/topbar/dashboard checkpoint unless a later accepted direction changes it.
+3. Treat feature work such as Blog/Tips/Media, dashboard hardening, editor/list implementation, taxonomy, authors, revalidation, settings, and Topbar Auth Menu as later scoped work unless the user explicitly reprioritizes it.
+4. Future UI prompts should read `.agents/skills/skin-analyzer-admin-tailwind-shadcn-governor/SKILL.md` before implementation.
+5. For the next product UI step, prefer scoped feature-page planning or a single feature-page foundation task.
 
 The Flux Sky Golden Mockup is a visual checkpoint and planning reference only. It is not production code and must not be copied wholesale into production.
 

@@ -4,6 +4,14 @@ This document makes UI QA enforceable for `skin-analyzer-admin-web`.
 
 Visual QA must compare screenshots against `docs/admin-web-brand-visual-direction.md` and `docs/admin-web-theme-token-contract.md` in addition to checking layout and accessibility basics.
 
+Latest accepted evidence checkpoint:
+
+```text
+Admin Web Flux Sky Visual QA Rerun v4
+```
+
+Status: `PASS_WITH_NOTES` for the Flux Sky shell/dashboard checkpoint. It is evidence for shell/sidebar/topbar/dashboard state only and does not make the whole Admin Web product or feature pages final.
+
 ## 1. Screenshot Requirements
 
 For every UI task after scaffold, capture evidence for:
@@ -18,6 +26,8 @@ For every UI task after scaffold, capture evidence for:
 Dark mode screenshots are not required because Admin Web MVP is light-only. Do not fail UI tasks for missing dark mode screenshots.
 
 Docs-only tasks are exempt from screenshot requirements.
+
+For Flux Sky shell/dashboard regression or future visual tasks, use local `/dashboard` on `http://127.0.0.1:3000` when the task scope allows. Public Cloudflare or deployed preview URLs are not Codex source of truth for local implementation state unless a future task explicitly scopes deployment verification.
 
 ## 2. Screenshot Artifact Location
 
@@ -85,17 +95,18 @@ Visual drift checklist:
 
 - No Public Web palette as the base.
 - Light neutral workspace.
-- For Flux Sky work, light / neutral sidebar, not dark/navy/black and not the current production dark sidebar.
+- For Flux Sky work, light / neutral sidebar, not dark/navy/black and not the previous dark production sidebar.
 - For Flux Sky work, shadcn/Tailwind sky action and event states.
-- Fail Flux Sky work if it reverts to the old dark navy sidebar, old Admin Web dark sidebar, or current production sidebar visual target unless a later accepted direction explicitly changes it.
+- Fail Flux Sky work if it reverts to the old dark navy sidebar, old Admin Web dark sidebar, or previous dark sidebar visual target unless a later accepted direction explicitly changes it.
 - Fail new Flux Sky action states if they use Tailwind blue or UI Colors blue instead of sky.
-- For explicitly scoped current/legacy UI tasks only, validate current implemented dark-sidebar tokens as current-state context, not as Flux Sky acceptance criteria.
+- For explicitly scoped historical legacy UI audits only, treat previous dark-sidebar tokens as historical context, not as Flux Sky acceptance criteria.
 - No generic cube or hex branding.
 - No marketing-page styling.
 - No arbitrary palette.
 - No random local colors outside Admin Web tokens.
 - No heavy neon, glass, or gradient treatment unless approved.
 - Responsive behavior remains intentional.
+- Development runtime indicators are `NOT_APP_UI_ARTIFACT` unless they obscure app UI, overlap important controls, or distort layout evidence.
 
 ## 4. Admin Editor Special Rule
 

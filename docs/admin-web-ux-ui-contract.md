@@ -6,7 +6,7 @@ Brand and visual direction is further constrained by `docs/admin-web-brand-visua
 
 ## Active Direction Update: Flux Sky
 
-For the upcoming Admin Web redesign, the active visual direction is:
+The active Admin Web visual direction is:
 
 ```text
 Flux Sky: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
@@ -20,11 +20,13 @@ This supersedes older future-direction language that points Flux Sky work back t
 - Blue action palette from earlier attempts.
 - Generic shadcn/admin scaffold styling.
 
-The old dark navy sidebar remains current implemented/historical context only until a scoped production task changes it. Do not use it as the target for future Flux Sky work unless a later accepted direction explicitly changes it.
+The old dark navy sidebar is historical context only. Do not use it as the target for future Flux Sky work unless a later accepted direction explicitly changes it.
 
 Flux is a public visual/interaction reference only. The user is not buying the Flux license. Do not copy Flux code, assets, logos, exact class names, proprietary icons, template implementation, user identity, or sample data. The final Admin Web must remain Skin Analyzer-specific.
 
-Admin Web Flux Sky Golden Mockup v1 is an accepted isolated visual direction checkpoint and planning reference only. It is not production implementation, not whole Admin Web final visual acceptance, and must not be copied wholesale into production.
+Admin Web Flux Sky Golden Mockup v1 is an accepted isolated visual direction checkpoint and historical planning reference only. It is not production implementation, not whole Admin Web final visual acceptance, and must not be copied wholesale into production.
+
+The Flux Sky shell/sidebar/topbar/dashboard implementation has reached a QA-passed checkpoint with notes through `Admin Web Flux Sky Visual QA Rerun v4`. Future UI work must preserve that shell/topbar/dashboard direction unless a later accepted direction explicitly changes it.
 
 ## 1. Design Direction
 
@@ -69,7 +71,7 @@ Define tokens during scaffold before implementing major screens. Do not introduc
 
 Admin Web tokens are Admin Web-owned. Current implemented tokens are documented in `docs/admin-web-theme-token-contract.md` and must not inherit the Public Web theme as the base.
 
-For upcoming Flux Sky production work, a scoped token/theme task must translate light / neutral sidebar states and shadcn/Tailwind sky action/event states into Admin Web semantic tokens before production implementation. Do not copy raw slate/sky classes from the Golden Mockup into production components.
+Flux Sky shell/dashboard token roles are implemented in `app/globals.css`. Future feature-page work must consume Admin Web semantic tokens or explicitly scope a token extension. Do not copy raw slate/sky classes from the Golden Mockup into production components.
 
 - `background`: page canvas.
 - `surface`: primary panel, card, dialog, table, and form surface.
@@ -100,7 +102,7 @@ Logo direction is a front-facing AI skin scan mark following Logo B: Semi-realis
 ## 5. Layout
 
 - Sidebar: primary navigation, permission-aware visibility, stable width, clear active states.
-- Flux Sky sidebar work: use light / neutral sidebar direction, soft active pill, sky active/focus accents, and clear active rail. Do not use the current dark production sidebar as the visual target.
+- Flux Sky sidebar work: use light / neutral sidebar direction, soft active pill, sky active/focus accents, and clear active rail. Do not use the previous dark production sidebar as the visual target.
 - Topbar: user/session actions, current area context, optional breadcrumbs or page actions.
 - Main content: focused work surface with predictable spacing and page-level actions.
 - Cards: use for repeated items, compact summaries, and contained tools only.
@@ -182,22 +184,18 @@ The editor should protect brand consistency and content safety more than it maxi
 - Do not treat technical `PASS` as visual acceptance.
 - Screenshot/visual evidence is required for visual implementation tasks after the scaffold exists.
 
-## 12. Future Productionization Rule
+## 12. Future UI Work Rule
 
-The next production planning task should be:
+Future Admin Web UI prompts must read:
 
 ```text
-Admin Web Flux Sky shadcn-backed Productionization Plan v1
+.agents/skills/skin-analyzer-admin-tailwind-shadcn-governor/SKILL.md
 ```
 
-This plan must happen before any production implementation.
+Future UI work must preserve the accepted Flux Sky shell/sidebar/topbar/dashboard checkpoint and remain scoped to the requested page or component. Technical `PASS` is still not user or gatekeeper visual acceptance for future tasks.
 
-Expected future sequence:
+Recommended next product UI direction:
 
-1. Admin Web Flux Sky shadcn-backed Productionization Plan v1.
-2. Token/theme contract update for light sidebar + sky action states.
-3. Sidebar Production v1.
-4. Topbar / Dropdown / Command Production v1.
-5. Mobile Drawer Production v1.
-6. Dashboard Layout v2.
-7. Visual QA / Screenshot Parity.
+1. Admin Web Flux Sky Feature Page Planning v1.
+2. A single scoped feature-page foundation task such as Blog List, Tips List, or Media Library.
+3. Dashboard/API hardening only when real backend data scope is explicitly approved.

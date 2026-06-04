@@ -8,7 +8,7 @@ Use this document to prevent future Admin Web work from drifting into the Public
 
 ## 2. Active Direction Update: Flux Sky
 
-For the upcoming Admin Web redesign, the active accepted direction is:
+The active accepted Admin Web visual direction is:
 
 ```text
 Flux Sky: light / neutral Flux-like sidebar + shadcn/Tailwind sky action/event states.
@@ -22,6 +22,12 @@ Flux Sky means:
 - Clean SaaS/admin density.
 - Skin Analyzer-specific product content.
 
+Flux Sky shell/dashboard checkpoint status:
+
+- Sidebar, topbar, collapsed rail, mobile drawer, command/search, dropdown surfaces, and static dashboard layout have moved from planning into the implemented shell/dashboard checkpoint.
+- `Admin Web Flux Sky Visual QA Rerun v4` is the latest visual evidence checkpoint and passed with notes.
+- This does not make the whole Admin Web product final and does not make feature pages production-ready.
+
 Flux boundary:
 
 - Flux is used only as a public visual and interaction reference.
@@ -31,7 +37,7 @@ Flux boundary:
 
 Superseded direction:
 
-- Any older direction language that points future redesign work to a dark navy sidebar, old Admin Web sidebar, current production sidebar visual style, Tailwind blue action palette, or generic shadcn/admin scaffold is previous / historical / scoped foundation.
+- Any older direction language that points future redesign work to a dark navy sidebar, old Admin Web sidebar, previous dark production sidebar visual style, Tailwind blue action palette, or generic shadcn/admin scaffold is previous / historical / scoped foundation.
 - Do not use that older direction as the Flux Sky production target unless a later accepted direction explicitly changes it.
 
 ## 3. Product Surface Separation
@@ -71,7 +77,7 @@ The UI must not feel:
 - Heavy glassmorphism interface.
 - Rose-heavy public theme.
 
-For upcoming Flux Sky redesign work, the active visual target is a Flux Sky light neutral admin shell with shadcn/Tailwind sky action and event states. Current production dark-sidebar visuals are implementation history, not the target.
+For future Flux Sky work, the active visual target is the Flux Sky light neutral admin shell with shadcn/Tailwind sky action and event states. Previous dark-sidebar visuals are implementation history, not the target.
 
 ## 5. Approved Visual References
 
@@ -86,8 +92,8 @@ The Flux Sky Golden Mockup is an accepted isolated visual direction checkpoint o
 
 Historical reference:
 
-- The earlier dark-navy, blue/cyan admin dashboard mockup and current production sidebar remain historical implemented context.
-- They are superseded as the target for upcoming Flux Sky redesign work.
+- The earlier dark-navy, blue/cyan admin dashboard mockup and previous dark production sidebar remain historical implemented context.
+- They are superseded by the Flux Sky shell/dashboard checkpoint.
 
 Use active Flux Sky references to guide:
 
@@ -126,9 +132,9 @@ Historical implemented palette:
 
 - Deep navy sidebar / near-black blue.
 - Blue/cyan active state.
-- Existing current production sidebar styling.
+- Previous dark production sidebar styling.
 
-This historical palette remains current implementation context only. It is superseded as the target for upcoming Flux Sky redesign work.
+This historical palette is superseded by the Flux Sky shell/dashboard checkpoint.
 
 Forbidden palette direction:
 
@@ -159,7 +165,7 @@ Required meaning:
 - Skin analysis overlay or dots on forehead, cheeks, and T-zone.
 - Sky/cyan tech accent when token-approved.
 - Readable on the Flux Sky light / neutral sidebar and light surfaces.
-- For legacy implemented sidebar work only, also preserve readability on the current dark navy sidebar until it is replaced.
+- For historical legacy sidebar references only, note that the previous dark navy sidebar has been replaced by the Flux Sky shell/sidebar checkpoint.
 
 Forbidden logo direction:
 
@@ -229,7 +235,7 @@ A UI task should not pass if:
 - It makes Admin Web look like a marketing landing page.
 - It ignores responsive behavior.
 - It does not provide screenshot evidence for UI changes.
-- It implements a Flux Sky task with the old dark/navy sidebar or current production sidebar visual target.
+- It implements a Flux Sky task with the old dark/navy sidebar or previous dark sidebar visual target.
 - It uses Tailwind blue or UI Colors blue instead of shadcn/Tailwind sky for new Flux Sky action states.
 - It copies Flux source, assets, exact class names, proprietary icons, logo, or template implementation.
 - It copies the Golden Mockup component wholesale into production.
