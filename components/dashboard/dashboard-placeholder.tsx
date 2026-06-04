@@ -278,6 +278,25 @@ const statusText: Record<StatusTone, string> = {
   warning: "text-(--admin-warning)"
 };
 
+const dashboardType = {
+  body:
+    "text-[length:var(--admin-text-body)] leading-[var(--admin-leading-body)] text-(--admin-text-muted)",
+  cardTitle:
+    "text-[length:var(--admin-text-card-title)] leading-[var(--admin-leading-card-title)] font-semibold text-(--admin-text)",
+  heroBody:
+    "text-[length:var(--admin-text-hero-body)] leading-[var(--admin-leading-hero-body)] text-(--admin-text-muted)",
+  heroTitle:
+    "text-[length:var(--admin-text-hero-title)] leading-[var(--admin-leading-hero-title)] font-semibold tracking-normal text-(--admin-text)",
+  label:
+    "text-[length:var(--admin-text-label)] leading-[var(--admin-leading-label)] font-semibold",
+  metric:
+    "text-[length:var(--admin-text-metric)] leading-[var(--admin-leading-metric)] font-semibold tracking-normal",
+  sectionTitle:
+    "text-[length:var(--admin-text-section-title)] leading-[var(--admin-leading-section-title)] font-semibold tracking-normal text-(--admin-text)",
+  statusLabel:
+    "text-[length:var(--admin-text-caption)] leading-[var(--admin-leading-caption)] font-semibold"
+} as const;
+
 function DashboardPanel({
   action,
   children,
@@ -293,18 +312,16 @@ function DashboardPanel({
 }) {
   return (
     <section
-      className={`min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-5 shadow-(--shadow-subtle) ${className}`}
+      className={`min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-4 shadow-(--shadow-subtle) sm:p-5 ${className}`}
     >
-      <div className="mb-5 flex min-w-0 items-start justify-between gap-4">
+      <div className="mb-4 flex min-w-0 items-start justify-between gap-4">
         <div className="min-w-0">
           {eyebrow ? (
-            <p className="mb-1 text-xs font-semibold uppercase tracking-normal text-(--admin-action)">
+            <p className={`${dashboardType.label} mb-1 uppercase tracking-normal text-(--admin-action)`}>
               {eyebrow}
             </p>
           ) : null}
-          <h2 className="text-base font-semibold tracking-normal text-(--admin-text)">
-            {title}
-          </h2>
+          <h2 className={dashboardType.sectionTitle}>{title}</h2>
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}
       </div>
@@ -316,7 +333,7 @@ function DashboardPanel({
 function StatusBadge({ label, tone }: { label: string; tone: StatusTone }) {
   return (
     <Badge
-      className={`border-transparent bg-(--admin-surface-elevated) ${statusText[tone]}`}
+      className={`border-transparent bg-(--admin-surface-elevated) ${dashboardType.statusLabel} ${statusText[tone]}`}
       variant="muted"
     >
       {label}
@@ -346,14 +363,14 @@ function MetricCard({ item }: { item: MetricItem }) {
   const Icon = item.icon;
 
   return (
-    <article className="min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-4 shadow-(--shadow-subtle)">
+    <article className="min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-4 shadow-(--shadow-subtle) sm:p-5">
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold leading-5 text-(--admin-text-muted)">
-            {item.label}
-          </p>
-          <p className={`mt-3 text-3xl font-semibold tracking-normal ${accentText[item.tone]}`}>
+          <p className={`${dashboardType.metric} ${accentText[item.tone]}`}>
             {item.value}
+          </p>
+          <p className={`${dashboardType.cardTitle} mt-1`}>
+            {item.label}
           </p>
         </div>
         <span
@@ -362,11 +379,11 @@ function MetricCard({ item }: { item: MetricItem }) {
           <Icon aria-hidden="true" size={20} strokeWidth={2.2} />
         </span>
       </div>
-      <div className="mt-5 space-y-1">
-        <p className={`text-xs font-semibold ${accentText[item.tone]}`}>
+      <div className="mt-4 space-y-1">
+        <p className={`${dashboardType.statusLabel} ${accentText[item.tone]}`}>
           {item.signal}
         </p>
-        <p className="text-xs leading-5 text-(--admin-text-muted)">
+        <p className={`${dashboardType.body} hidden sm:block`}>
           {item.detail}
         </p>
       </div>
@@ -378,7 +395,7 @@ function FaceScanSignal() {
   return (
     <div
       aria-label="Static AI scan readiness motif"
-      className="relative flex size-28 shrink-0 items-center justify-center rounded-full border border-(--admin-border) bg-(--admin-surface-elevated)"
+      className="relative hidden size-28 shrink-0 items-center justify-center rounded-full border border-(--admin-border) bg-(--admin-surface-elevated) sm:flex"
     >
       <span className="absolute inset-3 rounded-full border border-(--admin-selected)" />
       <span className="absolute inset-x-7 top-3 h-4 border-l-2 border-r-2 border-t-2 border-(--admin-action)" />
@@ -396,34 +413,35 @@ function FaceScanSignal() {
 function OverviewHero() {
   return (
     <section className="overflow-hidden rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) shadow-(--admin-shadow-card)">
-      <div className="grid min-w-0 gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]">
+      <div className="grid min-w-0 gap-4 p-4 sm:gap-5 sm:p-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="default">AI operations</Badge>
-            <Badge variant="outline">Static preview data</Badge>
+            <Badge className="hidden sm:inline-flex" variant="outline">
+              Static preview data
+            </Badge>
           </div>
-          <h2 className="mt-4 max-w-3xl text-2xl font-semibold tracking-normal text-(--admin-text) sm:text-3xl">
-            Skin Analyzer command overview for review, readiness, and revalidation.
+          <h2 className={`${dashboardType.heroTitle} mt-3 max-w-2xl`}>
+            Skin Analyzer snapshot.
           </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-(--admin-text-muted)">
-            Monitor clinical copy quality, AI scan signal readiness, media gaps,
-            publishing status, and admin trust indicators without calling the
-            Admin Backend in this layout sprint.
+          <p className={`${dashboardType.heroBody} mt-3 hidden max-w-3xl sm:block`}>
+            Review clinical copy quality, AI scan readiness, media gaps, and
+            publishing health without backend reads.
           </p>
 
-          <div className="mt-6 grid min-w-0 gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid min-w-0 gap-3 sm:mt-5 sm:grid-cols-3">
             {overviewSignals.map((signal) => (
               <div
                 className="min-w-0 border-l-2 border-(--admin-selected) pl-3"
                 key={signal.label}
               >
-                <p className="text-2xl font-semibold tracking-normal text-(--admin-action)">
+                <p className={`${dashboardType.metric} text-(--admin-action)`}>
                   {signal.value}
                 </p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-normal text-(--admin-text-muted)">
+                <p className={`${dashboardType.statusLabel} mt-1 uppercase tracking-normal text-(--admin-text-muted)`}>
                   {signal.label}
                 </p>
-                <p className="mt-1 text-xs leading-5 text-(--admin-text-muted)">
+                <p className={`${dashboardType.body} mt-1 hidden sm:block`}>
                   {signal.note}
                 </p>
               </div>
@@ -431,14 +449,14 @@ function OverviewHero() {
           </div>
         </div>
 
-        <div className="min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface-elevated) p-4">
+        <div className="hidden min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface-elevated) p-3 sm:block sm:p-4">
           <div className="flex min-w-0 items-start gap-4">
             <FaceScanSignal />
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-(--admin-text)">
+              <p className={dashboardType.cardTitle}>
                 AI scan signal board
               </p>
-              <p className="mt-2 text-xs leading-5 text-(--admin-text-muted)">
+              <p className={`${dashboardType.body} mt-2 hidden sm:block`}>
                 Preview-only readiness snapshot for guidance and content quality checks.
               </p>
             </div>
@@ -453,12 +471,12 @@ function OverviewHero() {
                 <SignalDot tone={row.tone === "success" ? "success" : row.tone === "warning" ? "warning" : "info"} />
                 <div className="min-w-0">
                   <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span className="min-w-0 font-semibold text-(--admin-text)">
+                    <span className={`min-w-0 ${dashboardType.cardTitle}`}>
                       {row.label}
                     </span>
                     <StatusBadge label={row.status} tone={row.tone} />
                   </div>
-                  <p className="mt-1 text-xs leading-5 text-(--admin-text-muted)">
+                  <p className={`${dashboardType.body} mt-1`}>
                     {row.meta}
                   </p>
                 </div>
@@ -486,12 +504,12 @@ function QualityBar({
     <div className="min-w-0 space-y-2">
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-(--admin-text)">{label}</p>
-          <p className="mt-1 text-xs leading-5 text-(--admin-text-muted)">
+          <p className={dashboardType.cardTitle}>{label}</p>
+          <p className={`${dashboardType.body} mt-1`}>
             {note}
           </p>
         </div>
-        <span className={`shrink-0 text-sm font-semibold ${accentText[tone]}`}>
+        <span className={`shrink-0 text-sm font-semibold leading-5 ${accentText[tone]}`}>
           {value}%
         </span>
       </div>
@@ -511,14 +529,14 @@ function QualityBar({
 
 export function DashboardPlaceholder() {
   return (
-    <div className="min-w-0 space-y-6 overflow-hidden">
+    <div className="min-w-0 space-y-5 overflow-hidden sm:space-y-6">
       <PageHeader
-        description="Monitor Skin Analyzer review queues, AI scan signals, media readiness, publishing health, and system trust using static preview data."
+        description="Track review queues, AI signals, media, and publishing health using static preview data."
         permission={PERMISSIONS.dashboardView}
         title="AI Skin Analysis Operations"
       />
 
-      <div className="flex min-w-0 flex-col items-start justify-between gap-3 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) px-4 py-3 shadow-(--shadow-subtle) sm:flex-row sm:items-center">
+      <div className="hidden min-w-0 flex-col items-start justify-between gap-3 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) px-4 py-3 shadow-(--shadow-subtle) sm:flex sm:flex-row sm:items-center">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <Badge variant="outline">Protected dashboard</Badge>
           <Badge variant="muted">No backend reads</Badge>
@@ -532,7 +550,7 @@ export function DashboardPlaceholder() {
 
       <OverviewHero />
 
-      <section aria-label="Dashboard operational metrics" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="Dashboard operational metrics" className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         {metricItems.map((item) => (
           <MetricCard item={item} key={item.label} />
         ))}
@@ -556,16 +574,16 @@ export function DashboardPlaceholder() {
                 </div>
                 <div className="min-w-0">
                   <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <h3 className="font-semibold text-(--admin-text)">
+                    <h3 className={dashboardType.cardTitle}>
                       {item.label}
                     </h3>
                     <StatusBadge label={item.priority} tone={item.tone} />
                   </div>
-                  <p className="mt-1 text-sm leading-5 text-(--admin-text-muted)">
+                  <p className={`${dashboardType.body} mt-1`}>
                     {item.detail}
                   </p>
                 </div>
-                <p className="text-sm font-medium text-(--admin-text-muted) sm:text-right">
+                <p className={`${dashboardType.statusLabel} text-(--admin-text-muted) sm:text-right`}>
                   {item.owner}
                 </p>
               </div>
@@ -610,17 +628,17 @@ export function DashboardPlaceholder() {
                   >
                     <Icon aria-hidden="true" size={18} />
                   </span>
-                  <span className="min-w-0 text-sm font-semibold leading-5 text-(--admin-text)">
+                  <span className={`min-w-0 ${dashboardType.cardTitle}`}>
                     {item.label}
                   </span>
-                  <span className={`text-lg font-semibold ${accentText[item.tone]}`}>
+                  <span className={`text-lg font-semibold leading-6 ${accentText[item.tone]}`}>
                     {item.value}
                   </span>
                 </div>
               );
             })}
           </div>
-          <p className="mt-4 rounded-(--admin-radius-control) bg-(--admin-surface-elevated) px-3 py-2 text-xs leading-5 text-(--admin-text-muted)">
+          <p className={`${dashboardType.body} mt-4 rounded-(--admin-radius-control) bg-(--admin-surface-elevated) px-3 py-2`}>
             Media data is a static dashboard preview; upload and library workflows remain deferred.
           </p>
         </DashboardPanel>
@@ -637,15 +655,15 @@ export function DashboardPlaceholder() {
                 <SignalDot tone={event.tone === "success" ? "success" : event.tone === "warning" ? "warning" : "info"} />
                 <div className="min-w-0">
                   <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span className="min-w-0 break-words text-sm font-semibold text-(--admin-text)">
+                    <span className={`min-w-0 break-words ${dashboardType.cardTitle}`}>
                       {event.path}
                     </span>
                     <StatusBadge label={event.status} tone={event.tone} />
                   </div>
-                  <p className="mt-1 text-xs leading-5 text-(--admin-text-muted)">
+                  <p className={`${dashboardType.body} mt-1`}>
                     {event.summary}
                   </p>
-                  <p className="mt-1 text-xs font-medium text-(--admin-text-muted)">
+                  <p className="mt-1 text-xs font-medium leading-4 text-(--admin-text-muted)">
                     {event.time}
                   </p>
                 </div>
@@ -673,10 +691,10 @@ export function DashboardPlaceholder() {
                     <Icon aria-hidden="true" size={18} />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-(--admin-text)">
+                    <span className={`block ${dashboardType.cardTitle}`}>
                       {action.label}
                     </span>
-                    <span className="mt-1 block text-xs leading-5 text-(--admin-text-muted)">
+                    <span className={`${dashboardType.body} mt-1 block`}>
                       {action.meta}
                     </span>
                   </span>
@@ -706,10 +724,10 @@ export function DashboardPlaceholder() {
                   <Icon aria-hidden="true" size={18} />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-(--admin-text)">
+                  <span className={`block ${dashboardType.cardTitle}`}>
                     {item.label}
                   </span>
-                  <span className="mt-1 block text-xs leading-5 text-(--admin-text-muted)">
+                  <span className={`${dashboardType.body} mt-1 block`}>
                     {item.meta}
                   </span>
                 </span>

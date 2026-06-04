@@ -7,6 +7,26 @@
   --admin-border: #e2e8f0;
   --admin-text: #0f172a;
   --admin-text-muted: #64748b;
+  --admin-text-page-title: clamp(1.625rem, 1.48rem + 0.48vw, 1.875rem);
+  --admin-leading-page-title: clamp(2rem, 1.76rem + 0.64vw, 2.25rem);
+  --admin-text-page-eyebrow: 0.75rem;
+  --admin-leading-page-eyebrow: 1rem;
+  --admin-text-hero-title: clamp(1.375rem, 1.25rem + 0.36vw, 1.5rem);
+  --admin-leading-hero-title: clamp(1.75rem, 1.6rem + 0.44vw, 1.875rem);
+  --admin-text-hero-body: 0.875rem;
+  --admin-leading-hero-body: 1.5rem;
+  --admin-text-section-title: clamp(0.9375rem, 0.9rem + 0.12vw, 1rem);
+  --admin-leading-section-title: 1.375rem;
+  --admin-text-card-title: clamp(0.8125rem, 0.78rem + 0.12vw, 0.875rem);
+  --admin-leading-card-title: 1.25rem;
+  --admin-text-metric: clamp(1.625rem, 1.24rem + 0.98vw, 2rem);
+  --admin-leading-metric: clamp(2rem, 1.56rem + 1.12vw, 2.25rem);
+  --admin-text-label: 0.75rem;
+  --admin-leading-label: 1rem;
+  --admin-text-body: clamp(0.8125rem, 0.79rem + 0.08vw, 0.875rem);
+  --admin-leading-body: clamp(1.25rem, 1.18rem + 0.2vw, 1.5rem);
+  --admin-text-caption: 0.75rem;
+  --admin-leading-caption: 1rem;
 
   --admin-sidebar: #f8fafc;
   --admin-sidebar-elevated: #f1f5f9;
