@@ -194,7 +194,7 @@ export function Topbar() {
         className="sticky top-0 z-30 border-b border-(--admin-topbar-border) bg-(--admin-topbar)"
         ref={rootRef}
       >
-        <div className="flex min-h-19 items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
+        <div className="flex min-h-16 items-center justify-between gap-2 px-4 sm:gap-2.5 sm:px-6 lg:px-8">
           <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
             <MobileSidebarDrawer />
 
@@ -203,7 +203,7 @@ export function Topbar() {
               aria-expanded={commandOpen}
               aria-haspopup="dialog"
               className={cn(
-                "hidden h-11 w-full max-w-md justify-start gap-3 border-(--admin-topbar-border) bg-(--admin-dropdown) px-3 text-(--admin-text-muted) shadow-(--shadow-subtle) transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) hover:bg-(--admin-dropdown-highlight) hover:text-(--admin-dropdown-highlight-foreground) focus-visible:ring-(--admin-command-focus) active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none md:flex",
+                "hidden h-9 w-full max-w-sm justify-start gap-2.5 border-(--admin-topbar-border) bg-(--admin-dropdown) px-3 text-(--admin-text-muted) shadow-(--shadow-subtle) transition-[background-color,border-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) ring-offset-(--admin-topbar) hover:bg-(--admin-dropdown-highlight) hover:text-(--admin-dropdown-highlight-foreground) focus-visible:ring-(--admin-command-focus) active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none md:flex",
                 commandOpen &&
                   "border-(--admin-command-focus) bg-(--admin-dropdown-highlight) text-(--admin-dropdown-highlight-foreground)"
               )}
@@ -211,25 +211,25 @@ export function Topbar() {
               type="button"
               variant="secondary"
             >
-              <Search aria-hidden="true" className="h-5 w-5 shrink-0" />
-              <span className="min-w-0 flex-1 truncate text-left text-sm font-medium">
-                Search content, pages, tags...
+              <Search aria-hidden="true" className="h-4 w-4 shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left text-sm font-normal">
+                Search admin...
               </span>
-              <span className="flex shrink-0 items-center gap-1 rounded-lg border border-(--admin-topbar-border) bg-(--admin-surface-elevated) px-2 py-1 text-xs font-semibold text-(--admin-text-muted)">
-                <Command aria-hidden="true" className="h-3.5 w-3.5" />
+              <span className="flex shrink-0 items-center gap-1 rounded-md border border-(--admin-topbar-border) bg-(--admin-surface-elevated) px-1.5 py-0.5 text-[0.6875rem] font-semibold leading-4 text-(--admin-text-muted)">
+                <Command aria-hidden="true" className="h-3 w-3" />
                 K
               </span>
             </Button>
           </div>
 
-          <div className="relative flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <div className="relative flex shrink-0 items-center gap-1 sm:gap-1.5">
             <Button
               aria-controls="admin-topbar-command"
               aria-expanded={commandOpen}
               aria-haspopup="dialog"
               aria-label="Open command search"
               className={cn(
-                "transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none md:hidden",
+                "h-10 w-10 transition-[background-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none md:hidden",
                 commandOpen &&
                   "bg-(--admin-dropdown-highlight) text-(--admin-dropdown-highlight-foreground)"
               )}
@@ -238,7 +238,7 @@ export function Topbar() {
               type="button"
               variant="ghost"
             >
-              <Search aria-hidden="true" className="h-5 w-5" />
+              <Search aria-hidden="true" className="h-4 w-4" />
             </Button>
 
             <Button
@@ -247,7 +247,7 @@ export function Topbar() {
               aria-haspopup="menu"
               aria-label="Notifications"
               className={cn(
-                "relative transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none",
+                "relative h-10 w-10 transition-[background-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none sm:h-9 sm:w-9",
                 notificationsOpen &&
                   "bg-(--admin-dropdown-highlight) text-(--admin-dropdown-highlight-foreground)"
               )}
@@ -256,20 +256,20 @@ export function Topbar() {
               type="button"
               variant="ghost"
             >
-              <Bell aria-hidden="true" className="h-5 w-5" />
-              <span className="absolute right-2 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-(--admin-notification-accent) px-1 text-[10px] font-semibold leading-none text-(--admin-action-foreground)">
+              <Bell aria-hidden="true" className="h-4 w-4" />
+              <span className="absolute right-1.5 top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-(--admin-notification-accent) px-1 text-[9px] font-semibold leading-none text-(--admin-action-foreground)">
                 3
               </span>
             </Button>
 
             <Button
               aria-label="Help"
-              className="hidden transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none xl:inline-flex"
+              className="hidden h-9 w-9 transition-[background-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none xl:inline-flex"
               size="icon"
               type="button"
               variant="ghost"
             >
-              <CircleHelp aria-hidden="true" className="h-5 w-5" />
+              <CircleHelp aria-hidden="true" className="h-4 w-4" />
             </Button>
 
             <Button
@@ -278,7 +278,7 @@ export function Topbar() {
               aria-haspopup="menu"
               aria-label="Profile menu for Sompong C."
               className={cn(
-                "h-10 gap-2 rounded-(--admin-radius-control) px-1.5 transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-[0.98] motion-reduce:transition-none motion-reduce:transform-none sm:px-2",
+                "h-9 gap-1.5 rounded-(--admin-radius-control) px-1.5 transition-[background-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-[0.98] motion-reduce:transition-none motion-reduce:transform-none sm:px-2",
                 profileOpen &&
                   "bg-(--admin-dropdown-highlight) text-(--admin-dropdown-highlight-foreground)"
               )}
@@ -286,17 +286,17 @@ export function Topbar() {
               type="button"
               variant="ghost"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-(--admin-topbar-border) bg-(--admin-primary-soft) text-xs font-semibold text-(--admin-primary)">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-(--admin-topbar-border) bg-(--admin-primary-soft) text-[0.6875rem] font-semibold leading-4 text-(--admin-primary)">
                 SC
               </span>
-              <span className="hidden min-w-0 items-center gap-2 sm:flex">
-                <span className="max-w-32 truncate text-sm font-semibold text-(--admin-text)">
+              <span className="hidden min-w-0 items-center gap-1.5 sm:flex">
+                <span className="max-w-28 truncate text-sm font-medium text-(--admin-text)">
                   Sompong C.
                 </span>
                 <ChevronDown
                   aria-hidden="true"
                   className={cn(
-                    "h-4 w-4 shrink-0 text-(--admin-text-muted) transition-transform duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] motion-reduce:transition-none motion-reduce:transform-none",
+                    "h-3.5 w-3.5 shrink-0 text-(--admin-text-muted) transition-transform duration-(--admin-motion-fast) ease-(--admin-motion-ease) motion-reduce:transition-none motion-reduce:transform-none",
                     profileOpen && "rotate-180"
                   )}
                 />
@@ -344,10 +344,10 @@ function NotificationsDropdown() {
         </Badge>
       </div>
       <Separator className="bg-(--admin-topbar-border)" />
-      <div className="max-h-[21rem] overflow-y-auto p-2">
+      <div className="max-h-84 overflow-y-auto p-2">
         {notificationItems.map((item) => (
           <button
-            className="grid w-full grid-cols-[auto_1fr] gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] hover:bg-(--admin-dropdown-highlight) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-dropdown)"
+            className="grid w-full grid-cols-[auto_1fr] gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-[background-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) hover:bg-(--admin-dropdown-highlight) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-dropdown)"
             key={item.label}
             role="menuitem"
             type="button"
@@ -410,7 +410,7 @@ function ProfileDropdown() {
 
           return (
             <button
-              className="grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] hover:bg-(--admin-dropdown-highlight) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-dropdown)"
+              className="grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-[background-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) hover:bg-(--admin-dropdown-highlight) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-dropdown)"
               key={item.label}
               role="menuitem"
               type="button"
@@ -489,7 +489,7 @@ function CommandPanel({
           />
           <Button
             aria-label="Close command search"
-            className="transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-dropdown) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
+            className="transition-[background-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) ring-offset-(--admin-dropdown) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
             onClick={onClose}
             size="icon"
             type="button"
@@ -512,7 +512,7 @@ function CommandPanel({
               <button
                 aria-selected={selected}
                 className={cn(
-                  "grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-dropdown)",
+                  "grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-[background-color,border-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-dropdown)",
                   selected
                     ? "bg-(--admin-command-highlight) text-(--admin-command-highlight-foreground)"
                     : "text-(--admin-text) hover:bg-(--admin-dropdown-highlight) hover:text-(--admin-dropdown-highlight-foreground)"
@@ -525,7 +525,7 @@ function CommandPanel({
               >
                 <span
                   className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-(--admin-radius-control) border transition-[background-color,border-color,color] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] motion-reduce:transition-none",
+                    "flex h-9 w-9 items-center justify-center rounded-(--admin-radius-control) border transition-[background-color,border-color,color] duration-(--admin-motion-fast) ease-(--admin-motion-ease) motion-reduce:transition-none",
                     selected
                       ? "border-(--admin-command-highlight-foreground)"
                       : "border-(--admin-topbar-border) bg-(--admin-surface-elevated) text-(--admin-primary)"

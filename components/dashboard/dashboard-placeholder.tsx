@@ -353,7 +353,7 @@ function SignalDot({ tone }: { tone: AccentTone }) {
 function ReviewButton({ children = "Review" }: { children?: ReactNode }) {
   return (
     <Button
-      className="transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] active:scale-[0.98] motion-reduce:transition-none motion-reduce:transform-none"
+      className="transition-[background-color,border-color,color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) active:scale-[0.98] motion-reduce:transition-none motion-reduce:transform-none"
       size="sm"
       type="button"
       variant="secondary"
@@ -368,7 +368,7 @@ function MetricCard({ item }: { item: MetricItem }) {
   const Icon = item.icon;
 
   return (
-    <article className="min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-4 shadow-(--shadow-subtle) transition-[background-color,border-color,box-shadow] duration-[var(--admin-motion-base)] ease-[var(--admin-motion-ease)] hover:border-(--admin-selected) hover:shadow-(--admin-shadow-card) motion-reduce:transition-none sm:p-5">
+    <article className="min-w-0 rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) p-4 shadow-(--shadow-subtle) transition-[background-color,border-color,box-shadow] duration-(--admin-motion-base) ease-(--admin-motion-ease) hover:border-(--admin-selected) hover:shadow-(--admin-shadow-card) motion-reduce:transition-none sm:p-5">
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0">
           <p className={`${dashboardType.metric} ${accentText[item.tone]}`}>
@@ -688,11 +688,11 @@ export function DashboardPlaceholder() {
 
               return (
                 <button
-                  className="group grid w-full min-w-0 grid-cols-[auto_1fr_auto] items-center gap-3 rounded-(--admin-radius-control) px-2 py-3 text-left transition-[background-color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] hover:bg-(--admin-surface-elevated) hover:shadow-(--shadow-subtle) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-surface)"
+                  className="group grid w-full min-w-0 grid-cols-[auto_1fr_auto] items-center gap-3 rounded-(--admin-radius-control) px-2 py-3 text-left transition-[background-color,box-shadow,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) hover:bg-(--admin-surface-elevated) hover:shadow-(--shadow-subtle) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-surface)"
                   key={action.label}
                   type="button"
                 >
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) bg-(--admin-selected) text-(--admin-action) transition-[background-color,color,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:transform-none">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) bg-(--admin-selected) text-(--admin-action) transition-[background-color,color,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:transform-none">
                     <Icon aria-hidden="true" size={18} />
                   </span>
                   <span className="min-w-0">
@@ -705,7 +705,7 @@ export function DashboardPlaceholder() {
                   </span>
                   <ArrowRight
                     aria-hidden="true"
-                    className="shrink-0 text-(--admin-text-muted) transition-[color,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] group-hover:translate-x-0.5 group-hover:text-(--admin-action) motion-reduce:transition-none motion-reduce:transform-none"
+                    className="shrink-0 text-(--admin-text-muted) transition-[color,transform] duration-(--admin-motion-fast) ease-(--admin-motion-ease) group-hover:translate-x-0.5 group-hover:text-(--admin-action) motion-reduce:transition-none motion-reduce:transform-none"
                     size={16}
                   />
                 </button>
