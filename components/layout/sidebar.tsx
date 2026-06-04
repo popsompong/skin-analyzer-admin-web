@@ -56,6 +56,9 @@ const icons: Record<AdminMenuIcon, React.ComponentType<{ className?: string }>> 
   tips: Lightbulb
 };
 
+const sidebarTooltipContentClassName =
+  "rounded-(--admin-radius-control) border border-(--admin-sidebar-border) !bg-(--admin-dropdown) px-3 py-2 text-xs font-semibold leading-4 !text-(--admin-selected-foreground) shadow-(--admin-shadow-card) [&_polygon]:!fill-(--admin-dropdown) [&_svg]:!bg-(--admin-dropdown) [&_svg]:!fill-(--admin-dropdown)";
+
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const CollapseIcon = collapsed ? PanelLeftOpen : PanelLeftClose;
@@ -90,7 +93,11 @@ export function Sidebar() {
               <CollapseIcon aria-hidden="true" className="h-4 w-4" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={8}>
+          <TooltipContent
+            className={sidebarTooltipContentClassName}
+            side="right"
+            sideOffset={8}
+          >
             {collapseLabel}
           </TooltipContent>
         </Tooltip>

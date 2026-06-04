@@ -21,6 +21,9 @@ type NavItemProps = {
   surface?: "sidebar" | "drawer";
 };
 
+const navTooltipContentClassName =
+  "rounded-(--admin-radius-control) border border-(--admin-sidebar-border) !bg-(--admin-dropdown) px-3 py-2 text-xs font-semibold leading-4 !text-(--admin-selected-foreground) shadow-(--admin-shadow-card) [&_polygon]:!fill-(--admin-dropdown) [&_svg]:!bg-(--admin-dropdown) [&_svg]:!fill-(--admin-dropdown)";
+
 export function NavItem({
   badge,
   collapsed = false,
@@ -59,11 +62,11 @@ export function NavItem({
       aria-label={collapsed ? accessibleLabel : undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "relative flex min-h-11 items-center gap-3 overflow-hidden rounded-(--admin-radius-control) border border-transparent px-3 py-2.5 text-sm font-semibold text-(--admin-sidebar-muted) transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-[0.985] motion-reduce:transition-none motion-reduce:transform-none",
+        "relative flex min-h-11 items-center gap-3 overflow-hidden rounded-(--admin-radius-control) border border-transparent px-3 py-2.5 text-sm font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-[0.985] motion-reduce:transition-none motion-reduce:transform-none",
         ringOffsetClass,
-        "hover:border-(--admin-sidebar-border) hover:bg-(--admin-sidebar-hover) hover:text-(--admin-sidebar-hover-foreground)",
-        active &&
-          "border-(--admin-sidebar-active) bg-(--admin-sidebar-active) text-(--admin-sidebar-active-foreground) hover:border-(--admin-sidebar-active) hover:bg-(--admin-sidebar-active) hover:text-(--admin-sidebar-active-foreground)",
+        active
+          ? "border-(--admin-sidebar-active) bg-(--admin-sidebar-active) !text-(--admin-sidebar-active-foreground) hover:border-(--admin-sidebar-active) hover:bg-(--admin-sidebar-active) hover:!text-(--admin-sidebar-active-foreground)"
+          : "text-(--admin-sidebar-muted) hover:border-(--admin-sidebar-border) hover:bg-(--admin-sidebar-hover) hover:text-(--admin-sidebar-hover-foreground)",
         collapsed && "justify-center gap-0 px-0"
       )}
       href={href}
@@ -72,10 +75,21 @@ export function NavItem({
       {active ? (
         <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-(--admin-sidebar-active-accent)" />
       ) : null}
-      <span className="shrink-0 transition-transform duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] motion-reduce:transition-none motion-reduce:transform-none">
+      <span
+        className={cn(
+          "shrink-0 transition-[color,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] motion-reduce:transition-none motion-reduce:transform-none",
+          active && "text-(--admin-sidebar-active-foreground)"
+        )}
+      >
         {icon}
       </span>
-      <span className={cn("min-w-0 flex-1 truncate", collapsed && "sr-only")}>
+      <span
+        className={cn(
+          "min-w-0 flex-1 truncate",
+          active && "text-(--admin-sidebar-active-foreground)",
+          collapsed && "sr-only"
+        )}
+      >
         {label}
       </span>
       {badge ? (
@@ -102,7 +116,11 @@ export function NavItem({
   return (
     <Tooltip>
       <TooltipTrigger asChild>{link}</TooltipTrigger>
-      <TooltipContent side="right" sideOffset={8}>
+      <TooltipContent
+        className={navTooltipContentClassName}
+        side="right"
+        sideOffset={8}
+      >
         {tooltipLabel}
       </TooltipContent>
     </Tooltip>
