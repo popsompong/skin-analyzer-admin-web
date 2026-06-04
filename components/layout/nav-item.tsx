@@ -59,7 +59,7 @@ export function NavItem({
       aria-label={collapsed ? accessibleLabel : undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "relative flex min-h-11 items-center gap-3 overflow-hidden rounded-(--admin-radius-control) border border-transparent px-3 py-2.5 text-sm font-semibold text-(--admin-sidebar-muted) transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2",
+        "relative flex min-h-11 items-center gap-3 overflow-hidden rounded-(--admin-radius-control) border border-transparent px-3 py-2.5 text-sm font-semibold text-(--admin-sidebar-muted) transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-[0.985] motion-reduce:transition-none motion-reduce:transform-none",
         ringOffsetClass,
         "hover:border-(--admin-sidebar-border) hover:bg-(--admin-sidebar-hover) hover:text-(--admin-sidebar-hover-foreground)",
         active &&
@@ -72,7 +72,9 @@ export function NavItem({
       {active ? (
         <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-(--admin-sidebar-active-accent)" />
       ) : null}
-      <span className="shrink-0">{icon}</span>
+      <span className="shrink-0 transition-transform duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] motion-reduce:transition-none motion-reduce:transform-none">
+        {icon}
+      </span>
       <span className={cn("min-w-0 flex-1 truncate", collapsed && "sr-only")}>
         {label}
       </span>

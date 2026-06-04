@@ -75,6 +75,11 @@
   --admin-radius-control: 14px;
   --admin-shadow-card: 0 18px 45px rgba(15, 23, 42, 0.08);
   --admin-focus-ring: var(--admin-command-focus);
+  --admin-motion-fast: 140ms;
+  --admin-motion-base: 180ms;
+  --admin-motion-slow: 220ms;
+  --admin-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --admin-motion-ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   --background: var(--admin-bg);
   --foreground: var(--admin-text);
@@ -126,4 +131,89 @@ select {
 ::selection {
   background: var(--brand-muted);
   color: var(--text-primary);
+}
+
+@keyframes admin-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes admin-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes admin-collapsible-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+
+  to {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes admin-collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+.admin-motion-panel-in {
+  animation: admin-panel-in var(--admin-motion-base)
+    var(--admin-motion-ease-emphasized) both;
+}
+
+.admin-motion-dropdown-in {
+  animation: admin-panel-in var(--admin-motion-fast)
+    var(--admin-motion-ease) both;
+  transform-origin: top right;
+}
+
+.admin-motion-backdrop-in {
+  animation: admin-backdrop-in var(--admin-motion-fast)
+    var(--admin-motion-ease) both;
+}
+
+.admin-motion-collapsible {
+  overflow: hidden;
+}
+
+.admin-motion-collapsible[data-state="open"] {
+  animation: admin-collapsible-down var(--admin-motion-slow)
+    var(--admin-motion-ease-emphasized) both;
+}
+
+.admin-motion-collapsible[data-state="closed"] {
+  animation: admin-collapsible-up var(--admin-motion-base)
+    var(--admin-motion-ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-motion-panel-in,
+  .admin-motion-dropdown-in,
+  .admin-motion-backdrop-in,
+  .admin-motion-collapsible {
+    animation: none;
+  }
 }

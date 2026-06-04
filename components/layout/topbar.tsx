@@ -203,7 +203,7 @@ export function Topbar() {
               aria-expanded={commandOpen}
               aria-haspopup="dialog"
               className={cn(
-                "hidden h-11 w-full max-w-md justify-start gap-3 border-(--admin-topbar-border) bg-(--admin-dropdown) px-3 text-(--admin-text-muted) shadow-(--shadow-subtle) ring-offset-(--admin-topbar) hover:bg-(--admin-dropdown-highlight) hover:text-(--admin-dropdown-highlight-foreground) focus-visible:ring-(--admin-command-focus) md:flex",
+                "hidden h-11 w-full max-w-md justify-start gap-3 border-(--admin-topbar-border) bg-(--admin-dropdown) px-3 text-(--admin-text-muted) shadow-(--shadow-subtle) transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) hover:bg-(--admin-dropdown-highlight) hover:text-(--admin-dropdown-highlight-foreground) focus-visible:ring-(--admin-command-focus) active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none md:flex",
                 commandOpen &&
                   "border-(--admin-command-focus) bg-(--admin-dropdown-highlight) text-(--admin-dropdown-highlight-foreground)"
               )}
@@ -229,7 +229,7 @@ export function Topbar() {
               aria-haspopup="dialog"
               aria-label="Open command search"
               className={cn(
-                "ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) md:hidden",
+                "transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none md:hidden",
                 commandOpen &&
                   "bg-(--admin-dropdown-highlight) text-(--admin-dropdown-highlight-foreground)"
               )}
@@ -247,7 +247,7 @@ export function Topbar() {
               aria-haspopup="menu"
               aria-label="Notifications"
               className={cn(
-                "relative ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus)",
+                "relative transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none",
                 notificationsOpen &&
                   "bg-(--admin-dropdown-highlight) text-(--admin-dropdown-highlight-foreground)"
               )}
@@ -264,7 +264,7 @@ export function Topbar() {
 
             <Button
               aria-label="Help"
-              className="hidden ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) xl:inline-flex"
+              className="hidden transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none xl:inline-flex"
               size="icon"
               type="button"
               variant="ghost"
@@ -278,7 +278,7 @@ export function Topbar() {
               aria-haspopup="menu"
               aria-label="Profile menu for Sompong C."
               className={cn(
-                "h-10 gap-2 rounded-(--admin-radius-control) px-1.5 ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) sm:px-2",
+                "h-10 gap-2 rounded-(--admin-radius-control) px-1.5 transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-topbar) focus-visible:ring-(--admin-command-focus) active:scale-[0.98] motion-reduce:transition-none motion-reduce:transform-none sm:px-2",
                 profileOpen &&
                   "bg-(--admin-dropdown-highlight) text-(--admin-dropdown-highlight-foreground)"
               )}
@@ -296,7 +296,7 @@ export function Topbar() {
                 <ChevronDown
                   aria-hidden="true"
                   className={cn(
-                    "h-4 w-4 shrink-0 text-(--admin-text-muted) transition-transform",
+                    "h-4 w-4 shrink-0 text-(--admin-text-muted) transition-transform duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] motion-reduce:transition-none motion-reduce:transform-none",
                     profileOpen && "rotate-180"
                   )}
                 />
@@ -328,7 +328,7 @@ function NotificationsDropdown() {
   return (
     <div
       aria-label="Notifications"
-      className="absolute right-0 top-12 z-40 w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-(--admin-radius-card) border border-(--admin-topbar-border) bg-(--admin-dropdown) text-(--admin-text) shadow-(--admin-shadow-card)"
+      className="admin-motion-dropdown-in absolute right-0 top-12 z-40 w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-(--admin-radius-card) border border-(--admin-topbar-border) bg-(--admin-dropdown) text-(--admin-text) shadow-(--admin-shadow-card)"
       id="admin-topbar-notifications"
       role="menu"
     >
@@ -347,7 +347,7 @@ function NotificationsDropdown() {
       <div className="max-h-[21rem] overflow-y-auto p-2">
         {notificationItems.map((item) => (
           <button
-            className="grid w-full grid-cols-[auto_1fr] gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-colors hover:bg-(--admin-dropdown-highlight) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 ring-offset-(--admin-dropdown)"
+            className="grid w-full grid-cols-[auto_1fr] gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] hover:bg-(--admin-dropdown-highlight) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-dropdown)"
             key={item.label}
             role="menuitem"
             type="button"
@@ -388,7 +388,7 @@ function ProfileDropdown() {
   return (
     <div
       aria-label="Profile menu"
-      className="absolute right-0 top-12 z-40 w-[min(calc(100vw-2rem),20rem)] overflow-hidden rounded-(--admin-radius-card) border border-(--admin-topbar-border) bg-(--admin-dropdown) text-(--admin-text) shadow-(--admin-shadow-card)"
+      className="admin-motion-dropdown-in absolute right-0 top-12 z-40 w-[min(calc(100vw-2rem),20rem)] overflow-hidden rounded-(--admin-radius-card) border border-(--admin-topbar-border) bg-(--admin-dropdown) text-(--admin-text) shadow-(--admin-shadow-card)"
       id="admin-topbar-profile"
       role="menu"
     >
@@ -410,7 +410,7 @@ function ProfileDropdown() {
 
           return (
             <button
-              className="grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-colors hover:bg-(--admin-dropdown-highlight) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 ring-offset-(--admin-dropdown)"
+              className="grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] hover:bg-(--admin-dropdown-highlight) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-dropdown)"
               key={item.label}
               role="menuitem"
               type="button"
@@ -456,13 +456,13 @@ function CommandPanel({
     <div className="fixed inset-0 z-40 flex items-start justify-center px-4 py-20 sm:py-24">
       <button
         aria-label="Close command search backdrop"
-        className="absolute inset-0 bg-(--admin-sidebar-drawer-backdrop)"
+        className="admin-motion-backdrop-in absolute inset-0 bg-(--admin-sidebar-drawer-backdrop)"
         onClick={onClose}
         type="button"
       />
       <div
         aria-label="Command search"
-        className="relative w-[min(calc(100vw-2rem),42rem)] overflow-hidden rounded-(--admin-radius-card) border border-(--admin-topbar-border) bg-(--admin-dropdown) text-(--admin-text) shadow-(--admin-shadow-card)"
+        className="admin-motion-panel-in relative w-[min(calc(100vw-2rem),42rem)] overflow-hidden rounded-(--admin-radius-card) border border-(--admin-topbar-border) bg-(--admin-dropdown) text-(--admin-text) shadow-(--admin-shadow-card)"
         id="admin-topbar-command"
         onKeyDown={onKeyDown}
         role="dialog"
@@ -489,7 +489,7 @@ function CommandPanel({
           />
           <Button
             aria-label="Close command search"
-            className="ring-offset-(--admin-dropdown) focus-visible:ring-(--admin-command-focus)"
+            className="transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] ring-offset-(--admin-dropdown) focus-visible:ring-(--admin-command-focus) active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
             onClick={onClose}
             size="icon"
             type="button"
@@ -512,7 +512,7 @@ function CommandPanel({
               <button
                 aria-selected={selected}
                 className={cn(
-                  "grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 ring-offset-(--admin-dropdown)",
+                  "grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 rounded-(--admin-radius-control) px-3 py-3 text-left transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-dropdown)",
                   selected
                     ? "bg-(--admin-command-highlight) text-(--admin-command-highlight-foreground)"
                     : "text-(--admin-text) hover:bg-(--admin-dropdown-highlight) hover:text-(--admin-dropdown-highlight-foreground)"
@@ -525,7 +525,7 @@ function CommandPanel({
               >
                 <span
                   className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-(--admin-radius-control) border",
+                    "flex h-9 w-9 items-center justify-center rounded-(--admin-radius-control) border transition-[background-color,border-color,color] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] motion-reduce:transition-none",
                     selected
                       ? "border-(--admin-command-highlight-foreground)"
                       : "border-(--admin-topbar-border) bg-(--admin-surface-elevated) text-(--admin-primary)"

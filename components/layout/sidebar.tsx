@@ -65,7 +65,7 @@ export function Sidebar() {
     <TooltipProvider delayDuration={120}>
       <aside
         className={cn(
-          "sticky top-0 hidden h-screen shrink-0 border-r border-(--admin-sidebar-border) text-(--admin-sidebar-text) transition-[width] duration-150 ease-out lg:flex lg:flex-col",
+          "sticky top-0 hidden h-screen shrink-0 border-r border-(--admin-sidebar-border) text-(--admin-sidebar-text) transition-[width,background-color,border-color] duration-[var(--admin-motion-slow)] ease-[var(--admin-motion-ease-emphasized)] motion-reduce:transition-none lg:flex lg:flex-col",
           collapsed
             ? "w-[72px] bg-(--admin-sidebar-rail)"
             : "w-62 bg-(--admin-sidebar)"
@@ -78,7 +78,7 @@ export function Sidebar() {
               aria-expanded={!collapsed}
               aria-label={collapseLabel}
               className={cn(
-                "absolute top-5 -right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full border border-(--admin-sidebar-border) text-(--admin-sidebar-muted) shadow-(--shadow-subtle) transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 ring-offset-(--admin-sidebar)",
+                "absolute top-5 -right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full border border-(--admin-sidebar-border) text-(--admin-sidebar-muted) shadow-(--shadow-subtle) transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-sidebar)",
                 collapsed
                   ? "bg-(--admin-sidebar-rail)"
                   : "bg-(--admin-sidebar)",
@@ -118,14 +118,14 @@ export function MobileSidebarDrawer() {
       <SheetTrigger asChild>
         <button
           aria-label="Open admin navigation"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) text-(--admin-text-muted) transition-colors hover:bg-(--admin-surface-elevated) hover:text-(--admin-text) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 ring-offset-(--admin-topbar) lg:hidden"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-(--admin-radius-control) text-(--admin-text-muted) transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] hover:bg-(--admin-surface-elevated) hover:text-(--admin-text) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-command-focus) focus-visible:ring-offset-2 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-topbar) lg:hidden"
           type="button"
         >
           <Menu aria-hidden="true" className="h-5 w-5" />
         </button>
       </SheetTrigger>
       <SheetContent
-        className="w-[min(17.5rem,calc(100vw-1.5rem))] max-w-[17.5rem] gap-0 border-(--admin-sidebar-border) bg-(--admin-sidebar-drawer) p-0 text-(--admin-sidebar-text) shadow-(--admin-shadow-card) sm:max-w-[17.5rem]"
+        className="w-[min(17.5rem,calc(100vw-1.5rem))] max-w-[17.5rem] gap-0 border-(--admin-sidebar-border) bg-(--admin-sidebar-drawer) p-0 text-(--admin-sidebar-text) shadow-(--admin-shadow-card) ease-[var(--admin-motion-ease-emphasized)] data-[state=closed]:duration-[var(--admin-motion-base)] data-[state=open]:duration-[var(--admin-motion-slow)] motion-reduce:transition-none sm:max-w-[17.5rem]"
         data-admin-mobile-sidebar-drawer="true"
         showCloseButton={false}
         side="left"
@@ -153,7 +153,7 @@ export function MobileSidebarDrawer() {
             <SheetClose asChild>
               <button
                 aria-label="Close admin navigation"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-(--admin-radius-control) text-(--admin-sidebar-muted) transition-colors hover:bg-(--admin-sidebar-hover) hover:text-(--admin-sidebar-hover-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 ring-offset-(--admin-sidebar-drawer)"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-(--admin-radius-control) text-(--admin-sidebar-muted) transition-[background-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] hover:bg-(--admin-sidebar-hover) hover:text-(--admin-sidebar-hover-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ring-offset-(--admin-sidebar-drawer)"
                 type="button"
               >
                 <X aria-hidden="true" className="h-4 w-4" />
@@ -343,7 +343,7 @@ function SidebarSection({
     <Collapsible className="mt-5" onOpenChange={setOpen} open={open}>
       <CollapsibleTrigger
         className={cn(
-          "group relative flex min-h-9 w-full items-center gap-2 rounded-(--admin-radius-control) border border-transparent px-3 text-left text-xs font-semibold tracking-normal text-(--admin-sidebar-muted) transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2",
+          "group relative flex min-h-9 w-full items-center gap-2 rounded-(--admin-radius-control) border border-transparent px-3 text-left text-xs font-semibold tracking-normal text-(--admin-sidebar-muted) transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--admin-motion-fast)] ease-[var(--admin-motion-ease)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--admin-sidebar-focus-ring) focus-visible:ring-offset-2 active:scale-[0.99] motion-reduce:transition-none motion-reduce:transform-none",
           ringOffsetClass,
           "hover:border-(--admin-sidebar-border) hover:bg-(--admin-sidebar-hover) hover:text-(--admin-sidebar-hover-foreground)",
           hasActiveItem &&
@@ -359,12 +359,12 @@ function SidebarSection({
         <ChevronDown
           aria-hidden="true"
           className={cn(
-            "h-4 w-4 shrink-0 transition-transform duration-150",
+            "h-4 w-4 shrink-0 transition-transform duration-[var(--admin-motion-base)] ease-[var(--admin-motion-ease)] motion-reduce:transition-none motion-reduce:transform-none",
             open ? "rotate-180" : "rotate-0"
           )}
         />
       </CollapsibleTrigger>
-      <CollapsibleContent className="mt-3 space-y-1.5">
+      <CollapsibleContent className="admin-motion-collapsible mt-3 space-y-1.5">
         {items.map((item) => (
           <SidebarNavItem
             item={item}
