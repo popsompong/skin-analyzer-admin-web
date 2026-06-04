@@ -655,7 +655,7 @@ export function DashboardPlaceholder() {
                 <SignalDot tone={event.tone === "success" ? "success" : event.tone === "warning" ? "warning" : "info"} />
                 <div className="min-w-0">
                   <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span className={`min-w-0 break-words ${dashboardType.cardTitle}`}>
+                    <span className={`min-w-0 wrap-break-word ${dashboardType.cardTitle}`}>
                       {event.path}
                     </span>
                     <StatusBadge label={event.status} tone={event.tone} />
