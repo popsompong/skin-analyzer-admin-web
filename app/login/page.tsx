@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, LifeBuoy, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,7 +31,7 @@ function LoginScanMark() {
   return (
     <div
       aria-hidden="true"
-      className="relative mx-auto flex size-36 items-center justify-center sm:size-44"
+      className="relative mx-auto flex size-18 items-center justify-center sm:size-24"
     >
       <div className="absolute inset-1 rounded-full border border-(--admin-sidebar-border) opacity-70" />
       <div className="absolute inset-8 rounded-full border border-(--admin-primary) opacity-35" />
@@ -108,6 +108,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
@@ -174,173 +175,143 @@ export default function LoginPage() {
   const passwordError = errors.password?.message;
 
   return (
-    <main className="min-h-screen bg-(--admin-bg) px-4 py-6 text-(--admin-text) sm:px-6 lg:px-8">
-      <section className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-md items-center justify-center">
-        <div className="w-full overflow-hidden rounded-(--admin-radius-card) border border-(--admin-sidebar-border) bg-(--admin-sidebar) p-4 shadow-(--admin-shadow-card) sm:p-5">
-          <div className="rounded-(--admin-radius-card) border border-(--admin-sidebar-border) bg-(--admin-sidebar-elevated) px-5 pb-5 pt-6 text-(--admin-sidebar-text) sm:px-6 sm:pb-6">
-            <div className="text-center">
-              <LoginScanMark />
-              <div className="mt-2 space-y-1">
-                <h1 className="text-3xl font-semibold tracking-normal text-(--admin-sidebar-text)">
-                  Skin Analyzer
-                </h1>
-                <p className="text-xl font-medium text-(--admin-sidebar-text)">
-                  Admin Web
-                </p>
-              </div>
-              <div className="mt-7 space-y-2">
-                <p className="text-2xl font-semibold tracking-normal">
-                  Welcome back
-                </p>
-                <p className="text-sm font-medium text-(--admin-sidebar-muted)">
-                  Please sign in to your account
-                </p>
-              </div>
+    <main className="min-h-dvh bg-(--admin-bg) px-4 py-4 text-(--admin-text) sm:px-6 sm:py-6 lg:px-8">
+      <section className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full max-w-[400px] items-center justify-center sm:min-h-[calc(100dvh-3rem)]">
+        <div className="w-full rounded-(--admin-radius-card) border border-(--admin-border) bg-(--admin-surface) px-5 py-6 shadow-(--admin-shadow-card) sm:px-7 sm:py-8 max-[360px]:px-4 max-[360px]:py-5">
+          <div className="text-center">
+            <LoginScanMark />
+            <div className="mt-3 space-y-1.5 sm:mt-4 sm:space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-normal text-(--admin-selected-foreground)">
+                ADMIN WEB
+              </p>
+              <h1 className="text-xl font-semibold tracking-normal text-(--admin-text) sm:text-2xl">
+                Skin Analyzer
+              </h1>
+              <p className="text-xs font-medium text-(--admin-text-muted) sm:text-sm">
+                Please sign in to your admin account
+              </p>
             </div>
+          </div>
 
-            <div className="mt-5 rounded-(--admin-radius-card) border border-(--admin-sidebar-border) bg-(--admin-sidebar-elevated) p-4 shadow-(--admin-shadow-card) sm:p-5">
-              <form
-                aria-label="Admin sign in"
-                className={hasFieldErrors ? "space-y-3" : "space-y-4"}
-                noValidate
-                onSubmit={onSubmit}
-              >
-                <label className="block text-sm font-semibold text-(--admin-sidebar-text)">
-                  Email
-                  <span className="relative mt-2 block">
-                    <input
-                      {...register("email")}
-                      aria-describedby={emailError ? "login-email-error" : undefined}
-                      aria-invalid={emailError ? "true" : "false"}
-                      autoComplete="email"
-                      className="h-11 w-full rounded-(--admin-radius-control) border border-(--admin-sidebar-border) bg-(--admin-sidebar) px-4 pr-11 text-sm font-medium text-(--admin-sidebar-text) outline-none ring-offset-(--admin-sidebar) placeholder:text-(--admin-sidebar-muted) focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring)"
-                      disabled={busy}
-                      placeholder="you@example.com"
-                      type="email"
-                    />
-                    <Mail
-                      aria-hidden="true"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-(--admin-sidebar-muted)"
-                      size={18}
-                    />
-                  </span>
-                </label>
-                {emailError ? (
-                  <span
-                    className="-mt-2 block text-xs font-semibold text-(--admin-danger)"
-                    id="login-email-error"
-                  >
-                    {emailError}
-                  </span>
-                ) : null}
-
-                <label className="block text-sm font-semibold text-(--admin-sidebar-text)">
-                  Password
-                  <span className="relative mt-2 block">
-                    <input
-                      {...register("password")}
-                      aria-describedby={
-                        passwordError ? "login-password-error" : undefined
-                      }
-                      aria-invalid={passwordError ? "true" : "false"}
-                      autoComplete="current-password"
-                      className="h-11 w-full rounded-(--admin-radius-control) border border-(--admin-sidebar-border) bg-(--admin-sidebar) px-4 pr-11 text-sm font-medium text-(--admin-sidebar-text) outline-none ring-offset-(--admin-sidebar) placeholder:text-(--admin-sidebar-muted) focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring)"
-                      disabled={busy}
-                      placeholder="Enter password"
-                      type="password"
-                    />
-                    <Eye
-                      aria-hidden="true"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-(--admin-sidebar-muted)"
-                      size={18}
-                    />
-                  </span>
-                </label>
-                {passwordError ? (
-                  <span
-                    className="-mt-2 block text-xs font-semibold text-(--admin-danger)"
-                    id="login-password-error"
-                  >
-                    {passwordError}
-                  </span>
-                ) : null}
-
-                <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
-                  <label className="flex shrink-0 items-center gap-2 whitespace-nowrap font-medium text-(--admin-sidebar-text)">
-                    <input
-                      checked={rememberMe}
-                      className="size-4 rounded border border-(--admin-sidebar-border) bg-(--admin-sidebar) accent-(--admin-primary)"
-                      disabled={busy}
-                      onChange={(event) => setRememberMe(event.target.checked)}
-                      type="checkbox"
-                    />
-                    Remember me
-                  </label>
-                  <button
-                    className="shrink-0 font-semibold text-(--admin-accent-cyan) underline underline-offset-4 disabled:opacity-60"
+          <div className="mt-5 sm:mt-7">
+            <form
+              aria-label="Admin sign in"
+              className={hasFieldErrors ? "space-y-3" : "space-y-3 sm:space-y-4"}
+              noValidate
+              onSubmit={onSubmit}
+            >
+              <label className="block text-sm font-semibold text-(--admin-text)">
+                Email
+                <span className="relative mt-2 block">
+                  <input
+                    {...register("email")}
+                    aria-describedby={emailError ? "login-email-error" : undefined}
+                    aria-invalid={emailError ? "true" : "false"}
+                    autoComplete="email"
+                    className="h-11 w-full rounded-(--admin-radius-control) border border-(--admin-border) bg-(--admin-surface) px-4 text-sm font-medium text-(--admin-text) outline-none ring-offset-(--admin-surface) placeholder:text-(--admin-text-muted) focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring)"
                     disabled={busy}
+                    placeholder="you@example.com"
+                    type="email"
+                  />
+                </span>
+              </label>
+              {emailError ? (
+                <span
+                  className="-mt-2 block text-xs font-semibold text-(--admin-danger)"
+                  id="login-email-error"
+                >
+                  {emailError}
+                </span>
+              ) : null}
+
+              <label className="block text-sm font-semibold text-(--admin-text)">
+                Password
+                <span className="relative mt-2 block">
+                  <input
+                    {...register("password")}
+                    aria-describedby={
+                      passwordError ? "login-password-error" : undefined
+                    }
+                    aria-invalid={passwordError ? "true" : "false"}
+                    autoComplete="current-password"
+                    className="h-11 w-full rounded-(--admin-radius-control) border border-(--admin-border) bg-(--admin-surface) px-4 pr-11 text-sm font-medium text-(--admin-text) outline-none ring-offset-(--admin-surface) placeholder:text-(--admin-text-muted) focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring)"
+                    disabled={busy}
+                    placeholder="Enter password"
+                    type={showPassword ? "text" : "password"}
+                  />
+                  <button
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
+                    className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-(--admin-radius-control) text-(--admin-text-muted) outline-none transition-colors duration-(--admin-motion-fast) hover:bg-(--admin-surface-elevated) hover:text-(--admin-text) focus-visible:ring-2 focus-visible:ring-(--admin-focus-ring) focus-visible:ring-offset-2 focus-visible:ring-offset-(--admin-surface) disabled:opacity-60"
+                    disabled={busy}
+                    onClick={() => setShowPassword((value) => !value)}
                     type="button"
                   >
-                    Forgot password?
+                    {showPassword ? (
+                      <EyeOff aria-hidden="true" size={17} />
+                    ) : (
+                      <Eye aria-hidden="true" size={17} />
+                    )}
                   </button>
-                </div>
-
-                {error ? (
-                  <div
-                    className="rounded-(--admin-radius-control) border border-(--admin-danger) bg-(--admin-sidebar) px-3 py-2 text-sm font-medium text-(--admin-sidebar-text)"
-                    role="alert"
-                  >
-                    {error}
-                  </div>
-                ) : null}
-
-                <Button
-                  aria-busy={busy}
-                  className="h-11 w-full rounded-(--admin-radius-control) bg-(--admin-primary) text-(--admin-sidebar-text) hover:bg-(--admin-primary-hover)"
-                  disabled={busy}
-                  type="submit"
-                >
-                  {busy ? (
-                    <>
-                      <span
-                        aria-hidden="true"
-                        className="size-4 animate-spin rounded-full border-2 border-(--admin-sidebar-text) border-t-transparent"
-                      />
-                      {isCheckingSession ? "Checking session" : "Signing in"}
-                    </>
-                  ) : (
-                    "Sign in"
-                  )}
-                </Button>
-              </form>
-
-              <div className="mt-5 flex items-center justify-center gap-1.5 text-center text-sm font-medium text-(--admin-sidebar-muted)">
-                <LifeBuoy aria-hidden="true" size={15} />
-                <span>Need help? Contact</span>
-                <span className="font-semibold text-(--admin-accent-cyan) underline underline-offset-4">
-                  support
                 </span>
-              </div>
-            </div>
+              </label>
+              {passwordError ? (
+                <span
+                  className="-mt-2 block text-xs font-semibold text-(--admin-danger)"
+                  id="login-password-error"
+                >
+                  {passwordError}
+                </span>
+              ) : null}
 
-            <div className="mt-5 hidden gap-2 text-xs font-medium text-(--admin-sidebar-muted) sm:grid sm:grid-cols-2">
-              <div className="flex items-center gap-2 rounded-(--admin-radius-control) border border-(--admin-sidebar-border) bg-(--admin-sidebar) px-3 py-2">
-                <ShieldCheck
-                  aria-hidden="true"
-                  className="text-(--admin-accent-cyan)"
-                  size={16}
-                />
-                Private admin access
+              <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
+                <label className="flex shrink-0 items-center gap-2 font-medium text-(--admin-text)">
+                  <input
+                    checked={rememberMe}
+                    className="size-4 rounded border border-(--admin-border) bg-(--admin-surface) accent-(--admin-primary)"
+                    disabled={busy}
+                    onChange={(event) => setRememberMe(event.target.checked)}
+                    type="checkbox"
+                  />
+                  Remember me
+                </label>
+                <button
+                  className="shrink-0 font-semibold text-(--admin-selected-foreground) underline underline-offset-4 disabled:opacity-60"
+                  disabled={busy}
+                  type="button"
+                >
+                  Forgot password?
+                </button>
               </div>
-              <div className="flex items-center gap-2 rounded-(--admin-radius-control) border border-(--admin-sidebar-border) bg-(--admin-sidebar) px-3 py-2">
-                <LockKeyhole
-                  aria-hidden="true"
-                  className="text-(--admin-accent-cyan)"
-                  size={16}
-                />
-                Cookie session auth
-              </div>
-            </div>
+
+              {error ? (
+                <div
+                  className="rounded-(--admin-radius-control) border border-(--admin-danger) bg-(--admin-surface-elevated) px-3 py-2 text-sm font-medium text-(--admin-text)"
+                  role="alert"
+                >
+                  {error}
+                </div>
+              ) : null}
+
+              <Button
+                aria-busy={busy}
+                className="h-11 w-full rounded-(--admin-radius-control) bg-(--admin-primary) text-(--admin-action-foreground) hover:bg-(--admin-primary-hover)"
+                disabled={busy}
+                type="submit"
+              >
+                {busy ? (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="size-4 animate-spin rounded-full border-2 border-(--admin-action-foreground) border-t-transparent"
+                    />
+                    {isCheckingSession ? "Checking session" : "Signing in"}
+                  </>
+                ) : (
+                  "Sign in"
+                )}
+              </Button>
+            </form>
           </div>
         </div>
       </section>
