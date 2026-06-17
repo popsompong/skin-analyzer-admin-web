@@ -1,11 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getAdminMe, loginAdmin, logoutAdmin } from "@/lib/api/auth";
+import {
+  getAdminMe,
+  loginAdmin,
+  logoutAdmin,
+  refreshAdminSession
+} from "@/lib/api/auth";
 import {
   AdminApiClientError,
-  adminApiRequest
+  adminApiRequest,
+  adminApiRequestWithRefresh
 } from "@/lib/api/client";
 import {
   clearAdminCsrfToken,
+  clearAdminRefreshCsrfToken,
+  getAdminCsrfToken,
+  getAdminRefreshCsrfToken,
+  setAdminRefreshCsrfToken,
   setAdminCsrfToken
 } from "@/lib/auth/csrf-token-store";
 
@@ -50,7 +60,9 @@ function getHeader(init: RequestInit | undefined, name: string) {
 describe("admin auth API client", () => {
   beforeEach(() => {
     process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL = "https://admin-api.test";
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "false";
     clearAdminCsrfToken();
+    clearAdminRefreshCsrfToken();
     window.sessionStorage.clear();
   });
 
@@ -60,6 +72,7 @@ describe("admin auth API client", () => {
         {
           csrfToken: "test-csrf-token",
           permissions: ["dashboard.view"],
+          refreshCsrfToken: "test-refresh-csrf-token",
           roles: [{ key: "admin", name: "Admin" }],
           session: { id: "session-1" },
           user: { email: "admin@example.com", id: "admin-1" }
@@ -88,6 +101,7 @@ describe("admin auth API client", () => {
       password: "fake-password"
     });
     expect(snapshot.csrfToken).toBe("test-csrf-token");
+    expect(snapshot.refreshCsrfToken).toBe("test-refresh-csrf-token");
     expect(snapshot.user?.email).toBe("admin@example.com");
     expect(snapshot.permissions).toEqual(["dashboard.view"]);
   });
@@ -96,7 +110,9 @@ describe("admin auth API client", () => {
     setAdminCsrfToken("test-csrf-token");
     const fetchMock = vi.fn(async () =>
       createJsonResponse({
+        csrfToken: "me-csrf-token",
         permissions: ["dashboard.view"],
+        refreshCsrfToken: "me-refresh-csrf-token",
         roles: [],
         session: { id: "session-1" },
         user: { email: "admin@example.com", id: "admin-1" }
@@ -104,13 +120,15 @@ describe("admin auth API client", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    await getAdminMe();
+    const snapshot = await getAdminMe();
     const [url, init] = getFetchCall(fetchMock);
 
     expect(url).toBe("https://admin-api.test/v1/admin/auth/me");
     expect(init?.method).toBe("GET");
     expect(init?.credentials).toBe("include");
     expect(getHeader(init, "X-CSRF-Token")).toBeNull();
+    expect(snapshot.csrfToken).toBe("me-csrf-token");
+    expect(snapshot.refreshCsrfToken).toBe("me-refresh-csrf-token");
   });
 
   it("logoutAdmin posts to the logout endpoint with credentials included and no csrf requirement", async () => {
@@ -129,6 +147,7 @@ describe("admin auth API client", () => {
 
   it("future mutating requests include X-CSRF-Token from the csrf store", async () => {
     setAdminCsrfToken("test-csrf-token");
+    setAdminRefreshCsrfToken("test-refresh-csrf-token");
     const fetchMock = vi.fn(async () => createJsonResponse({ ok: true }));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -140,6 +159,172 @@ describe("admin auth API client", () => {
 
     expect(init?.credentials).toBe("include");
     expect(getHeader(init, "X-CSRF-Token")).toBe("test-csrf-token");
+    expect(getHeader(init, "X-Refresh-CSRF-Token")).toBeNull();
+  });
+
+  it("refresh feature flag disabled leaves existing behavior unchanged", async () => {
+    setAdminRefreshCsrfToken("test-refresh-csrf-token");
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(refreshAdminSession()).rejects.toMatchObject({
+      code: "admin_refresh_disabled"
+    } satisfies Partial<AdminApiClientError>);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("refreshAdminSession sends only the refresh csrf proof and stores rotated csrf state", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminCsrfToken("old-csrf-token");
+    setAdminRefreshCsrfToken("old-refresh-csrf-token");
+    const fetchMock = vi.fn(async () =>
+      createJsonResponse({
+        csrfToken: "new-csrf-token",
+        ok: true,
+        refreshCsrfToken: "new-refresh-csrf-token",
+        session: {
+          expiresAt: "2026-06-17T09:00:00Z",
+          id: "session-2"
+        }
+      })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await refreshAdminSession();
+    const [url, init] = getFetchCall(fetchMock);
+
+    expect(url).toBe("https://admin-api.test/v1/admin/auth/refresh");
+    expect(init?.method).toBe("POST");
+    expect(init?.credentials).toBe("include");
+    expect(init?.body).toBeUndefined();
+    expect(getHeader(init, "X-CSRF-Token")).toBeNull();
+    expect(getHeader(init, "X-Refresh-CSRF-Token")).toBe(
+      "old-refresh-csrf-token"
+    );
+    expect(getHeader(init, "Authorization")).toBeNull();
+    expect(response.session).toEqual({
+      expiresAt: "2026-06-17T09:00:00Z",
+      id: "session-2"
+    });
+    expect(getAdminCsrfToken()).toBe("new-csrf-token");
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBe("new-refresh-csrf-token");
+  });
+
+  it("refreshAdminSession rejects unsafe refresh response fields", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminRefreshCsrfToken("test-refresh-csrf-token");
+    const rawAccessKey = ["access", "Token"].join("");
+    const rawRefreshKey = ["refresh", "Handle"].join("");
+    const fetchMock = vi.fn(async () =>
+      createJsonResponse({
+        [rawAccessKey]: "must-not-enter-state",
+        csrfToken: "new-csrf-token",
+        ok: true,
+        refreshCsrfToken: "new-refresh-csrf-token",
+        [rawRefreshKey]: "must-not-enter-state",
+        session: {
+          expiresAt: "2026-06-17T09:00:00Z",
+          id: "session-2"
+        }
+      })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(refreshAdminSession()).rejects.toMatchObject({
+      code: "unsafe_refresh_response"
+    } satisfies Partial<AdminApiClientError>);
+  });
+
+  it("GET read requests can refresh once and retry once when explicitly opted in", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminRefreshCsrfToken("retry-refresh-csrf-token");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(createJsonResponse({ error: {} }, { status: 401 }))
+      .mockResolvedValueOnce(
+        createJsonResponse({
+          csrfToken: "new-csrf-token",
+          ok: true,
+          refreshCsrfToken: "new-refresh-csrf-token",
+          session: {
+            expiresAt: "2026-06-17T09:00:00Z",
+            id: "session-2"
+          }
+        })
+      )
+      .mockResolvedValueOnce(createJsonResponse({ ok: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      adminApiRequestWithRefresh("/v1/admin/content")
+    ).resolves.toEqual({ ok: true });
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(getFetchCall(fetchMock, 0)[0]).toBe(
+      "https://admin-api.test/v1/admin/content"
+    );
+    expect(getFetchCall(fetchMock, 1)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/refresh"
+    );
+    expect(getFetchCall(fetchMock, 2)[0]).toBe(
+      "https://admin-api.test/v1/admin/content"
+    );
+  });
+
+  it("mutation 401 does not blindly replay after refresh policy opt-in", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminCsrfToken("test-csrf-token");
+    setAdminRefreshCsrfToken("test-refresh-csrf-token");
+    const fetchMock = vi.fn(async () =>
+      createJsonResponse({ error: {} }, { status: 401 })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      adminApiRequestWithRefresh("/v1/admin/content", {
+        body: JSON.stringify({ title: "Draft" }),
+        method: "POST"
+      })
+    ).rejects.toMatchObject({ status: 401 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("refresh 401 clears csrf and refresh csrf state", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminCsrfToken("old-csrf-token");
+    setAdminRefreshCsrfToken("old-refresh-csrf-token");
+    const fetchMock = vi.fn(async () =>
+      createJsonResponse({ error: {} }, { status: 401 })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(refreshAdminSession()).rejects.toMatchObject({ status: 401 });
+    expect(getAdminCsrfToken()).toBeUndefined();
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBeUndefined();
+  });
+
+  it("refresh 409 preserves csrf state for a later /me reconcile", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminCsrfToken("old-csrf-token");
+    setAdminRefreshCsrfToken("old-refresh-csrf-token");
+    const fetchMock = vi.fn(async () =>
+      createJsonResponse(
+        { error: { code: "session_stale", message: "Session stale." } },
+        { status: 409 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(refreshAdminSession()).rejects.toMatchObject({ status: 409 });
+    expect(getAdminCsrfToken()).toBe("old-csrf-token");
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBe("old-refresh-csrf-token");
   });
 
   it("parses safe API error shape without leaking submitted values", async () => {
@@ -171,11 +356,15 @@ describe("admin auth API client", () => {
   it("does not expose raw session token fields from auth responses", async () => {
     const rawSessionKey = `session${"Token"}`;
     const rawAccessKey = `access${"Token"}`;
+    const rawRefreshKey = ["refresh", "Handle"].join("");
+    const rawClaimsKey = ["raw", "Claims"].join("");
     const fetchMock = vi.fn(async () =>
       createJsonResponse({
         csrfToken: "test-csrf-token",
         session: {
           [rawAccessKey]: "should-not-leak",
+          [rawClaimsKey]: "should-not-leak",
+          [rawRefreshKey]: "should-not-leak",
           [rawSessionKey]: "should-not-leak",
           id: "session-1"
         },

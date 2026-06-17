@@ -6,15 +6,21 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode
 } from "react";
 import { AdminApiClientError } from "@/lib/api/client";
-import { getAdminMe, loginAdmin, logoutAdmin } from "@/lib/api/auth";
 import {
-  clearAdminCsrfToken,
+  getAdminMeWithRefresh,
+  loginAdmin,
+  logoutAdmin
+} from "@/lib/api/auth";
+import {
+  clearAdminCsrfTokens,
   getAdminCsrfToken,
-  setAdminCsrfToken
+  setAdminCsrfToken,
+  setAdminRefreshCsrfToken
 } from "@/lib/auth/csrf-token-store";
 import type {
   AdminAuthRole,
@@ -70,6 +76,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AdminAuthSession | null>(null);
   const [status, setStatus] = useState<AdminAuthStatus>("loading");
   const [user, setUser] = useState<AdminAuthUser | null>(null);
+  const loggingOutRef = useRef(false);
 
   const applySnapshot = useCallback((snapshot: AdminAuthSnapshot | null) => {
     const authenticated = hasAuthenticatedUser(snapshot);
@@ -80,7 +87,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     } else if (authenticated) {
       nextCsrfToken = getAdminCsrfToken();
     } else {
-      clearAdminCsrfToken();
+      clearAdminCsrfTokens();
+    }
+
+    if (snapshot?.refreshCsrfToken) {
+      setAdminRefreshCsrfToken(snapshot.refreshCsrfToken);
+    } else if (!authenticated) {
+      clearAdminCsrfTokens();
     }
 
     setCsrfToken(nextCsrfToken);
@@ -92,8 +105,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refresh = useCallback(async () => {
+    if (loggingOutRef.current) {
+      applySnapshot(null);
+      return null;
+    }
+
     try {
-      const snapshot = await getAdminMe();
+      const snapshot = await getAdminMeWithRefresh();
       applySnapshot(snapshot);
       setError(null);
 
@@ -134,6 +152,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   );
 
   const logout = useCallback(async () => {
+    loggingOutRef.current = true;
     setStatus("loading");
     setError(null);
 
@@ -141,6 +160,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       await logoutAdmin();
     } finally {
       applySnapshot(null);
+      loggingOutRef.current = false;
     }
   }, [applySnapshot]);
 
@@ -151,7 +171,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
 
-    getAdminMe()
+    getAdminMeWithRefresh()
       .then((snapshot) => {
         if (!active) {
           return;

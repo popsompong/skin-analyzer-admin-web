@@ -1,9 +1,12 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AdminApiClientError } from "@/lib/api/client";
-import { getAdminMe, logoutAdmin } from "@/lib/api/auth";
+import { getAdminMeWithRefresh, logoutAdmin } from "@/lib/api/auth";
 import { AdminAuthGuard } from "@/lib/auth/admin-auth-guard";
-import { clearAdminCsrfToken } from "@/lib/auth/csrf-token-store";
+import {
+  clearAdminRefreshCsrfToken,
+  clearAdminCsrfToken
+} from "@/lib/auth/csrf-token-store";
 
 const routerReplaceMock = vi.hoisted(() => vi.fn());
 
@@ -14,7 +17,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/lib/api/auth", () => ({
-  getAdminMe: vi.fn(),
+  getAdminMeWithRefresh: vi.fn(),
   loginAdmin: vi.fn(),
   logoutAdmin: vi.fn()
 }));
@@ -22,14 +25,17 @@ vi.mock("@/lib/api/auth", () => ({
 describe("AdminAuthGuard", () => {
   beforeEach(() => {
     clearAdminCsrfToken();
+    clearAdminRefreshCsrfToken();
     window.sessionStorage.clear();
     routerReplaceMock.mockReset();
-    vi.mocked(getAdminMe).mockReset();
+    vi.mocked(getAdminMeWithRefresh).mockReset();
     vi.mocked(logoutAdmin).mockReset();
   });
 
   it("renders the loading state while checking auth", () => {
-    vi.mocked(getAdminMe).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(getAdminMeWithRefresh).mockReturnValue(
+      new Promise(() => undefined)
+    );
 
     render(
       <AdminAuthGuard>
@@ -42,7 +48,7 @@ describe("AdminAuthGuard", () => {
   });
 
   it("redirects unauthenticated users to /login without exposing children", async () => {
-    vi.mocked(getAdminMe).mockRejectedValue(
+    vi.mocked(getAdminMeWithRefresh).mockRejectedValue(
       new AdminApiClientError("Unauthorized", 401)
     );
 
@@ -59,7 +65,7 @@ describe("AdminAuthGuard", () => {
   });
 
   it("renders children for authenticated users", async () => {
-    vi.mocked(getAdminMe).mockResolvedValue({
+    vi.mocked(getAdminMeWithRefresh).mockResolvedValue({
       permissions: ["dashboard.view"],
       roles: [],
       session: { id: "session-1" },

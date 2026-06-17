@@ -22,6 +22,28 @@ Target backend:
 skin-analyzer-admin-backend
 ```
 
+## Central Auth Refresh Foundation
+
+Admin Web has a disabled-by-default Central Auth refresh-flow foundation for the
+Admin Backend route `POST /v1/admin/auth/refresh`.
+
+Feature flag:
+
+```text
+NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED=false
+```
+
+When the flag is not `true`, existing Admin Web auth behavior remains unchanged.
+When enabled, the refresh helper still calls Admin Backend only, uses
+`credentials: "include"`, sends `X-Refresh-CSRF-Token` only on the refresh
+route, and stores only browser-safe CSRF/session state. Admin Web must not store
+or send Central Auth credential material from browser JavaScript.
+
+Details:
+
+- `docs/architecture/central-auth-refresh-flow-foundation.md`
+- `docs/architecture/central-auth-refresh-flow-admin-web-contract.md`
+
 ## What This Repo Is Not
 
 - Not the public Skin Analyzer web app.

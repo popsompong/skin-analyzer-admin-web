@@ -12,11 +12,37 @@ export type AdminAuthRole = {
   permissions: string[];
 };
 
-export type AdminAuthSession = Record<string, unknown>;
+export type AdminAuthSession = Record<string, unknown> & {
+  expiresAt?: string;
+  id?: string;
+};
+
+export type AdminMeResponse = {
+  csrfToken: string;
+  permissions: string[];
+  refreshCsrfToken?: string;
+  roles: AdminAuthRole[];
+  session: {
+    expiresAt: string;
+    id: string;
+  };
+  user: AdminAuthUser;
+};
+
+export type AdminRefreshResponse = {
+  csrfToken: string;
+  ok: true;
+  refreshCsrfToken: string;
+  session: {
+    expiresAt: string;
+    id: string;
+  };
+};
 
 export type AdminAuthSnapshot = {
   csrfToken?: string;
   permissions: string[];
+  refreshCsrfToken?: string;
   roles: AdminAuthRole[];
   session: AdminAuthSession | null;
   user: AdminAuthUser | null;

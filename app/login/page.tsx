@@ -8,7 +8,10 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { AdminApiClientError } from "@/lib/api/client";
 import { getAdminMe, loginAdmin } from "@/lib/api/auth";
-import { setAdminCsrfToken } from "@/lib/auth/csrf-token-store";
+import {
+  setAdminCsrfToken,
+  setAdminRefreshCsrfToken
+} from "@/lib/auth/csrf-token-store";
 import {
   loginFormDefaultValues,
   loginFormSchema,
@@ -126,6 +129,8 @@ export default function LoginPage() {
         const snapshot = await getAdminMe();
 
         if (active && snapshot.user) {
+          setAdminCsrfToken(snapshot.csrfToken);
+          setAdminRefreshCsrfToken(snapshot.refreshCsrfToken);
           router.replace("/dashboard");
           return;
         }
@@ -162,6 +167,7 @@ export default function LoginPage() {
       }
 
       setAdminCsrfToken(snapshot.csrfToken);
+      setAdminRefreshCsrfToken(snapshot.refreshCsrfToken);
       router.replace("/dashboard");
       router.refresh();
     } catch (loginError) {

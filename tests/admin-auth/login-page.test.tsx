@@ -3,7 +3,10 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AdminApiClientError } from "@/lib/api/client";
 import { getAdminMe, loginAdmin } from "@/lib/api/auth";
-import { setAdminCsrfToken } from "@/lib/auth/csrf-token-store";
+import {
+  setAdminCsrfToken,
+  setAdminRefreshCsrfToken
+} from "@/lib/auth/csrf-token-store";
 import LoginPage from "@/app/login/page";
 
 const routerReplaceMock = vi.hoisted(() => vi.fn());
@@ -22,7 +25,8 @@ vi.mock("@/lib/api/auth", () => ({
 }));
 
 vi.mock("@/lib/auth/csrf-token-store", () => ({
-  setAdminCsrfToken: vi.fn()
+  setAdminCsrfToken: vi.fn(),
+  setAdminRefreshCsrfToken: vi.fn()
 }));
 
 describe("LoginPage auth behavior", () => {
@@ -32,6 +36,7 @@ describe("LoginPage auth behavior", () => {
     vi.mocked(getAdminMe).mockReset();
     vi.mocked(loginAdmin).mockReset();
     vi.mocked(setAdminCsrfToken).mockReset();
+    vi.mocked(setAdminRefreshCsrfToken).mockReset();
     vi.mocked(getAdminMe).mockRejectedValue(
       new AdminApiClientError("Unauthorized", 401)
     );
@@ -86,6 +91,7 @@ describe("LoginPage auth behavior", () => {
     vi.mocked(loginAdmin).mockResolvedValue({
       csrfToken: "test-csrf-token",
       permissions: ["dashboard.view"],
+      refreshCsrfToken: "test-refresh-csrf-token",
       roles: [],
       session: { id: "session-1" },
       user: {
@@ -111,6 +117,9 @@ describe("LoginPage auth behavior", () => {
       });
     });
     expect(setAdminCsrfToken).toHaveBeenCalledWith("test-csrf-token");
+    expect(setAdminRefreshCsrfToken).toHaveBeenCalledWith(
+      "test-refresh-csrf-token"
+    );
     expect(routerReplaceMock).toHaveBeenCalledWith("/dashboard");
     expect(routerRefreshMock).toHaveBeenCalled();
   });
@@ -145,6 +154,7 @@ describe("LoginPage auth behavior", () => {
     vi.mocked(loginAdmin).mockResolvedValue({
       csrfToken: "test-csrf-token",
       permissions: [],
+      refreshCsrfToken: "test-refresh-csrf-token",
       roles: [],
       session: { id: "session-1" },
       user: {
