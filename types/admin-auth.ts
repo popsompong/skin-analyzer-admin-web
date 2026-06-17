@@ -39,6 +39,13 @@ export type AdminRefreshResponse = {
   };
 };
 
+export type AdminLogoutResponse =
+  | {
+      ok?: true;
+      status?: "ok";
+    }
+  | undefined;
+
 export type AdminAuthSnapshot = {
   csrfToken?: string;
   permissions: string[];

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  clearAdminCentralAuthLogoutGuard,
   getAdminMe,
   loginAdmin,
   logoutAdmin,
@@ -60,7 +61,9 @@ function getHeader(init: RequestInit | undefined, name: string) {
 describe("admin auth API client", () => {
   beforeEach(() => {
     process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL = "https://admin-api.test";
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED = "false";
     process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "false";
+    clearAdminCentralAuthLogoutGuard();
     clearAdminCsrfToken();
     clearAdminRefreshCsrfToken();
     window.sessionStorage.clear();
@@ -131,8 +134,9 @@ describe("admin auth API client", () => {
     expect(snapshot.refreshCsrfToken).toBe("me-refresh-csrf-token");
   });
 
-  it("logoutAdmin posts to the logout endpoint with credentials included and no csrf requirement", async () => {
+  it("logout feature flag disabled preserves existing logout request behavior", async () => {
     setAdminCsrfToken("test-csrf-token");
+    setAdminRefreshCsrfToken("test-refresh-csrf-token");
     const fetchMock = vi.fn(async () => createEmptyResponse());
     vi.stubGlobal("fetch", fetchMock);
 
@@ -142,7 +146,179 @@ describe("admin auth API client", () => {
     expect(url).toBe("https://admin-api.test/v1/admin/auth/logout");
     expect(init?.method).toBe("POST");
     expect(init?.credentials).toBe("include");
+    expect(init?.body).toBeUndefined();
     expect(getHeader(init, "X-CSRF-Token")).toBeNull();
+    expect(getHeader(init, "X-Refresh-CSRF-Token")).toBeNull();
+    expect(getHeader(init, "Authorization")).toBeNull();
+  });
+
+  it("Central Auth logout sends credentials and the access csrf proof first", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED = "true";
+    setAdminCsrfToken("test-csrf-token");
+    setAdminRefreshCsrfToken("test-refresh-csrf-token");
+    const fetchMock = vi.fn(async () => createJsonResponse({ ok: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await logoutAdmin();
+    const [url, init] = getFetchCall(fetchMock);
+
+    expect(url).toBe("https://admin-api.test/v1/admin/auth/logout");
+    expect(init?.method).toBe("POST");
+    expect(init?.credentials).toBe("include");
+    expect(init?.body).toBeUndefined();
+    expect(getHeader(init, "X-CSRF-Token")).toBe("test-csrf-token");
+    expect(getHeader(init, "X-Refresh-CSRF-Token")).toBeNull();
+    expect(getHeader(init, "Authorization")).toBeNull();
+    expect(getAdminCsrfToken()).toBeUndefined();
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBeUndefined();
+  });
+
+  it("Central Auth logout falls back to refresh csrf proof without sending both headers", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED = "true";
+    setAdminRefreshCsrfToken("test-refresh-csrf-token");
+    const fetchMock = vi.fn(async () => createJsonResponse({ ok: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await logoutAdmin();
+    const [url, init] = getFetchCall(fetchMock);
+
+    expect(url).toBe("https://admin-api.test/v1/admin/auth/logout");
+    expect(init?.credentials).toBe("include");
+    expect(init?.body).toBeUndefined();
+    expect(getHeader(init, "X-CSRF-Token")).toBeNull();
+    expect(getHeader(init, "X-Refresh-CSRF-Token")).toBe(
+      "test-refresh-csrf-token"
+    );
+    expect(getHeader(init, "Authorization")).toBeNull();
+  });
+
+  it("Central Auth logout with no csrf proof fails closed locally without a backend call", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED = "true";
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    await logoutAdmin();
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(getAdminCsrfToken()).toBeUndefined();
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBeUndefined();
+  });
+
+  it.each([401, 403, 409, 429, 503])(
+    "Central Auth logout status %i clears csrf state without refreshing",
+    async (status) => {
+      process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED = "true";
+      process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+      setAdminCsrfToken("test-csrf-token");
+      setAdminRefreshCsrfToken("test-refresh-csrf-token");
+      const fetchMock = vi.fn(async () =>
+        createJsonResponse({ error: {} }, { status })
+      );
+      vi.stubGlobal("fetch", fetchMock);
+
+      await expect(logoutAdmin()).resolves.toBeUndefined();
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(getFetchCall(fetchMock)[0]).toBe(
+        "https://admin-api.test/v1/admin/auth/logout"
+      );
+      expect(getAdminCsrfToken()).toBeUndefined();
+      expect(
+        getAdminRefreshCsrfToken({ includeCookieFallback: false })
+      ).toBeUndefined();
+    }
+  );
+
+  it("Central Auth logout network failure clears csrf state without retrying refresh", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED = "true";
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminCsrfToken("test-csrf-token");
+    setAdminRefreshCsrfToken("test-refresh-csrf-token");
+    const fetchMock = vi.fn(async () => {
+      throw new TypeError("Network unavailable");
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(logoutAdmin()).resolves.toBeUndefined();
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(getAdminCsrfToken()).toBeUndefined();
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBeUndefined();
+  });
+
+  it("Central Auth logout blocks new refresh attempts once logout starts", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED = "true";
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminCsrfToken("test-csrf-token");
+    setAdminRefreshCsrfToken("test-refresh-csrf-token");
+    let resolveLogout: (response: Response) => void = () => undefined;
+    const fetchMock = vi.fn(
+      () =>
+        new Promise<Response>((resolve) => {
+          resolveLogout = resolve;
+        })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const logoutPromise = logoutAdmin();
+
+    await expect(refreshAdminSession()).rejects.toMatchObject({
+      code: "admin_logout_in_progress"
+    } satisfies Partial<AdminApiClientError>);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    resolveLogout(createEmptyResponse());
+    await logoutPromise;
+  });
+
+  it("pending refresh success after logout starts does not restore csrf state", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED = "true";
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminRefreshCsrfToken("old-refresh-csrf-token");
+    let resolveRefresh: (response: Response) => void = () => undefined;
+    const fetchMock = vi
+      .fn()
+      .mockImplementationOnce(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveRefresh = resolve;
+          })
+      )
+      .mockResolvedValueOnce(createEmptyResponse());
+    vi.stubGlobal("fetch", fetchMock);
+
+    const refreshPromise = refreshAdminSession();
+    await Promise.resolve();
+
+    setAdminCsrfToken("logout-csrf-token");
+    setAdminRefreshCsrfToken("logout-refresh-csrf-token");
+    await logoutAdmin();
+
+    resolveRefresh(
+      createJsonResponse({
+        csrfToken: "new-csrf-token",
+        ok: true,
+        refreshCsrfToken: "new-refresh-csrf-token",
+        session: {
+          expiresAt: "2026-06-17T09:00:00Z",
+          id: "session-2"
+        }
+      })
+    );
+
+    await expect(refreshPromise).rejects.toMatchObject({
+      code: "admin_logout_in_progress"
+    } satisfies Partial<AdminApiClientError>);
+    expect(getAdminCsrfToken()).toBeUndefined();
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBeUndefined();
   });
 
   it("future mutating requests include X-CSRF-Token from the csrf store", async () => {

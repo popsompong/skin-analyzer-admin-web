@@ -44,6 +44,29 @@ Details:
 - `docs/architecture/central-auth-refresh-flow-foundation.md`
 - `docs/architecture/central-auth-refresh-flow-admin-web-contract.md`
 
+## Central Auth Logout Foundation
+
+Admin Web has a disabled-by-default Central Auth logout-flow foundation for the
+Admin Backend route `POST /v1/admin/auth/logout`.
+
+Feature flag:
+
+```text
+NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED=false
+```
+
+When the flag is not `true`, existing logout behavior remains unchanged. When
+enabled, logout still calls Admin Backend only, uses `credentials: "include"`,
+prefers `X-CSRF-Token`, falls back to `X-Refresh-CSRF-Token`, blocks refresh
+after logout begins, ignores late auth responses, and clears browser-safe
+auth/CSRF/session state. Admin Web must not store or send Central Auth access
+tokens or refresh handles.
+
+Details:
+
+- `docs/architecture/central-auth-logout-flow-foundation.md`
+- `docs/architecture/central-auth-logout-flow-contract.md`
+
 ## What This Repo Is Not
 
 - Not the public Skin Analyzer web app.

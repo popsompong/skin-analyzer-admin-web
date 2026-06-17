@@ -7,6 +7,7 @@ import {
 import {
   clearAdminCsrfTokens,
   clearAdminRefreshCsrfToken,
+  getAdminCsrfToken,
   getAdminRefreshCsrfToken,
   setAdminCsrfToken,
   setAdminRefreshCsrfToken
@@ -16,11 +17,14 @@ import type {
   AdminAuthSession,
   AdminAuthSnapshot,
   AdminAuthUser,
+  AdminLogoutResponse,
   AdminRefreshResponse
 } from "@/types/admin-auth";
 
 export const ADMIN_CENTRAL_AUTH_REFRESH_ENABLED_ENV =
   "NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED";
+export const ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED_ENV =
+  "NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED";
 
 export const adminAuthEndpoints = {
   login: "/v1/admin/auth/login",
@@ -43,6 +47,36 @@ const forbiddenBrowserAuthKeys = [
 const allowedBrowserCsrfKeys = ["csrfToken", "refreshCsrfToken"].map((value) =>
   value.toLowerCase()
 );
+
+let adminCentralAuthLogoutGuardActive = false;
+let adminCentralAuthLogoutGeneration = 0;
+
+function beginAdminCentralAuthLogoutGuard() {
+  adminCentralAuthLogoutGuardActive = true;
+  adminCentralAuthLogoutGeneration += 1;
+
+  return adminCentralAuthLogoutGeneration;
+}
+
+export function clearAdminCentralAuthLogoutGuard() {
+  adminCentralAuthLogoutGuardActive = false;
+}
+
+function getAdminCentralAuthLogoutGeneration() {
+  return adminCentralAuthLogoutGeneration;
+}
+
+function didAdminCentralAuthLogoutStartSince(generation: number) {
+  return adminCentralAuthLogoutGeneration !== generation;
+}
+
+function createLogoutInProgressError() {
+  return new AdminApiClientError(
+    "Admin logout is in progress.",
+    0,
+    "admin_logout_in_progress"
+  );
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -286,8 +320,44 @@ function normalizeRefreshResponse(
   };
 }
 
+function normalizeLogoutResponse(data: unknown): AdminLogoutResponse {
+  if (hasForbiddenBrowserAuthFields(data)) {
+    throw new AdminApiClientError(
+      "Admin logout response included unsafe auth fields.",
+      0,
+      "unsafe_logout_response"
+    );
+  }
+
+  const record = asRecord(data);
+
+  if (!record) {
+    return undefined;
+  }
+
+  if (record.ok === true || record.status === "ok") {
+    return record as AdminLogoutResponse;
+  }
+
+  if (Object.keys(record).length === 0) {
+    return undefined;
+  }
+
+  throw new AdminApiClientError(
+    "Admin logout response was not browser-safe.",
+    0,
+    "invalid_logout_response"
+  );
+}
+
 export function isAdminCentralAuthRefreshEnabled() {
   return process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED
+    ?.trim()
+    .toLowerCase() === "true";
+}
+
+export function isAdminCentralAuthLogoutEnabled() {
+  return process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_LOGOUT_ENABLED
     ?.trim()
     .toLowerCase() === "true";
 }
@@ -307,9 +377,58 @@ function handleRefreshFailure(error: unknown) {
   }
 }
 
+function shouldSuppressCentralAuthLogoutError(error: unknown) {
+  if (!(error instanceof AdminApiClientError)) {
+    return true;
+  }
+
+  if (
+    error.code === "unsafe_logout_response" ||
+    error.code === "invalid_logout_response"
+  ) {
+    return false;
+  }
+
+  return [0, 401, 403, 409, 429, 503].includes(error.status);
+}
+
+type LogoutCsrfProof =
+  | {
+      csrfToken: string;
+      kind: "access";
+    }
+  | {
+      kind: "refresh";
+      refreshCsrfToken: string;
+    };
+
+function getLogoutCsrfProof(): LogoutCsrfProof | null {
+  const csrfToken = getAdminCsrfToken();
+
+  if (csrfToken) {
+    return {
+      csrfToken,
+      kind: "access"
+    };
+  }
+
+  const refreshCsrfToken = getAdminRefreshCsrfToken();
+
+  if (refreshCsrfToken) {
+    return {
+      kind: "refresh",
+      refreshCsrfToken
+    };
+  }
+
+  return null;
+}
+
 export async function loginAdmin(
   request: AdminLoginRequest
 ): Promise<AdminAuthSnapshot> {
+  clearAdminCentralAuthLogoutGuard();
+
   const response = await adminApiFetch<unknown>(adminAuthEndpoints.login, {
     body: JSON.stringify(request),
     includeCsrfToken: false,
@@ -334,6 +453,10 @@ export async function getAdminMe(): Promise<AdminAuthSnapshot> {
 }
 
 export async function refreshAdminSession(): Promise<AdminRefreshResponse> {
+  if (adminCentralAuthLogoutGuardActive) {
+    throw createLogoutInProgressError();
+  }
+
   if (!isAdminCentralAuthRefreshEnabled()) {
     throw new AdminApiClientError(
       "Admin Central Auth refresh is disabled.",
@@ -342,6 +465,7 @@ export async function refreshAdminSession(): Promise<AdminRefreshResponse> {
     );
   }
 
+  const logoutGeneration = getAdminCentralAuthLogoutGeneration();
   const refreshCsrfToken = getAdminRefreshCsrfToken();
 
   if (!refreshCsrfToken) {
@@ -365,6 +489,10 @@ export async function refreshAdminSession(): Promise<AdminRefreshResponse> {
       response.refreshCsrfToken
     );
 
+    if (didAdminCentralAuthLogoutStartSince(logoutGeneration)) {
+      throw createLogoutInProgressError();
+    }
+
     setAdminCsrfToken(refreshResponse.csrfToken);
     setAdminRefreshCsrfToken(refreshResponse.refreshCsrfToken);
 
@@ -376,12 +504,26 @@ export async function refreshAdminSession(): Promise<AdminRefreshResponse> {
 }
 
 export async function getAdminMeWithRefresh(): Promise<AdminAuthSnapshot> {
+  if (adminCentralAuthLogoutGuardActive) {
+    throw createLogoutInProgressError();
+  }
+
+  const logoutGeneration = getAdminCentralAuthLogoutGeneration();
+
   try {
-    return await getAdminMe();
+    const snapshot = await getAdminMe();
+
+    if (didAdminCentralAuthLogoutStartSince(logoutGeneration)) {
+      throw createLogoutInProgressError();
+    }
+
+    return snapshot;
   } catch (error) {
     const canAttemptRefresh =
       error instanceof AdminApiClientError &&
       error.status === 401 &&
+      !adminCentralAuthLogoutGuardActive &&
+      !didAdminCentralAuthLogoutStartSince(logoutGeneration) &&
       isAdminCentralAuthRefreshEnabled() &&
       Boolean(getAdminRefreshCsrfToken());
 
@@ -402,19 +544,63 @@ export async function getAdminMeWithRefresh(): Promise<AdminAuthSnapshot> {
       throw refreshError;
     }
 
-    return getAdminMe();
+    const snapshot = await getAdminMe();
+
+    if (didAdminCentralAuthLogoutStartSince(logoutGeneration)) {
+      throw createLogoutInProgressError();
+    }
+
+    return snapshot;
   }
 }
 
 export async function logoutAdmin(): Promise<void> {
-  await adminApiRequest<void>(adminAuthEndpoints.logout, {
-    includeCsrfToken: false,
-    method: "POST"
-  });
+  if (!isAdminCentralAuthLogoutEnabled()) {
+    await adminApiRequest<void>(adminAuthEndpoints.logout, {
+      includeCsrfToken: false,
+      method: "POST"
+    });
+    return;
+  }
+
+  beginAdminCentralAuthLogoutGuard();
+
+  const proof = getLogoutCsrfProof();
+
+  try {
+    if (!proof) {
+      return;
+    }
+
+    const response =
+      proof.kind === "access"
+        ? await adminApiRequest<unknown>(adminAuthEndpoints.logout, {
+            csrfToken: proof.csrfToken,
+            method: "POST"
+          })
+        : await adminApiRequest<unknown>(adminAuthEndpoints.logout, {
+            includeCsrfToken: false,
+            includeRefreshCsrfToken: true,
+            method: "POST",
+            refreshCsrfToken: proof.refreshCsrfToken
+          });
+
+    normalizeLogoutResponse(response);
+  } catch (error) {
+    if (!shouldSuppressCentralAuthLogoutError(error)) {
+      throw error;
+    }
+  } finally {
+    clearAdminCsrfTokens();
+  }
 }
 
 setAdminApiUnauthorizedRefreshHandler(async () => {
-  if (!isAdminCentralAuthRefreshEnabled() || !getAdminRefreshCsrfToken()) {
+  if (
+    adminCentralAuthLogoutGuardActive ||
+    !isAdminCentralAuthRefreshEnabled() ||
+    !getAdminRefreshCsrfToken()
+  ) {
     return false;
   }
 

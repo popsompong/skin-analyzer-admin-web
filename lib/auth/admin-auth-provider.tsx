@@ -76,7 +76,18 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AdminAuthSession | null>(null);
   const [status, setStatus] = useState<AdminAuthStatus>("loading");
   const [user, setUser] = useState<AdminAuthUser | null>(null);
+  const authGenerationRef = useRef(0);
   const loggingOutRef = useRef(false);
+
+  const advanceAuthGeneration = useCallback(() => {
+    authGenerationRef.current += 1;
+
+    return authGenerationRef.current;
+  }, []);
+
+  const canApplyAuthResult = useCallback((generation: number) => {
+    return !loggingOutRef.current && generation === authGenerationRef.current;
+  }, []);
 
   const applySnapshot = useCallback((snapshot: AdminAuthSnapshot | null) => {
     const authenticated = hasAuthenticatedUser(snapshot);
@@ -110,13 +121,24 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       return null;
     }
 
+    const requestGeneration = authGenerationRef.current;
+
     try {
       const snapshot = await getAdminMeWithRefresh();
+
+      if (!canApplyAuthResult(requestGeneration)) {
+        return null;
+      }
+
       applySnapshot(snapshot);
       setError(null);
 
       return snapshot;
     } catch (refreshError) {
+      if (!canApplyAuthResult(requestGeneration)) {
+        return null;
+      }
+
       applySnapshot(null);
 
       if (
@@ -130,28 +152,40 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
       return null;
     }
-  }, [applySnapshot]);
+  }, [applySnapshot, canApplyAuthResult]);
 
   const login = useCallback(
     async (credentials: { email: string; password: string }) => {
+      const requestGeneration = advanceAuthGeneration();
+      loggingOutRef.current = false;
       setStatus("loading");
       setError(null);
 
       try {
         const snapshot = await loginAdmin(credentials);
+
+        if (!canApplyAuthResult(requestGeneration)) {
+          return snapshot;
+        }
+
         applySnapshot(snapshot);
 
         return snapshot;
       } catch (loginError) {
+        if (!canApplyAuthResult(requestGeneration)) {
+          throw loginError;
+        }
+
         applySnapshot(null);
         setError(getSafeAuthError(loginError));
         throw loginError;
       }
     },
-    [applySnapshot]
+    [advanceAuthGeneration, applySnapshot, canApplyAuthResult]
   );
 
   const logout = useCallback(async () => {
+    advanceAuthGeneration();
     loggingOutRef.current = true;
     setStatus("loading");
     setError(null);
@@ -162,7 +196,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       applySnapshot(null);
       loggingOutRef.current = false;
     }
-  }, [applySnapshot]);
+  }, [advanceAuthGeneration, applySnapshot]);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -170,10 +204,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    const requestGeneration = authGenerationRef.current;
 
     getAdminMeWithRefresh()
       .then((snapshot) => {
-        if (!active) {
+        if (!active || !canApplyAuthResult(requestGeneration)) {
           return;
         }
 
@@ -181,7 +216,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         setError(null);
       })
       .catch((bootstrapError: unknown) => {
-        if (!active) {
+        if (!active || !canApplyAuthResult(requestGeneration)) {
           return;
         }
 
@@ -200,7 +235,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [applySnapshot]);
+  }, [applySnapshot, canApplyAuthResult]);
 
   const value = useMemo<AdminAuthContextValue>(
     () => ({

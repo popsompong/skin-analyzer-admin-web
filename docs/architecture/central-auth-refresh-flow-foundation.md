@@ -40,6 +40,10 @@ enough to refresh without the HttpOnly refresh cookie sent by the browser.
 
 Hard auth failure and logout state resets clear both CSRF proofs.
 
+The Central Auth logout foundation adds a logout guard so refresh attempts are
+blocked after logout begins, and an in-flight refresh response cannot restore
+rotated CSRF/session state after the logout generation advances.
+
 ## Request Headers
 
 Normal protected read requests use `credentials: "include"` and do not send CSRF
@@ -111,5 +115,7 @@ Admin Web must not store, log, type as frontend state, or send from JavaScript:
 - raw Central Auth response bodies
 - raw claims
 
-The refresh foundation intentionally avoids production cutover, logout flow
-changes, Admin Backend changes, Central Auth changes, and sibling repo changes.
+The refresh foundation intentionally avoids production cutover, Admin Backend
+changes, Central Auth changes, and sibling repo changes. Logout behavior is now
+documented separately in
+`docs/architecture/central-auth-logout-flow-foundation.md`.

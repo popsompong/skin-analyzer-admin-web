@@ -183,4 +183,71 @@ describe("AdminAuthProvider", () => {
       getAdminRefreshCsrfToken({ includeCookieFallback: false })
     ).toBeUndefined();
   });
+
+  it("ignores pending bootstrap success after logout starts", async () => {
+    let resolveBootstrap: (snapshot: AdminAuthSnapshot) => void =
+      () => undefined;
+    vi.mocked(getAdminMeWithRefresh).mockReturnValue(
+      new Promise<AdminAuthSnapshot>((resolve) => {
+        resolveBootstrap = resolve;
+      })
+    );
+    vi.mocked(logoutAdmin).mockResolvedValue();
+
+    renderProvider();
+    const auth = await waitForAuth();
+
+    await act(async () => {
+      await auth.logout();
+    });
+
+    await act(async () => {
+      resolveBootstrap(authenticatedSnapshot);
+      await Promise.resolve();
+    });
+
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+    expect(screen.getByTestId("csrf")).toHaveTextContent("none");
+    expect(screen.getByTestId("email")).toHaveTextContent("none");
+    expect(getLatestAuth().user).toBeNull();
+    expect(getLatestAuth().permissions).toEqual([]);
+  });
+
+  it("ignores pending manual refresh success after logout starts", async () => {
+    let resolveRefresh: (snapshot: AdminAuthSnapshot) => void =
+      () => undefined;
+    vi.mocked(getAdminMeWithRefresh)
+      .mockReturnValueOnce(new Promise(() => undefined))
+      .mockReturnValueOnce(
+        new Promise<AdminAuthSnapshot>((resolve) => {
+          resolveRefresh = resolve;
+        })
+      );
+    vi.mocked(logoutAdmin).mockResolvedValue();
+
+    renderProvider();
+    await waitForAuth();
+
+    let refreshPromise: Promise<AdminAuthSnapshot | null> =
+      Promise.resolve(null);
+
+    await act(async () => {
+      refreshPromise = getLatestAuth().refresh();
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      await getLatestAuth().logout();
+    });
+
+    await act(async () => {
+      resolveRefresh(authenticatedSnapshot);
+      await expect(refreshPromise).resolves.toBeNull();
+    });
+
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+    expect(screen.getByTestId("csrf")).toHaveTextContent("none");
+    expect(screen.getByTestId("email")).toHaveTextContent("none");
+    expect(getLatestAuth().session).toBeNull();
+  });
 });
