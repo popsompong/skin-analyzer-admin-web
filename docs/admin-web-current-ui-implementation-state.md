@@ -60,7 +60,7 @@ Current Flux Sky shell/dashboard checkpoint status:
 - The checkpoint covers the production shell/sidebar/topbar/dashboard surface only.
 - Feature pages are not final.
 - Dashboard data remains static preview data and does not perform real dashboard API reads.
-- User/gatekeeper acceptance is still required for future visual tasks; technical `PASS` or `PASS_WITH_NOTES` is evidence, not whole-product acceptance.
+- User or ChatGPT Final Gatekeeper acceptance is still required for future visual tasks; technical `PASS` or `PASS_WITH_NOTES` is evidence, not whole-product acceptance.
 
 ## 3. Current Implemented / Historical Visual Foundation
 
@@ -293,7 +293,7 @@ Accepted component UI checkpoints:
 ### Technical PASS is not visual acceptance
 
 - Codex technical `PASS` does not automatically mean user visual acceptance.
-- Only user or ChatGPT gatekeeper review can decide whether UI output becomes accepted current state.
+- Only user or ChatGPT Final Gatekeeper review can decide whether UI output becomes accepted current state.
 - Future UI implementation tasks must not treat their own screenshots as final acceptance unless the result is explicitly accepted afterward.
 - Screenshot/visual evidence is required for visual implementation tasks after the scaffold exists.
 
@@ -353,7 +353,7 @@ Accepted component UI checkpoints:
 - Mobile drawer and mobile command/search shell passed Visual QA Rerun v4 for the current dashboard shell checkpoint.
 - Mobile screenshots are still evidence, not whole-product mobile acceptance.
 - Feature-page mobile UX remains deferred.
-- Mobile dashboard title/copy density can be tightened later if gatekeeper wants more compact first-fold density.
+- Mobile dashboard title/copy density can be tightened later if user or ChatGPT Final Gatekeeper wants more compact first-fold density.
 
 ### Deferred UI / product areas
 
@@ -402,9 +402,9 @@ Do not re-run this sequence unless a future task explicitly scopes a regression,
 ### Future documentation workflow
 
 - UI implementation tasks should not directly update current-state docs by default.
-- UI implementation tasks should include a `Documentation Impact Candidate` section in the final report.
+- UI implementation tasks should include a `Documentation Impact Candidate` section in `02-implementer-summary.md`.
 - The `Documentation Impact Candidate` should propose accepted scope, known limitations, temporary assets, deferred follow-up work, rejected/not-final areas, and whether a docs sync task is recommended.
-- A separate docs sync or addendum task should update current-state docs only after user or ChatGPT gatekeeper review confirms the notes.
+- A separate docs sync or addendum task should update current-state docs only after user or ChatGPT Final Gatekeeper review confirms the notes.
 - Syntax-only cleanup tasks do not need docs sync unless they change accepted visual state or add caveats.
 
 ### Form validation and auth test status
@@ -579,15 +579,15 @@ Do not re-run this sequence unless a future task explicitly scopes a regression,
   - Do not introduce `dangerouslySetInnerHTML` without a scoped sanitizer/review task.
   - Protected feature mutation CSRF smoke for Blog/Tips/Media remains deferred.
   - Topbar logout UI remains deferred.
-  - No Admin Web current-state docs were updated in the implementation/fix tasks; this addendum records the notes after gatekeeper review.
+  - No Admin Web current-state docs were updated in the implementation/fix tasks; this addendum records the notes after ChatGPT Final Gatekeeper review.
 
 ### Documentation Impact Rule
 
-- Future implementation, test, smoke, and UI tasks must include a `Documentation Impact Candidate` section in the final report.
+- Future implementation, test, smoke, and UI tasks must include a `Documentation Impact Candidate` section in `02-implementer-summary.md`.
 - If there is no documentation impact, Codex must write exactly: `Documentation Impact Candidate: none`.
 - Codex must not update `docs/admin-web-current-ui-implementation-state.md` inside implementation, test, smoke, or UI tasks unless explicitly scoped as docs sync.
-- Docs sync and addendum tasks must use only gatekeeper-approved notes.
-- Technical `PASS` is not user or gatekeeper acceptance.
+- Docs sync and addendum tasks must use only user-approved or ChatGPT Final Gatekeeper-approved notes.
+- Technical `PASS` is not user or ChatGPT Final Gatekeeper acceptance.
 
 ### Next recommended task
 
@@ -644,9 +644,9 @@ Flux Sky shell/dashboard checkpoint sequence is listed in Section 8. Future work
 - No dark mode screenshots are required because Admin Web MVP is light-only.
 - Every UI implementation task must include screenshot evidence unless the task is docs-only or screenshots are impossible for a clearly reported reason.
 - Compare screenshots against the selected Visual Spec Pack v2 full source image, crop, upscaled crop, and notes.
-- Final UI reports must include a visual match checklist.
+- UI Implementer summaries must include a visual match checklist.
 - If any visual match checklist item is `NEEDS_FIX`, the overall result cannot be `PASS`.
-- Do not include screenshots or browser artifacts in changed-files zips.
+- Do not include screenshots or browser artifacts in changed-files zips when those zips are created.
 
 ## 12. Next Recommended Task
 

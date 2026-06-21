@@ -222,8 +222,8 @@ Every future UI prompt must include:
 - Use the approved Flux Sky Golden Mockup as visual reference only, not production code.
 - Follow accepted shadcn/ui governance: `components/ui` is for generic primitives only; product-specific Skin Analyzer UI belongs in layout or feature folders.
 - Generate screenshot evidence outside the repo.
-- No screenshots means `PASS_WITH_NOTES` at best for UI implementation tasks.
-- Technical `PASS` is not user or gatekeeper visual acceptance.
+- Missing screenshots must be documented as a visual evidence limitation; UI implementation tasks cannot receive Reviewer `PASS` without screenshot evidence unless the task is docs-only, screenshots are impossible for an accepted reason, or the user explicitly waives them.
+- Technical `PASS` is not user or ChatGPT Final Gatekeeper visual acceptance.
 
 ## 10. Gatekeeper Review Criteria
 

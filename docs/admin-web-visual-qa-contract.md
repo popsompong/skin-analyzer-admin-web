@@ -59,19 +59,19 @@ Do not write screenshots into the repository.
 
 Do not write browser traces, Playwright reports, videos, `test-results`, screenshots, or temporary visual artifacts into the repository.
 
-Do not include screenshots or browser artifacts in changed-files zips unless the user explicitly asks.
+Do not include screenshots or browser artifacts in changed-files zips when those zips are created, unless the user explicitly asks.
 
-Final reports must print the screenshot folder path when screenshots are generated.
+Implementer summaries and Reviewer evidence indexes must print the screenshot folder path when screenshots are generated.
 
-If no screenshots are generated, final reports must say:
+If no screenshots are generated, Implementer summaries must say:
 
 ```text
 Screenshot artifact path: none, no screenshots generated for this task.
 ```
 
-Future UI tasks cannot pass as full `PASS` without screenshot evidence unless the task is docs-only or screenshots are impossible for a clearly reported reason.
+Future UI tasks cannot receive Reviewer `PASS` without screenshot evidence unless the task is docs-only, screenshots are impossible for a clearly reported accepted reason, or the user explicitly waives screenshot evidence.
 
-If screenshots cannot run for a UI implementation task, the result should be `PASS_WITH_NOTES` at best, not `PASS`, unless the user explicitly waives screenshot evidence.
+If screenshots cannot run for a UI implementation task, record the limitation as a visual evidence assessment; do not present `PASS_WITH_NOTES` as a formal Reviewer or Final Gatekeeper verdict.
 
 ## 3. Required Checks
 
@@ -117,7 +117,7 @@ Visual drift checklist:
 
 ## 5. Evidence Reporting
 
-Codex final reports for UI tasks must include:
+Codex Implementer summaries and Compact Review Packets for UI tasks must include:
 
 - Routes tested.
 - Screenshot paths, or a clear reason screenshots were unavailable.
@@ -127,9 +127,9 @@ Codex final reports for UI tasks must include:
 - Validation commands.
 - shadcn/ui usage outcome: reused, added, intentionally avoided, or replaced by custom component.
 - Token compliance outcome.
-- User or gatekeeper visual acceptance status; technical `PASS` is not visual acceptance.
+- User or ChatGPT Final Gatekeeper visual acceptance status when available; technical `PASS` is not visual acceptance.
 
-Screenshots, browser workflow artifacts, and generated reports must be stored outside the repo unless explicitly requested.
+Screenshots and browser workflow artifacts must be stored outside the repo unless explicitly requested.
 
 ## 6. Playwright Direction
 
@@ -138,15 +138,21 @@ Screenshots, browser workflow artifacts, and generated reports must be stored ou
 - Do not require pixel-perfect screenshots at first.
 - Screenshot baselines can be added later after the layout stabilizes.
 
-## 7. Gatekeeper Statuses
+## 7. Visual Evidence Assessment
 
-- `PASS`: work satisfies scope, validation, and evidence requirements.
-- `PASS_WITH_NOTES`: work is acceptable but has documented limitations, such as unavailable screenshots.
-- `NEEDS_FIX`: issues were found and should be corrected before approval.
+These labels describe visual evidence only. They are inputs to Codex Independent Reviewer and ChatGPT Final Gatekeeper, not formal workflow verdicts.
+
+- `PASS`: visual evidence satisfies the scoped visual requirements.
+- `PASS_WITH_NOTES`: visual evidence is acceptable but has documented limitations, such as unavailable screenshots.
+- `NEEDS_FIX`: visual issues were found and should be corrected before approval.
 - `STOP`: wrong path, unsafe scope, unexpected files, or forbidden workstream detected.
+
+Codex Independent Reviewer still returns only `PASS`, `NEEDS_FIX`, or `BLOCKED`.
+
+ChatGPT Final Gatekeeper still returns only `GO`, `NEEDS_FIX`, or `BLOCKED`.
 
 ## 8. No Screenshot, No Pass Rule
 
-For UI tasks, if screenshots cannot run, the final result should be `PASS_WITH_NOTES` at best unless the task is docs-only.
+For UI tasks, if screenshots cannot run, the visual evidence assessment should document the limitation. Reviewer `PASS` is allowed only when the task is docs-only, screenshots are demonstrably impossible with an accepted reason, or the user explicitly waives screenshot evidence.
 
 For docs-only tasks, validation may rely on file checks and content checks instead of screenshots.
