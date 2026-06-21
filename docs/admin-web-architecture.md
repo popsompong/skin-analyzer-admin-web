@@ -90,6 +90,19 @@ Auth, API, permission, CSRF, and security boundaries remain unchanged by Flux Sk
 - Do not store a session token in `localStorage`.
 - A CSRF token may live in memory or a safe client store, but it must not be treated as the backend session token.
 - `GET /v1/admin/auth/me` loads current user, roles, and permissions.
+- `GET /v1/admin/auth/me` returning `401` with `error.code =
+  "session_ended"` is terminal browser session end. Admin Web must not refresh
+  or retry that response, must clear browser-safe CSRF proof state, and must
+  preserve the typed status/code for callers.
+- HTTP status is authoritative for broad auth disposition. Contradictory
+  status/code pairs must remain typed safe errors and must not select a body
+  code category when the HTTP status is incompatible.
+- Generic non-terminal `401` reads may still use the existing explicit
+  one-refresh/one-retry policy when refresh is enabled, a refresh CSRF proof is
+  available, and the request is an eligible read.
+- Service unavailable is status-authoritative HTTP 503. It is not terminal
+  session end and must not be treated as invalid credentials or as a reason to
+  start a refresh loop.
 - API errors must use standardized mapping for UI states and messages.
 - Separate API DTOs from UI view models where useful.
 - Do not use server actions for backend API mutation unless explicitly approved later.
@@ -107,6 +120,15 @@ Auth, API, permission, CSRF, and security boundaries remain unchanged by Flux Sk
 - Login uses `POST /v1/admin/auth/login`.
 - Logout uses `POST /v1/admin/auth/logout`.
 - Current session uses `GET /v1/admin/auth/me`.
+- Login may return either a complete local-auth snapshot or a Central Auth
+  browser-safe envelope containing fields such as `ok`, `expiresAt`, and
+  `refreshCsrfToken`. An envelope is not authenticated state by itself; Admin
+  Web must call `/me` exactly once, without auto-refreshing that immediate
+  post-login request, before applying authenticated user, role, permission,
+  session, and CSRF state.
+- Browser JavaScript must not store, log, type as frontend auth state, or send
+  `accessToken`, `refreshHandle`, raw cookies, raw PASETO/session credential
+  values, or raw claims.
 - Sidebar visibility must be based on permissions from `/v1/admin/auth/me`.
 - Backend permission checks are the source of truth.
 - Frontend menu hiding improves usability, but it is not security.

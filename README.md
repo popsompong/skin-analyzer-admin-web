@@ -44,6 +44,36 @@ Details:
 - `docs/architecture/central-auth-refresh-flow-foundation.md`
 - `docs/architecture/central-auth-refresh-flow-admin-web-contract.md`
 
+### Terminal `/me` Session End And Login Bootstrap
+
+Admin Backend may return `HTTP 401` with `error.code = "session_ended"` from
+`GET /v1/admin/auth/me` when the browser session fence has failed terminally.
+Admin Web treats that exact status/code pair as terminal: it clears
+browser-safe CSRF proof state, does not call refresh, does not retry `/me`, and
+lets the auth guard move the user back to `/login`. HTTP status is
+authoritative for broad disposition, so a contradictory response such as
+`HTTP 503` with `error.code = "session_ended"` is not terminal session end.
+
+Generic non-terminal `401` read responses still keep the existing opt-in
+one-refresh/one-retry policy when refresh is enabled and a refresh CSRF proof is
+available. `HTTP 503` with `service_unavailable` is not terminal session end and
+does not trigger an automatic refresh loop. Service unavailable is selected by
+HTTP 503, not by a body code attached to an incompatible status such as
+`HTTP 401`.
+
+`POST /v1/admin/auth/login` supports both response modes:
+
+- local mode may return the complete user, role, permission, session, and CSRF
+  snapshot;
+- Central Auth cookie mode may return only browser-safe login fields such as
+  `ok`, `expiresAt`, and `refreshCsrfToken`.
+
+For the Central Auth browser-safe envelope, Admin Web calls
+`GET /v1/admin/auth/me` exactly once without auto-refreshing that immediate
+post-login request. `/me` supplies the authenticated user snapshot. Admin Web
+does not expose or store `accessToken`, `refreshHandle`, raw cookies, raw PASETO
+values, or raw claims in browser JavaScript.
+
 ## Central Auth Logout Foundation
 
 Admin Web has a disabled-by-default Central Auth logout-flow foundation for the

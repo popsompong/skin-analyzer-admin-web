@@ -93,16 +93,52 @@ The v1 policy is conservative:
 
 - No proactive refresh timer.
 - Boot calls `/me` first.
-- Boot `/me` 401 may attempt one refresh only when the flag is enabled and a
-  refresh CSRF proof is available.
+- Boot `/me` `401 session_ended` is terminal. Admin Web clears browser-safe
+  normal and refresh CSRF proof state, does not call refresh, does not retry
+  `/me`, and enters the unauthenticated path.
+- Boot `/me` generic/non-terminal 401 may attempt one refresh only when the flag
+  is enabled and a refresh CSRF proof is available.
 - After boot-time refresh success, Admin Web calls `/me` once to reload user,
   roles, and permissions.
+- If the post-refresh `/me` returns `401 session_ended`, Admin Web treats it as
+  terminal and does not attempt a second refresh.
 - Opt-in read requests can attempt one refresh and one retry on 401.
+- Opt-in read requests must parse the safe API error envelope before invoking
+  the shared unauthorized-refresh handler. `401 session_ended` never invokes
+  that handler.
 - Mutating requests are not blindly replayed after refresh.
 - Refresh itself is never retried automatically.
 
 `409 session_stale` preserves local state and lets the boot helper reconcile by
 calling `/me` once. `429` and `503` do not create automatic retry storms.
+
+HTTP status is authoritative for broad auth disposition. `401 session_ended` is
+terminal only for that exact status/code pair. Service unavailable is selected
+by HTTP 503, not by a body code attached to an incompatible HTTP status.
+Contradictory status/code pairs remain typed safe errors and do not silently
+become success or select the wrong state transition.
+
+HTTP 503 is not terminal session end and should not clear a potentially valid
+authenticated state merely because an internal dependency is unavailable.
+
+## Login-To-`/me` Bootstrap
+
+`POST /v1/admin/auth/login` supports both local and Central Auth browser-safe
+response modes. The existing local-auth mode may return the complete user,
+role, permission, session, and CSRF snapshot. Admin Web preserves that behavior
+and does not call `/me` unnecessarily.
+
+Central Auth cookie mode may return only browser-safe fields such as `ok`,
+`expiresAt`, and `refreshCsrfToken`, while Admin Backend sets HttpOnly access
+and refresh cookies. Admin Web does not treat that envelope as authenticated
+state by itself. It calls `GET /v1/admin/auth/me` exactly once without
+auto-refreshing that immediate post-login request, then applies the final `/me`
+snapshot. If `/me` omits `refreshCsrfToken`, Admin Web may carry forward the
+safe login-envelope refresh CSRF proof.
+
+Login responses containing browser-forbidden credential material such as
+`accessToken`, `refreshHandle`, raw PASETO/session credential values, raw
+cookies, or raw claims are rejected.
 
 ## Storage And Redaction
 
@@ -119,3 +155,6 @@ The refresh foundation intentionally avoids production cutover, Admin Backend
 changes, Central Auth changes, and sibling repo changes. Logout behavior is now
 documented separately in
 `docs/architecture/central-auth-logout-flow-foundation.md`.
+
+This foundation remains a frontend contract/foundation note and does not claim
+staging or production readiness.

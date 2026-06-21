@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   clearAdminCentralAuthLogoutGuard,
   getAdminMe,
+  getAdminMeWithRefresh,
   loginAdmin,
   logoutAdmin,
   refreshAdminSession
@@ -9,7 +10,9 @@ import {
 import {
   AdminApiClientError,
   adminApiRequest,
-  adminApiRequestWithRefresh
+  adminApiRequestWithRefresh,
+  isAdminServiceUnavailableError,
+  isAdminSessionEndedError
 } from "@/lib/api/client";
 import {
   clearAdminCsrfToken,
@@ -69,6 +72,55 @@ describe("admin auth API client", () => {
     window.sessionStorage.clear();
   });
 
+  it.each([
+    {
+      code: "session_ended",
+      serviceUnavailable: false,
+      sessionEnded: true,
+      status: 401
+    },
+    {
+      code: "service_unavailable",
+      serviceUnavailable: false,
+      sessionEnded: false,
+      status: 401
+    },
+    {
+      code: undefined,
+      serviceUnavailable: false,
+      sessionEnded: false,
+      status: 401
+    },
+    {
+      code: "service_unavailable",
+      serviceUnavailable: true,
+      sessionEnded: false,
+      status: 503
+    },
+    {
+      code: "session_ended",
+      serviceUnavailable: true,
+      sessionEnded: false,
+      status: 503
+    },
+    {
+      code: undefined,
+      serviceUnavailable: true,
+      sessionEnded: false,
+      status: 503
+    }
+  ])(
+    "classifies status $status and code $code with status-authoritative semantics",
+    ({ code, serviceUnavailable, sessionEnded, status }) => {
+      const error = new AdminApiClientError("safe error", status, code);
+
+      expect(error.status).toBe(status);
+      expect(error.code).toBe(code);
+      expect(isAdminSessionEndedError(error)).toBe(sessionEnded);
+      expect(isAdminServiceUnavailableError(error)).toBe(serviceUnavailable);
+    }
+  );
+
   it("loginAdmin posts to the login endpoint with credentials included and no csrf requirement", async () => {
     const fetchMock = vi.fn(async () =>
       createJsonResponse(
@@ -107,6 +159,178 @@ describe("admin auth API client", () => {
     expect(snapshot.refreshCsrfToken).toBe("test-refresh-csrf-token");
     expect(snapshot.user?.email).toBe("admin@example.com");
     expect(snapshot.permissions).toEqual(["dashboard.view"]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("loginAdmin bootstraps a Central Auth browser-safe login envelope through one /me call", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        createJsonResponse({
+          expiresAt: "2026-06-17T09:00:00Z",
+          ok: true,
+          refreshCsrfToken: "login-refresh-csrf-token"
+        })
+      )
+      .mockResolvedValueOnce(
+        createJsonResponse({
+          csrfToken: "me-csrf-token",
+          permissions: ["dashboard.view"],
+          roles: [{ key: "admin", name: "Admin" }],
+          session: {
+            expiresAt: "2026-06-17T09:00:00Z",
+            id: "session-2"
+          },
+          user: { email: "admin@example.com", id: "admin-1" }
+        })
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const snapshot = await loginAdmin({
+      email: "admin@example.com",
+      password: "fake-password"
+    });
+
+    expect(snapshot.user?.email).toBe("admin@example.com");
+    expect(snapshot.csrfToken).toBe("me-csrf-token");
+    expect(snapshot.refreshCsrfToken).toBe("login-refresh-csrf-token");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(getFetchCall(fetchMock, 0)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/login"
+    );
+    expect(getFetchCall(fetchMock, 0)[1]?.method).toBe("POST");
+    expect(getFetchCall(fetchMock, 1)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/me"
+    );
+    expect(getFetchCall(fetchMock, 1)[1]?.method).toBe("GET");
+    expect(
+      fetchMock.mock.calls.map(([url]) => String(url))
+    ).not.toContain("https://admin-api.test/v1/admin/auth/refresh");
+  });
+
+  it("loginAdmin rejects unsafe Central Auth login envelope fields without calling /me", async () => {
+    const rawAccessKey = ["access", "Token"].join("");
+    const rawRefreshKey = ["refresh", "Handle"].join("");
+    const fetchMock = vi.fn(async () =>
+      createJsonResponse({
+        [rawAccessKey]: "must-not-enter-state",
+        expiresAt: "2026-06-17T09:00:00Z",
+        ok: true,
+        refreshCsrfToken: "login-refresh-csrf-token",
+        [rawRefreshKey]: "must-not-enter-state"
+      })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      loginAdmin({
+        email: "admin@example.com",
+        password: "fake-password"
+      })
+    ).rejects.toMatchObject({
+      code: "unsafe_login_response"
+    } satisfies Partial<AdminApiClientError>);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(JSON.stringify(fetchMock.mock.calls)).not.toContain(
+      "must-not-enter-state"
+    );
+  });
+
+  it("loginAdmin treats post-login /me session_ended as terminal without refreshing", async () => {
+    setAdminCsrfToken("stale-csrf-token");
+    setAdminRefreshCsrfToken("stale-refresh-csrf-token");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        createJsonResponse({
+          expiresAt: "2026-06-17T09:00:00Z",
+          ok: true,
+          refreshCsrfToken: "login-refresh-csrf-token"
+        })
+      )
+      .mockResolvedValueOnce(
+        createJsonResponse(
+          {
+            error: {
+              code: "session_ended",
+              message: "session ended"
+            }
+          },
+          { status: 401 }
+        )
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      loginAdmin({
+        email: "admin@example.com",
+        password: "fake-password"
+      })
+    ).rejects.toMatchObject({
+      code: "session_ended",
+      status: 401
+    } satisfies Partial<AdminApiClientError>);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(getFetchCall(fetchMock, 0)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/login"
+    );
+    expect(getFetchCall(fetchMock, 1)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/me"
+    );
+    expect(
+      fetchMock.mock.calls.map(([url]) => String(url))
+    ).not.toContain("https://admin-api.test/v1/admin/auth/refresh");
+    expect(getAdminCsrfToken()).toBeUndefined();
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBeUndefined();
+  });
+
+  it("loginAdmin preserves post-login /me service_unavailable without refreshing", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        createJsonResponse({
+          expiresAt: "2026-06-17T09:00:00Z",
+          ok: true,
+          refreshCsrfToken: "login-refresh-csrf-token"
+        })
+      )
+      .mockResolvedValueOnce(
+        createJsonResponse(
+          {
+            error: {
+              code: "service_unavailable",
+              message: "service unavailable"
+            }
+          },
+          { status: 503 }
+        )
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      loginAdmin({
+        email: "admin@example.com",
+        password: "fake-password"
+      })
+    ).rejects.toMatchObject({
+      code: "service_unavailable",
+      status: 503
+    } satisfies Partial<AdminApiClientError>);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(getFetchCall(fetchMock, 0)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/login"
+    );
+    expect(getFetchCall(fetchMock, 1)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/me"
+    );
+    expect(
+      fetchMock.mock.calls.map(([url]) => String(url))
+    ).not.toContain("https://admin-api.test/v1/admin/auth/refresh");
   });
 
   it("getAdminMe gets the current session endpoint with credentials included and no csrf header on GET", async () => {
@@ -132,6 +356,165 @@ describe("admin auth API client", () => {
     expect(getHeader(init, "X-CSRF-Token")).toBeNull();
     expect(snapshot.csrfToken).toBe("me-csrf-token");
     expect(snapshot.refreshCsrfToken).toBe("me-refresh-csrf-token");
+  });
+
+  it("getAdminMe treats session_ended as terminal and clears csrf proof state without refresh", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminCsrfToken("stale-csrf-token");
+    setAdminRefreshCsrfToken("stale-refresh-csrf-token");
+    const fetchMock = vi.fn(async () =>
+      createJsonResponse(
+        {
+          error: {
+            code: "session_ended",
+            message: "session ended"
+          }
+        },
+        { status: 401 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(getAdminMe()).rejects.toMatchObject({
+      code: "session_ended",
+      status: 401
+    } satisfies Partial<AdminApiClientError>);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(getFetchCall(fetchMock, 0)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/me"
+    );
+    expect(getAdminCsrfToken()).toBeUndefined();
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBeUndefined();
+  });
+
+  it("getAdminMeWithRefresh refreshes once for a generic eligible 401 and then reloads /me", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminRefreshCsrfToken("retry-refresh-csrf-token");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(createJsonResponse({ error: {} }, { status: 401 }))
+      .mockResolvedValueOnce(
+        createJsonResponse({
+          csrfToken: "new-csrf-token",
+          ok: true,
+          refreshCsrfToken: "new-refresh-csrf-token",
+          session: {
+            expiresAt: "2026-06-17T09:00:00Z",
+            id: "session-2"
+          }
+        })
+      )
+      .mockResolvedValueOnce(
+        createJsonResponse({
+          csrfToken: "me-csrf-token",
+          permissions: ["dashboard.view"],
+          roles: [],
+          session: { id: "session-2" },
+          user: { email: "admin@example.com", id: "admin-1" }
+        })
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const snapshot = await getAdminMeWithRefresh();
+
+    expect(snapshot.user?.email).toBe("admin@example.com");
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(getFetchCall(fetchMock, 0)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/me"
+    );
+    expect(getFetchCall(fetchMock, 1)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/refresh"
+    );
+    expect(getFetchCall(fetchMock, 2)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/me"
+    );
+  });
+
+  it("getAdminMeWithRefresh treats post-refresh session_ended as terminal without a second refresh", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminCsrfToken("old-csrf-token");
+    setAdminRefreshCsrfToken("old-refresh-csrf-token");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(createJsonResponse({ error: {} }, { status: 401 }))
+      .mockResolvedValueOnce(
+        createJsonResponse({
+          csrfToken: "new-csrf-token",
+          ok: true,
+          refreshCsrfToken: "new-refresh-csrf-token",
+          session: {
+            expiresAt: "2026-06-17T09:00:00Z",
+            id: "session-2"
+          }
+        })
+      )
+      .mockResolvedValueOnce(
+        createJsonResponse(
+          {
+            error: {
+              code: "session_ended",
+              message: "session ended"
+            }
+          },
+          { status: 401 }
+        )
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(getAdminMeWithRefresh()).rejects.toMatchObject({
+      code: "session_ended",
+      status: 401
+    } satisfies Partial<AdminApiClientError>);
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(getFetchCall(fetchMock, 0)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/me"
+    );
+    expect(getFetchCall(fetchMock, 1)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/refresh"
+    );
+    expect(getFetchCall(fetchMock, 2)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/me"
+    );
+    expect(getAdminCsrfToken()).toBeUndefined();
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBeUndefined();
+  });
+
+  it("getAdminMeWithRefresh does not refresh or clear proof state on service_unavailable", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminCsrfToken("existing-csrf-token");
+    setAdminRefreshCsrfToken("existing-refresh-csrf-token");
+    const fetchMock = vi.fn(async () =>
+      createJsonResponse(
+        {
+          error: {
+            code: "service_unavailable",
+            message: "service unavailable"
+          }
+        },
+        { status: 503 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(getAdminMeWithRefresh()).rejects.toMatchObject({
+      code: "service_unavailable",
+      status: 503
+    } satisfies Partial<AdminApiClientError>);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(getFetchCall(fetchMock, 0)[0]).toBe(
+      "https://admin-api.test/v1/admin/auth/me"
+    );
+    expect(getAdminCsrfToken()).toBe("existing-csrf-token");
+    expect(
+      getAdminRefreshCsrfToken({ includeCookieFallback: false })
+    ).toBe("existing-refresh-csrf-token");
   });
 
   it("logout feature flag disabled preserves existing logout request behavior", async () => {
@@ -449,6 +832,35 @@ describe("admin auth API client", () => {
     );
   });
 
+  it("GET read requests do not refresh or retry on terminal session_ended", async () => {
+    process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
+    setAdminRefreshCsrfToken("retry-refresh-csrf-token");
+    const fetchMock = vi.fn(async () =>
+      createJsonResponse(
+        {
+          error: {
+            code: "session_ended",
+            message: "session ended"
+          }
+        },
+        { status: 401 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      adminApiRequestWithRefresh("/v1/admin/content")
+    ).rejects.toMatchObject({
+      code: "session_ended",
+      status: 401
+    } satisfies Partial<AdminApiClientError>);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(getFetchCall(fetchMock, 0)[0]).toBe(
+      "https://admin-api.test/v1/admin/content"
+    );
+  });
+
   it("mutation 401 does not blindly replay after refresh policy opt-in", async () => {
     process.env.NEXT_PUBLIC_ADMIN_CENTRAL_AUTH_REFRESH_ENABLED = "true";
     setAdminCsrfToken("test-csrf-token");
@@ -529,7 +941,7 @@ describe("admin auth API client", () => {
     } satisfies Partial<AdminApiClientError>);
   });
 
-  it("does not expose raw session token fields from auth responses", async () => {
+  it("rejects raw credential fields from login responses", async () => {
     const rawSessionKey = `session${"Token"}`;
     const rawAccessKey = `access${"Token"}`;
     const rawRefreshKey = ["refresh", "Handle"].join("");
@@ -549,12 +961,15 @@ describe("admin auth API client", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    const snapshot = await loginAdmin({
-      email: "admin@example.com",
-      password: "fake-password"
-    });
+    await expect(
+      loginAdmin({
+        email: "admin@example.com",
+        password: "fake-password"
+      })
+    ).rejects.toMatchObject({
+      code: "unsafe_login_response"
+    } satisfies Partial<AdminApiClientError>);
 
-    expect(snapshot.session).toEqual({ id: "session-1" });
-    expect(JSON.stringify(snapshot)).not.toContain("should-not-leak");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

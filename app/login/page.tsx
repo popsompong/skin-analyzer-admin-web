@@ -6,7 +6,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { AdminApiClientError } from "@/lib/api/client";
+import {
+  AdminApiClientError,
+  isAdminServiceUnavailableError,
+  isAdminSessionEndedError
+} from "@/lib/api/client";
 import { getAdminMe, loginAdmin } from "@/lib/api/auth";
 import {
   setAdminCsrfToken,
@@ -19,7 +23,15 @@ import {
 } from "@/lib/forms/login-form-schema";
 
 function getLoginErrorMessage(error: unknown) {
+  if (isAdminSessionEndedError(error)) {
+    return "Your session ended. Please sign in again.";
+  }
+
   if (error instanceof AdminApiClientError) {
+    if (isAdminServiceUnavailableError(error)) {
+      return "Unable to reach the Admin Backend. Try again later.";
+    }
+
     if (error.status === 401) {
       return "Email or password is incorrect.";
     }

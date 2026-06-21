@@ -2,6 +2,7 @@ import {
   AdminApiClientError,
   adminApiFetch,
   adminApiRequest,
+  isAdminSessionEndedError,
   setAdminApiUnauthorizedRefreshHandler
 } from "@/lib/api/client";
 import {
@@ -195,15 +196,21 @@ function isForbiddenBrowserAuthKey(key: string, allowCsrfProofs = false) {
   );
 }
 
-function hasForbiddenBrowserAuthFields(value: unknown) {
+function hasForbiddenBrowserAuthFields(value: unknown): boolean {
+  if (Array.isArray(value)) {
+    return value.some(hasForbiddenBrowserAuthFields);
+  }
+
   const record = asRecord(value);
 
   if (!record) {
     return false;
   }
 
-  return Object.keys(record).some((key) =>
-    isForbiddenBrowserAuthKey(key, true)
+  return Object.entries(record).some(
+    ([key, nestedValue]) =>
+      isForbiddenBrowserAuthKey(key, true) ||
+      hasForbiddenBrowserAuthFields(nestedValue)
   );
 }
 
@@ -269,6 +276,49 @@ function normalizeAuthResponse(
     roles,
     session: sanitizeSession(record.session),
     user
+  };
+}
+
+function hasAuthenticatedSnapshot(snapshot: AdminAuthSnapshot) {
+  return Boolean(snapshot.user);
+}
+
+function assertBrowserSafeLoginResponse(data: unknown) {
+  if (!hasForbiddenBrowserAuthFields(data)) {
+    return;
+  }
+
+  throw new AdminApiClientError(
+    "Admin login response included unsafe auth fields.",
+    0,
+    "unsafe_login_response"
+  );
+}
+
+function normalizeLoginBootstrapEnvelope(
+  data: unknown,
+  headerRefreshCsrfToken?: string
+) {
+  assertBrowserSafeLoginResponse(data);
+
+  const record = asRecord(data);
+  const expiresAt = asString(record?.expiresAt);
+  const refreshCsrfToken = getResponseRefreshCsrfToken(
+    data,
+    headerRefreshCsrfToken
+  );
+
+  if (record?.ok !== true || !expiresAt) {
+    throw new AdminApiClientError(
+      "Admin login response was not browser-safe.",
+      0,
+      "invalid_login_response"
+    );
+  }
+
+  return {
+    expiresAt,
+    refreshCsrfToken
   };
 }
 
@@ -435,21 +485,47 @@ export async function loginAdmin(
     method: "POST"
   });
 
-  return normalizeAuthResponse(
+  assertBrowserSafeLoginResponse(response.data);
+
+  const snapshot = normalizeAuthResponse(
     response.data,
     response.csrfToken,
     response.refreshCsrfToken
   );
+
+  if (hasAuthenticatedSnapshot(snapshot)) {
+    return snapshot;
+  }
+
+  const loginEnvelope = normalizeLoginBootstrapEnvelope(
+    response.data,
+    response.refreshCsrfToken
+  );
+  const meSnapshot = await getAdminMe();
+
+  return {
+    ...meSnapshot,
+    refreshCsrfToken:
+      meSnapshot.refreshCsrfToken ?? loginEnvelope.refreshCsrfToken
+  };
 }
 
 export async function getAdminMe(): Promise<AdminAuthSnapshot> {
-  const response = await adminApiFetch<unknown>(adminAuthEndpoints.me);
+  try {
+    const response = await adminApiFetch<unknown>(adminAuthEndpoints.me);
 
-  return normalizeAuthResponse(
-    response.data,
-    response.csrfToken,
-    response.refreshCsrfToken
-  );
+    return normalizeAuthResponse(
+      response.data,
+      response.csrfToken,
+      response.refreshCsrfToken
+    );
+  } catch (error) {
+    if (isAdminSessionEndedError(error)) {
+      clearAdminCsrfTokens();
+    }
+
+    throw error;
+  }
 }
 
 export async function refreshAdminSession(): Promise<AdminRefreshResponse> {
@@ -519,6 +595,10 @@ export async function getAdminMeWithRefresh(): Promise<AdminAuthSnapshot> {
 
     return snapshot;
   } catch (error) {
+    if (isAdminSessionEndedError(error)) {
+      throw error;
+    }
+
     const canAttemptRefresh =
       error instanceof AdminApiClientError &&
       error.status === 401 &&
@@ -538,7 +618,13 @@ export async function getAdminMeWithRefresh(): Promise<AdminAuthSnapshot> {
         refreshError instanceof AdminApiClientError &&
         refreshError.status === 409
       ) {
-        return getAdminMe();
+        const snapshot = await getAdminMe();
+
+        if (didAdminCentralAuthLogoutStartSince(logoutGeneration)) {
+          throw createLogoutInProgressError();
+        }
+
+        return snapshot;
       }
 
       throw refreshError;

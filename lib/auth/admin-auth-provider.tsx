@@ -10,7 +10,11 @@ import {
   useState,
   type ReactNode
 } from "react";
-import { AdminApiClientError } from "@/lib/api/client";
+import {
+  AdminApiClientError,
+  isAdminServiceUnavailableError,
+  isAdminSessionEndedError
+} from "@/lib/api/client";
 import {
   getAdminMeWithRefresh,
   loginAdmin,
@@ -51,7 +55,15 @@ type AdminAuthContextValue = {
 const AdminAuthContext = createContext<AdminAuthContextValue | null>(null);
 
 function getSafeAuthError(error: unknown) {
+  if (isAdminSessionEndedError(error)) {
+    return "Your session ended. Please sign in again.";
+  }
+
   if (error instanceof AdminApiClientError) {
+    if (isAdminServiceUnavailableError(error)) {
+      return "Unable to reach the Admin Backend.";
+    }
+
     if (error.status === 401) {
       return "Please sign in to continue.";
     }
@@ -139,11 +151,17 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         return null;
       }
 
+      if (isAdminServiceUnavailableError(refreshError)) {
+        setError(getSafeAuthError(refreshError));
+        return null;
+      }
+
       applySnapshot(null);
 
       if (
-        refreshError instanceof AdminApiClientError &&
-        refreshError.status === 401
+        isAdminSessionEndedError(refreshError) ||
+        (refreshError instanceof AdminApiClientError &&
+          refreshError.status === 401)
       ) {
         setError(null);
       } else {
@@ -220,11 +238,18 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
           return;
         }
 
+        if (isAdminServiceUnavailableError(bootstrapError)) {
+          setStatus("unauthenticated");
+          setError(getSafeAuthError(bootstrapError));
+          return;
+        }
+
         applySnapshot(null);
 
         if (
-          bootstrapError instanceof AdminApiClientError &&
-          bootstrapError.status === 401
+          isAdminSessionEndedError(bootstrapError) ||
+          (bootstrapError instanceof AdminApiClientError &&
+            bootstrapError.status === 401)
         ) {
           setError(null);
         } else {

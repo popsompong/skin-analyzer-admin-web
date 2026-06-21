@@ -30,6 +30,22 @@ export class AdminApiClientError extends Error {
   }
 }
 
+export function isAdminSessionEndedError(
+  error: unknown
+): error is AdminApiClientError {
+  return (
+    error instanceof AdminApiClientError &&
+    error.status === 401 &&
+    error.code === "session_ended"
+  );
+}
+
+export function isAdminServiceUnavailableError(
+  error: unknown
+): boolean {
+  return error instanceof AdminApiClientError && error.status === 503;
+}
+
 type AdminApiUnauthorizedRefreshHandler = () => Promise<boolean>;
 
 let unauthorizedRefreshHandler:
@@ -167,6 +183,17 @@ export async function adminApiFetch<T>(
   const json = await readJsonSafely(response);
 
   if (!response.ok) {
+    const error = getSafeApiError(json, response.status);
+    const clientError = new AdminApiClientError(
+      error.message,
+      response.status,
+      error.code
+    );
+
+    if (isAdminSessionEndedError(clientError)) {
+      throw clientError;
+    }
+
     if (
       response.status === 401 &&
       shouldRetryUnauthorizedRead(method, options, includeRefreshCsrfToken) &&
@@ -178,9 +205,7 @@ export async function adminApiFetch<T>(
       });
     }
 
-    const error = getSafeApiError(json, response.status);
-
-    throw new AdminApiClientError(error.message, response.status, error.code);
+    throw clientError;
   }
 
   const responseCsrfToken = response.headers.get("X-CSRF-Token") ?? undefined;
